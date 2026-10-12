@@ -32,14 +32,35 @@ OPAQUE = {
     "eval",
     "iex",
     "invoke-expression",
-    "invoke-command",
-    "icm",
     "start-process",
     "saps",
     "start",
     "xargs",
     ".",
+    # Pseudo-terminal drivers can type into prompts meant for a person.
+    "expect",
+    "unbuffer",
+    "socat",
+    "winpty",
+    "faketty",
 }
+REMOTE_SESSION = {"-computername", "-cn", "-session", "-hostname", "-vmname", "-containerid"}
+# Inline Python/JavaScript is read for what it can do; Perl and Ruby stay opaque.
+READABLE_INLINE = {"python", "python3", "py", "node", "deno", "bun"}
+INLINE_CODE_FLAGS = {"-c", "-e", "--eval", "-p", "--print"}
+RUNS_PROGRAMS = re.compile(
+    r"subprocess|os\.(system|popen|exec|spawn)|\bpty\b|child_process|exec(Sync|File)?\s*\(|spawn(Sync)?\s*\("
+    r"|\beval\s*\(|\bexec\s*\(|__import__|importlib|ctypes|\bFunction\s*\("
+)
+NETWORK = re.compile(
+    r"\b(socket|urllib|http\.client|requests|httpx|aiohttp|smtplib|ftplib|axios|websocket)\b"
+    r"|\bfetch\s*\(|https?\.request|\bnet\.connect"
+)
+WRITES = re.compile(
+    r"write_text|write_bytes|open\s*\([^)]*['\"][wax]|shutil|os\.(remove|unlink|rename|replace|mkdir|makedirs)"
+    r"|\.unlink\(|rmtree|mkdir\(|fs\.(write|append|rm|unlink|rename|mkdir)|writeFile|appendFile"
+)
+DELETES = re.compile(r"rmtree|os\.(remove|unlink)|\.unlink\(|fs\.(rm|unlink)")
 INTERPRETERS = {"python", "python3", "py", "node", "perl", "ruby", "deno", "bun"}
 PUBLISH = {
     "npm": "publish", "pnpm": "publish", "yarn": "publish", "twine": "upload", "docker": "push",
@@ -170,6 +191,7 @@ def segments(command):
 
 
 EMBEDDED = "__aifw_embedded__"
+BLOCK = "__aifw_block__"
 
 
 def split_embedded(command):
@@ -209,7 +231,7 @@ def split_embedded(command):
             body = command[start : j - 1]
             if process or any(ch.isspace() for ch in body.strip()) or ";" in body:
                 bodies.append(body)  # brace expansion such as {a,b} is not code
-                out.append(f" {EMBEDDED} ")
+                out.append(f" {EMBEDDED if process else BLOCK} ")
             else:
                 out.append(command[i:j])
             i = j
@@ -349,19 +371,57 @@ def inline_code(name, args, lowered):
     return " ".join(args[index + 1 :]) if name in REST_OF_LINE else args[index + 1]
 
 
+def script_command(args):
+    """The command `script` runs: -c CMD, --command CMD or a short cluster ending in c (-qc, -qec)."""
+    for i, a in enumerate(args):
+        if a.startswith("--command="):
+            return a.split("=", 1)[1]
+        if (
+            a == "--command" or (a.startswith("-") and not a.startswith("--") and a.endswith("c"))
+        ) and i + 1 < len(args):
+            return args[i + 1]
+    return None
+
+
+def inline_script(name, code):
+    """What inline Python or JavaScript can do, read from its text."""
+    if RUNS_PROGRAMS.search(code):
+        return [request("opaque")]
+    found = []
+    if NETWORK.search(code):
+        found.append(request("external-write", service="unknown"))  # can send data anywhere
+    if WRITES.search(code):
+        found.append(request("filesystem-write", destructive=bool(DELETES.search(code))))
+    found = found or [request("read-only")]
+    if re.search(r"\baifw\b", code) and re.search(r"approve|activate|decide|grant|add_waiver", code):
+        found = [dict(r, approval=True) for r in found]
+    return found
+
+
 def segment_requests(words, piped, allowlist, depth):
     name, args = program(words)
     lowered = [a.lower() for a in args]
     text = " ".join(words)
     found = []
     inline = inline_code(name, args, lowered) if name in SHELLS else None
-    interpreted = name in INTERPRETERS and bool({"-c", "-e", "--eval"} & set(lowered))
-    if (
+    interpreted = name in INTERPRETERS and bool(INLINE_CODE_FLAGS & set(lowered))
+    code = next((args[i + 1] for i, a in enumerate(lowered[:-1]) if a in INLINE_CODE_FLAGS), None)
+    if name == BLOCK:
+        found.append(request("read-only"))
+    elif name in READABLE_INLINE and code is not None and depth <= 3:
+        found += inline_script(name, code)
+    elif name == "script" and script_command(args) is not None and depth <= 3:
+        found += analyze(script_command(args), allowlist, depth + 1)["requests"]
+    elif name in {"invoke-command", "icm", "enter-pssession", "new-pssession"}:
+        remote = name != "invoke-command" and name != "icm" or bool(REMOTE_SESSION & set(lowered))
+        found.append(request("external-write", service="remote-host") if remote else request("read-only"))
+    elif (
         depth > 3
         or name in OPAQUE
         or name.startswith(("$", "%"))
         or name == EMBEDDED
         or interpreted
+        or name == "script"
         or (name in SHELLS and (set(lowered) & ENCODED or (piped and not args)))
     ):
         found.append(request("opaque"))

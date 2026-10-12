@@ -174,7 +174,8 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         if kind in grants:
             log_break_glass(grants[kind], kind, tool_name, tool_input or {})
             decision = dict(decision="allow", reason="break-glass")
-        outside = kind == "external-read" and decision["decision"] == "deny"
+        # Outside the allowlist, a person confirms external reads and writes; sensitive data is denied.
+        outside = kind in {"external-read", "external-write"} and decision["decision"] == "deny"
         if outside and classification in {"confidential", "restricted"}:
             findings.append(("deny", f"{decision['reason']} ({classification} data)"))
         elif kind == "external-write" and classification == "restricted":

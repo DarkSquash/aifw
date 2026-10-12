@@ -34,6 +34,8 @@ Claude Code passa a ser o host de referência, ativado por projeto, e a validaç
 - `aifw secrets scan` e gates `secret-scan` e `session-conformance` nos scaffolds; leitura de arquivos de segredo pede confirmação.
 - Modo opcional `approvals.requireSignedCommit`: aprovações só valem em commit assinado.
 - O leitor de shell analisa `$(...)`, crases e blocos `{ }`; programa vindo de variável, `Invoke-Command` e `.` pedem confirmação; `printenv`/`env`/`set` são leitura de segredo; `git commit -S` pede confirmação (ADR-0021).
+- Menos confirmações sem reabrir brechas: blocos `{ }` têm o conteúdo analisado, `python -c`/`node -e` são lidos pelo que fazem, e escrita externa fora da allowlist pede confirmação em vez de ser negada (exceto dados `confidential`/`restricted`).
+- `script -c` é analisado; `expect`, `unbuffer`, `socat`, `winpty` e `script` sem comando pedem confirmação, fechando aprovação por terminal falso no Linux.
 - `uv sync` é liberado; `pip install`, `npm install` e `uv add` pedem confirmação.
 - Allowlist casa por domínio, com `serviceDomains` editável; Grep e Glob passam pelo hook; `protectedPaths` no `permissions.yaml`.
 - Modo de commit assinado cobre também adoção e decisões de impasse; uso de break-glass é registrado.
