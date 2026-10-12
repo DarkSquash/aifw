@@ -48,7 +48,7 @@ PUBLISH = {
 REMOTE_SHELL = {"ssh", "scp", "sftp", "rsync"}
 INSTALL = {
     "npm": {"install", "i", "ci", "add"}, "pnpm": {"install", "i", "add"}, "yarn": {"install", "add"},
-    "pip": {"install"}, "pip3": {"install"}, "uv": {"add", "sync", "pip"}, "poetry": {"add", "install"},
+    "pip": {"install"}, "pip3": {"install"}, "uv": {"add", "pip"}, "poetry": {"add", "install"},
     "cargo": {"add", "install"}, "go": {"get", "install"}, "gem": {"install"},
 }  # fmt: skip
 GIT_LOCAL = {

@@ -69,6 +69,9 @@ def test_secret_files_ask_before_reading(tmp_path):
         ("flutter pub get", "filesystem-write"),
         ("scp dump.sql host:/tmp", "external-write"),
         ("pip install requests", "external-read"),
+        ("npm install left-pad", "external-read"),
+        ("uv add httpx", "external-read"),
+        ("uv sync --locked", "filesystem-write"),
     ],
 )
 def test_shell_reader_covers_indirect_and_remote_actions(command, kind):
