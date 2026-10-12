@@ -617,7 +617,7 @@ O agente descobre ou recomenda:
 
 ## Manutenção deste guia
 
-`python scripts/generate_cli_reference.py` gera a referência diretamente do parser. O mesmo comando com `--check` detecta divergências. Execute dentro do ambiente instalado, por exemplo com `uv run --no-sync python`.
+`python scripts/generate_cli_reference.py` gera a referência diretamente do parser; use Python 3.13 ou mais novo, porque versões anteriores quebram as linhas de uso de outra forma. O mesmo comando com `--check` detecta divergências. Execute dentro do ambiente instalado, por exemplo com `uv run --no-sync python`.
 
 ```powershell
 uv run --no-sync ruff check python tests_python scripts setup.py
