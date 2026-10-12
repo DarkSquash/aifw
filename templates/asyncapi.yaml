@@ -1,0 +1,31 @@
+asyncapi: 3.0.0
+info:
+  title: Example Events
+  version: 0.1.0
+  description: Replace with event purpose, ownership and compatibility policy.
+channels:
+  orderEvents:
+    address: orders.events
+    messages:
+      orderCreated:
+        $ref: "#/components/messages/OrderCreated"
+operations:
+  receiveOrderCreated:
+    action: receive
+    channel:
+      $ref: "#/channels/orderEvents"
+    messages:
+      - $ref: "#/channels/orderEvents/messages/orderCreated"
+components:
+  messages:
+    OrderCreated:
+      name: OrderCreated
+      title: Order created
+      payload:
+        type: object
+        additionalProperties: false
+        required: [eventId, occurredAt, orderId]
+        properties:
+          eventId: { type: string }
+          occurredAt: { type: string }
+          orderId: { type: string }

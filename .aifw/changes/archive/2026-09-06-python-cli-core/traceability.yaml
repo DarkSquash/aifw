@@ -1,0 +1,60 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: python-cli-core
+artifacts:
+- id: TEST-PYTHON-RUNTIME
+  type: test
+  status: passed
+  path: scripts/verify_wheel.py
+- id: TEST-PYTHON-PARITY
+  type: test
+  status: passed
+  path: tests_python/test_spec_integrity.py
+- id: TEST-PYTHON-PI
+  type: test
+  status: passed
+  path: tests_python/test_pi_bridge.py
+- id: ADR-PYTHON
+  type: adr
+  status: passed
+  path: docs/decisions/ADR-0011-python-runtime.md
+- id: EVIDENCE-PYTEST
+  type: evidence
+  status: passed
+  path: .aifw/changes/archive/2026-09-06-python-cli-core/evidence/pytest.xml
+- id: EVIDENCE-WHEEL
+  type: evidence
+  status: passed
+  path: .aifw/changes/archive/2026-09-06-python-cli-core/evidence/isolated-wheel.json
+- id: EVIDENCE-PI
+  type: evidence
+  status: passed
+  path: .aifw/changes/archive/2026-09-06-python-cli-core/evidence/pi-adapter-smoke.json
+links:
+- from: SCN-AIFW-PYTHON-RUNTIME
+  relation: verifiedBy
+  to: TEST-PYTHON-RUNTIME
+- from: SCN-AIFW-PYTHON-PARITY
+  relation: verifiedBy
+  to: TEST-PYTHON-PARITY
+- from: SCN-AIFW-PYTHON-PI
+  relation: verifiedBy
+  to: TEST-PYTHON-PI
+- from: REQ-AIFW-PYTHON-RUNTIME
+  relation: governedBy
+  to: ADR-PYTHON
+- from: REQ-AIFW-PYTHON-PARITY
+  relation: governedBy
+  to: ADR-PYTHON
+- from: REQ-AIFW-PYTHON-PI
+  relation: governedBy
+  to: ADR-PYTHON
+- from: REQ-AIFW-PYTHON-PARITY
+  relation: provedBy
+  to: EVIDENCE-PYTEST
+- from: REQ-AIFW-PYTHON-RUNTIME
+  relation: provedBy
+  to: EVIDENCE-WHEEL
+- from: REQ-AIFW-PYTHON-PI
+  relation: provedBy
+  to: EVIDENCE-PI

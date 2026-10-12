@@ -1,0 +1,19 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: example-change
+artifacts:
+  - id: TEST-EXAMPLE-001
+    type: test
+    path: tests/example.test.ts
+    status: planned
+  - id: GATE-EXAMPLE-001
+    type: gate
+    path: .aifw/changes/active/example-change/evidence/gates.json
+    status: planned
+links:
+  - from: REQ-EXAMPLE-001
+    relation: provedBy
+    to: TASK-EXAMPLE-001
+  - from: SCN-EXAMPLE-001
+    relation: verifiedBy
+    to: TEST-EXAMPLE-001

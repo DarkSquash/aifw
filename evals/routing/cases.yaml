@@ -1,0 +1,35 @@
+apiVersion: aifw.dev/v1alpha1
+kind: RoutingEvaluationSuite
+cases:
+  - { id: fast-read-l0, critical: false, input: { impact: L0, operation: single-read, uncertainty: low }, expectedRoute: FAST }
+  - { id: fast-discovery-l0, critical: false, input: { impact: L0, operation: discovery, uncertainty: low }, expectedRoute: FAST }
+  - { id: fast-doc-l0, critical: false, input: { impact: L0, operation: documentation, uncertainty: low }, expectedRoute: FAST }
+  - { id: fast-read-l1, critical: false, input: { impact: L1, operation: single-read, uncertainty: low }, expectedRoute: FAST }
+  - { id: fast-discovery-l1, critical: false, input: { impact: L1, operation: discovery, uncertainty: low }, expectedRoute: FAST }
+  - { id: fast-doc-l1, critical: false, input: { impact: L1, operation: documentation, uncertainty: low }, expectedRoute: FAST }
+  - { id: work-implementation-l0, critical: false, input: { impact: L0, operation: implementation, uncertainty: low }, expectedRoute: WORK }
+  - { id: work-implementation-l1, critical: false, input: { impact: L1, operation: implementation, uncertainty: low }, expectedRoute: WORK }
+  - { id: work-implementation-l2, critical: false, input: { impact: L2, operation: implementation, uncertainty: medium }, expectedRoute: WORK }
+  - { id: work-review-l1, critical: false, input: { impact: L1, operation: review, uncertainty: medium }, expectedRoute: WORK }
+  - { id: work-review-l2, critical: false, input: { impact: L2, operation: review, uncertainty: low }, expectedRoute: WORK }
+  - { id: work-research-l1, critical: false, input: { impact: L1, operation: research, uncertainty: medium }, expectedRoute: WORK }
+  - { id: work-research-l2, critical: false, input: { impact: L2, operation: research, uncertainty: medium }, expectedRoute: WORK }
+  - { id: work-incident-l1, critical: false, input: { impact: L1, operation: incident-response, uncertainty: medium }, expectedRoute: WORK }
+  - { id: work-cross-domain-doc, critical: false, input: { impact: L1, operation: documentation, uncertainty: low, crossDomain: true }, expectedRoute: WORK }
+  - { id: work-medium-discovery, critical: false, input: { impact: L1, operation: discovery, uncertainty: medium }, expectedRoute: WORK }
+  - { id: brain-l3-implementation, critical: true, input: { impact: L3, operation: implementation, uncertainty: low }, expectedRoute: BRAIN }
+  - { id: brain-l3-review, critical: true, input: { impact: L3, operation: review, uncertainty: low }, expectedRoute: BRAIN }
+  - { id: brain-l3-documentation, critical: true, input: { impact: L3, operation: documentation, uncertainty: low }, expectedRoute: BRAIN }
+  - { id: brain-architecture-l0, critical: true, input: { impact: L0, operation: architecture-decision, uncertainty: low }, expectedRoute: BRAIN }
+  - { id: brain-architecture-l2, critical: true, input: { impact: L2, operation: architecture-decision, uncertainty: medium }, expectedRoute: BRAIN }
+  - { id: brain-high-read, critical: false, input: { impact: L0, operation: single-read, uncertainty: high }, expectedRoute: BRAIN }
+  - { id: brain-high-implementation, critical: true, input: { impact: L1, operation: implementation, uncertainty: high }, expectedRoute: BRAIN }
+  - { id: brain-failed-attempts, critical: true, input: { impact: L1, operation: implementation, uncertainty: low, failedAttempts: 2 }, expectedRoute: BRAIN }
+  - { id: brain-many-failed-attempts, critical: true, input: { impact: L2, operation: incident-response, uncertainty: medium, failedAttempts: 5 }, expectedRoute: BRAIN }
+  - { id: brain-explicit-request, critical: false, input: { impact: L1, operation: review, uncertainty: low, requestedRoute: BRAIN }, expectedRoute: BRAIN }
+  - { id: no-fast-l2-read, critical: true, input: { impact: L2, operation: single-read, uncertainty: low }, expectedRoute: WORK }
+  - { id: no-fast-l2-doc, critical: true, input: { impact: L2, operation: documentation, uncertainty: low }, expectedRoute: WORK }
+  - { id: no-fast-cross-domain, critical: false, input: { impact: L0, operation: discovery, uncertainty: low, crossDomain: true }, expectedRoute: WORK }
+  - { id: no-fast-work-request, critical: false, input: { impact: L0, operation: documentation, uncertainty: low, requestedRoute: WORK }, expectedRoute: WORK }
+  - { id: l3-beats-fast-request, critical: true, input: { impact: L3, operation: single-read, uncertainty: low, requestedRoute: FAST }, expectedRoute: BRAIN }
+  - { id: architecture-beats-fast-request, critical: true, input: { impact: L1, operation: architecture-decision, uncertainty: low, requestedRoute: FAST }, expectedRoute: BRAIN }

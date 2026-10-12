@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/waiver.schema.json",
+  "title": "AIFW Waiver",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "ruleId", "scope", "reason", "requestedBy", "approvedBy", "approvedAt", "expiresAt", "checkpoint"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^waiver:[a-z0-9-]+$" },
+    "ruleId": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+    "scope": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "reason": { "type": "string", "minLength": 1 },
+    "requestedBy": { "type": "string", "minLength": 1 },
+    "approvedBy": { "type": "string", "minLength": 1 },
+    "approvedAt": { "type": "string", "minLength": 1 },
+    "expiresAt": { "type": "string", "minLength": 1 },
+    "checkpoint": { "type": "string", "minLength": 1 },
+    "status": { "const": "active" }
+  }
+}

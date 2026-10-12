@@ -1,0 +1,111 @@
+apiVersion: aifw.dev/v1alpha1
+kind: Profile
+metadata:
+  id: web-ts
+  version: 0.1.0
+spec:
+  kind: stack
+  provides:
+    - capability:web-ui
+    - capability:javascript
+    - capability:typescript
+    - capability:node
+  requires: []
+  conflicts: []
+  rules:
+    - id: architecture.web-module-boundaries
+      version: 1.0.0
+      keyword: MUST
+      statement: Keep UI, application, domain and infrastructure dependencies directed according to the project's declared module boundaries, regardless of the selected JavaScript or TypeScript framework.
+      scope: [frontend, backend]
+      rationale: Explicit boundaries reduce accidental coupling and make agent changes reviewable.
+      owner: profile:web-ts
+      enforcement:
+        mode: hard
+        evidence: [dependency-check, project-map]
+      source: profiles/web-ts/profile.yaml
+      overridable: true
+    - id: contracts.openapi
+      version: 1.0.0
+      keyword: MUST
+      statement: Maintain an OpenAPI contract when the project exposes or consumes a material HTTP API.
+      scope: [api]
+      rationale: Machine-readable HTTP contracts keep implementation, clients and documentation aligned.
+      owner: profile:web-ts
+      enforcement:
+        mode: hard
+        evidence: [openapi-validation, contract-tests]
+      source: profiles/web-ts/profile.yaml
+      overridable: true
+    - id: contracts.asyncapi
+      version: 1.0.0
+      keyword: SHOULD
+      statement: Maintain an AsyncAPI contract for material event-driven interfaces.
+      scope: [events]
+      rationale: Events need the same discoverability and compatibility discipline as HTTP APIs.
+      owner: profile:web-ts
+      enforcement:
+        mode: audit
+        evidence: [asyncapi-validation, contract-tests]
+      source: profiles/web-ts/profile.yaml
+      overridable: true
+    - id: design.system-source
+      version: 1.0.0
+      keyword: MUST
+      statement: Treat versioned design tokens and components as the UI source of truth.
+      scope: [frontend]
+      rationale: Centralized design decisions prevent undocumented visual drift.
+      owner: profile:web-ts
+      enforcement:
+        mode: hard
+        evidence: [design-tokens, component-catalog]
+      source: profiles/web-ts/profile.yaml
+      overridable: true
+    - id: design.storybook
+      version: 1.0.0
+      keyword: SHOULD
+      statement: Document reusable UI states and interaction variants in Storybook or an equivalent component workbench.
+      scope: [frontend]
+      rationale: Isolated states improve review, accessibility and visual regression coverage.
+      owner: profile:web-ts
+      enforcement:
+        mode: audit
+        evidence: [storybook-build, visual-tests]
+      source: profiles/web-ts/profile.yaml
+      overridable: true
+    - id: design.button-radius
+      version: 1.0.0
+      keyword: SHOULD
+      statement: Derive button radius from semantic design tokens and permit documented density variants.
+      scope: [frontend]
+      rationale: Tokens preserve consistency while scoped variants prevent global rules from breaking dense layouts.
+      owner: profile:web-ts
+      enforcement:
+        mode: audit
+        evidence: [visual-review, visual-tests]
+      source: profiles/web-ts/profile.yaml
+      overridable: true
+    - id: security.web-threat-model
+      version: 1.0.0
+      keyword: MUST
+      statement: Update the STRIDE threat model when authentication, authorization, trust boundaries or sensitive data flows change.
+      scope: [frontend, backend, api]
+      rationale: Security review must follow changed attack surfaces.
+      owner: profile:web-ts
+      enforcement:
+        mode: human
+        evidence: [threat-model, security-review]
+      source: profiles/web-ts/profile.yaml
+      overridable: true
+    - id: observability.web-signals
+      version: 1.0.0
+      keyword: MUST
+      statement: Define logs, metrics, traces and user-visible error behavior for production-critical flows.
+      scope: [frontend, backend, production]
+      rationale: Failures must be diagnosable without exposing sensitive data.
+      owner: profile:web-ts
+      enforcement:
+        mode: audit
+        evidence: [observability-plan, runbook]
+      source: profiles/web-ts/profile.yaml
+      overridable: true

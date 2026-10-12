@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: harden-spec-archive
+  title: Corrigir integridade do lifecycle de specs
+  level: L3
+  createdAt: 2026-09-06T02:13:06.189Z
+summary: Corrigir os cinco achados F1-F5 da auditoria de 2026-09-05, com regressões e checkpoint recuperável.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: 2026-09-06T02:22:37.243Z
+  record: docs/decisions/ADR-0010-spec-archive-integrity.md
+archivedAt: 2026-09-06T02:22:38.920Z

@@ -1,0 +1,626 @@
+{
+  "approval": {
+    "status": "approved",
+    "change": {
+      "apiVersion": "aifw.dev/v1alpha1",
+      "kind": "SpecChange",
+      "metadata": {
+        "id": "harden-spec-archive",
+        "title": "Corrigir integridade do lifecycle de specs",
+        "level": "L3",
+        "createdAt": "2026-09-06T02:13:06.189Z"
+      },
+      "summary": "Corrigir os cinco achados F1-F5 da auditoria de 2026-09-05, com regressões e checkpoint recuperável.",
+      "status": "draft",
+      "approval": {
+        "approvedBy": "human:DarkSquash",
+        "approvedAt": "2026-09-06T02:22:37.243Z",
+        "record": "docs/decisions/ADR-0010-spec-archive-integrity.md"
+      }
+    }
+  },
+  "validation": {
+    "change": {
+      "apiVersion": "aifw.dev/v1alpha1",
+      "kind": "SpecChange",
+      "metadata": {
+        "id": "harden-spec-archive",
+        "title": "Corrigir integridade do lifecycle de specs",
+        "level": "L3",
+        "createdAt": "2026-09-06T02:13:06.189Z"
+      },
+      "summary": "Corrigir os cinco achados F1-F5 da auditoria de 2026-09-05, com regressões e checkpoint recuperável.",
+      "status": "draft",
+      "approval": {
+        "approvedBy": "human:DarkSquash",
+        "approvedAt": "2026-09-06T02:22:37.243Z",
+        "record": "docs/decisions/ADR-0010-spec-archive-integrity.md"
+      }
+    },
+    "pass": true,
+    "findings": [],
+    "capabilities": [
+      "aifw-control-plane"
+    ]
+  },
+  "analysis": {
+    "change": {
+      "apiVersion": "aifw.dev/v1alpha1",
+      "kind": "SpecChange",
+      "metadata": {
+        "id": "harden-spec-archive",
+        "title": "Corrigir integridade do lifecycle de specs",
+        "level": "L3",
+        "createdAt": "2026-09-06T02:13:06.189Z"
+      },
+      "summary": "Corrigir os cinco achados F1-F5 da auditoria de 2026-09-05, com regressões e checkpoint recuperável.",
+      "status": "draft",
+      "approval": {
+        "approvedBy": "human:DarkSquash",
+        "approvedAt": "2026-09-06T02:22:37.243Z",
+        "record": "docs/decisions/ADR-0010-spec-archive-integrity.md"
+      }
+    },
+    "pass": true,
+    "findings": [],
+    "coverage": {
+      "requirements": {
+        "total": 5,
+        "linkedToTask": 5
+      },
+      "scenarios": {
+        "total": 5,
+        "verified": 5
+      },
+      "tasks": {
+        "total": 5,
+        "completed": 5
+      }
+    },
+    "graph": {
+      "nodes": [
+        {
+          "id": "ADR-INTEGRITY",
+          "type": "adr",
+          "path": "docs/decisions/ADR-0010-spec-archive-integrity.md"
+        },
+        {
+          "id": "FILE:src/core/spec-lifecycle.ts",
+          "type": "code",
+          "path": "src/core/spec-lifecycle.ts"
+        },
+        {
+          "id": "FILE:src/core/spec-lifecycle.ts",
+          "type": "code",
+          "path": "src/core/spec-lifecycle.ts"
+        },
+        {
+          "id": "FILE:src/core/spec-lifecycle.ts",
+          "type": "code",
+          "path": "src/core/spec-lifecycle.ts"
+        },
+        {
+          "id": "FILE:src/core/spec-lifecycle.ts",
+          "type": "code",
+          "path": "src/core/spec-lifecycle.ts"
+        },
+        {
+          "id": "FILE:src/core/spec-lifecycle.ts",
+          "type": "code",
+          "path": "src/core/spec-lifecycle.ts"
+        },
+        {
+          "id": "FILE:tests/spec-integrity.test.ts",
+          "type": "code",
+          "path": "tests/spec-integrity.test.ts"
+        },
+        {
+          "id": "FILE:tests/spec-integrity.test.ts",
+          "type": "code",
+          "path": "tests/spec-integrity.test.ts"
+        },
+        {
+          "id": "FILE:tests/spec-integrity.test.ts",
+          "type": "code",
+          "path": "tests/spec-integrity.test.ts"
+        },
+        {
+          "id": "FILE:tests/spec-integrity.test.ts",
+          "type": "code",
+          "path": "tests/spec-integrity.test.ts"
+        },
+        {
+          "id": "FILE:tests/spec-integrity.test.ts",
+          "type": "code",
+          "path": "tests/spec-integrity.test.ts"
+        },
+        {
+          "id": "GATE-CHECK",
+          "type": "gate",
+          "path": ".aifw/changes/active/harden-spec-archive/evidence/check.json"
+        },
+        {
+          "id": "REQ-AIFW-INTEGRITY-APPROVAL",
+          "type": "requirement"
+        },
+        {
+          "id": "REQ-AIFW-INTEGRITY-EVIDENCE",
+          "type": "requirement"
+        },
+        {
+          "id": "REQ-AIFW-INTEGRITY-RECOVERY",
+          "type": "requirement"
+        },
+        {
+          "id": "REQ-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "type": "requirement"
+        },
+        {
+          "id": "REQ-AIFW-INTEGRITY-VALID-OUTPUT",
+          "type": "requirement"
+        },
+        {
+          "id": "SCN-AIFW-INTEGRITY-APPROVAL",
+          "type": "scenario"
+        },
+        {
+          "id": "SCN-AIFW-INTEGRITY-EVIDENCE",
+          "type": "scenario"
+        },
+        {
+          "id": "SCN-AIFW-INTEGRITY-RECOVERY",
+          "type": "scenario"
+        },
+        {
+          "id": "SCN-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "type": "scenario"
+        },
+        {
+          "id": "SCN-AIFW-INTEGRITY-VALID-OUTPUT",
+          "type": "scenario"
+        },
+        {
+          "id": "TASK-INTEGRITY-APPROVAL",
+          "type": "task"
+        },
+        {
+          "id": "TASK-INTEGRITY-EVIDENCE",
+          "type": "task"
+        },
+        {
+          "id": "TASK-INTEGRITY-RECOVERY",
+          "type": "task"
+        },
+        {
+          "id": "TASK-INTEGRITY-UNIQUE-DELTA",
+          "type": "task"
+        },
+        {
+          "id": "TASK-INTEGRITY-VALID-OUTPUT",
+          "type": "task"
+        },
+        {
+          "id": "TEST-INTEGRITY",
+          "type": "test",
+          "path": "tests/spec-integrity.test.ts"
+        }
+      ],
+      "links": [
+        {
+          "from": "REQ-AIFW-INTEGRITY-APPROVAL",
+          "relation": "checkedBy",
+          "to": "GATE-CHECK"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-APPROVAL",
+          "relation": "governedBy",
+          "to": "ADR-INTEGRITY"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-APPROVAL",
+          "relation": "hasScenario",
+          "to": "SCN-AIFW-INTEGRITY-APPROVAL"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-APPROVAL",
+          "relation": "implementedBy",
+          "to": "TASK-INTEGRITY-APPROVAL"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-EVIDENCE",
+          "relation": "checkedBy",
+          "to": "GATE-CHECK"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-EVIDENCE",
+          "relation": "governedBy",
+          "to": "ADR-INTEGRITY"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-EVIDENCE",
+          "relation": "hasScenario",
+          "to": "SCN-AIFW-INTEGRITY-EVIDENCE"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-EVIDENCE",
+          "relation": "implementedBy",
+          "to": "TASK-INTEGRITY-EVIDENCE"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-RECOVERY",
+          "relation": "checkedBy",
+          "to": "GATE-CHECK"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-RECOVERY",
+          "relation": "governedBy",
+          "to": "ADR-INTEGRITY"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-RECOVERY",
+          "relation": "hasScenario",
+          "to": "SCN-AIFW-INTEGRITY-RECOVERY"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-RECOVERY",
+          "relation": "implementedBy",
+          "to": "TASK-INTEGRITY-RECOVERY"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "relation": "checkedBy",
+          "to": "GATE-CHECK"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "relation": "governedBy",
+          "to": "ADR-INTEGRITY"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "relation": "hasScenario",
+          "to": "SCN-AIFW-INTEGRITY-UNIQUE-DELTA"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "relation": "implementedBy",
+          "to": "TASK-INTEGRITY-UNIQUE-DELTA"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-VALID-OUTPUT",
+          "relation": "checkedBy",
+          "to": "GATE-CHECK"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-VALID-OUTPUT",
+          "relation": "governedBy",
+          "to": "ADR-INTEGRITY"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-VALID-OUTPUT",
+          "relation": "hasScenario",
+          "to": "SCN-AIFW-INTEGRITY-VALID-OUTPUT"
+        },
+        {
+          "from": "REQ-AIFW-INTEGRITY-VALID-OUTPUT",
+          "relation": "implementedBy",
+          "to": "TASK-INTEGRITY-VALID-OUTPUT"
+        },
+        {
+          "from": "SCN-AIFW-INTEGRITY-APPROVAL",
+          "relation": "verifiedBy",
+          "to": "TEST-INTEGRITY"
+        },
+        {
+          "from": "SCN-AIFW-INTEGRITY-EVIDENCE",
+          "relation": "verifiedBy",
+          "to": "TEST-INTEGRITY"
+        },
+        {
+          "from": "SCN-AIFW-INTEGRITY-RECOVERY",
+          "relation": "verifiedBy",
+          "to": "TEST-INTEGRITY"
+        },
+        {
+          "from": "SCN-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "relation": "verifiedBy",
+          "to": "TEST-INTEGRITY"
+        },
+        {
+          "from": "SCN-AIFW-INTEGRITY-VALID-OUTPUT",
+          "relation": "verifiedBy",
+          "to": "TEST-INTEGRITY"
+        },
+        {
+          "from": "TASK-INTEGRITY-APPROVAL",
+          "relation": "changes",
+          "to": "FILE:src/core/spec-lifecycle.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-APPROVAL",
+          "relation": "changes",
+          "to": "FILE:tests/spec-integrity.test.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-EVIDENCE",
+          "relation": "changes",
+          "to": "FILE:src/core/spec-lifecycle.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-EVIDENCE",
+          "relation": "changes",
+          "to": "FILE:tests/spec-integrity.test.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-RECOVERY",
+          "relation": "changes",
+          "to": "FILE:src/core/spec-lifecycle.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-RECOVERY",
+          "relation": "changes",
+          "to": "FILE:tests/spec-integrity.test.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-UNIQUE-DELTA",
+          "relation": "changes",
+          "to": "FILE:src/core/spec-lifecycle.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-UNIQUE-DELTA",
+          "relation": "changes",
+          "to": "FILE:tests/spec-integrity.test.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-VALID-OUTPUT",
+          "relation": "changes",
+          "to": "FILE:src/core/spec-lifecycle.ts"
+        },
+        {
+          "from": "TASK-INTEGRITY-VALID-OUTPUT",
+          "relation": "changes",
+          "to": "FILE:tests/spec-integrity.test.ts"
+        }
+      ]
+    }
+  },
+  "preview": {
+    "changeId": "harden-spec-archive",
+    "pass": true,
+    "findings": [],
+    "changes": [
+      {
+        "capability": "aifw-control-plane",
+        "action": "update",
+        "added": [
+          "REQ-AIFW-INTEGRITY-APPROVAL",
+          "REQ-AIFW-INTEGRITY-EVIDENCE",
+          "REQ-AIFW-INTEGRITY-RECOVERY",
+          "REQ-AIFW-INTEGRITY-UNIQUE-DELTA",
+          "REQ-AIFW-INTEGRITY-VALID-OUTPUT"
+        ],
+        "modified": [],
+        "removed": [],
+        "outputPath": ".aifw/specs/current/aifw-control-plane.yaml"
+      }
+    ],
+    "outputs": [
+      {
+        "relativePath": ".aifw/specs/current/aifw-control-plane.yaml",
+        "spec": {
+          "apiVersion": "aifw.dev/v1alpha1",
+          "kind": "CapabilitySpec",
+          "capability": "aifw-control-plane",
+          "title": "AIFW control plane",
+          "purpose": "Tornar engenharia com agentes reproduzível, rastreável, segura e independente do executor.",
+          "requirements": [
+            {
+              "id": "REQ-AIFW-BROWNFIELD",
+              "strength": "MUST",
+              "statement": "O framework deve mapear fatos de projetos existentes sem aprovar inferências semânticas automaticamente.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-BROWNFIELD-TWO-PHASE",
+                  "given": [
+                    "um projeto existente inicializado no AIFW"
+                  ],
+                  "when": [
+                    "discovery e aplicação do baseline são executados"
+                  ],
+                  "then": [
+                    "candidatos factuais são persistidos e permanecem pendentes de revisão humana"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-INTEGRITY-APPROVAL",
+              "strength": "MUST",
+              "statement": "O archive L3 deve revalidar aprovação humana e arquivo de registro existente dentro da raiz real do projeto.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-INTEGRITY-APPROVAL",
+                  "given": [
+                    "uma mudança ready cuja aprovação ou classificação foi alterada"
+                  ],
+                  "when": [
+                    "archive é solicitado"
+                  ],
+                  "then": [
+                    "a aprovação inválida bloqueia sem alterar current ou active"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-INTEGRITY-EVIDENCE",
+              "strength": "MUST",
+              "statement": "Artefatos passed devem apontar para arquivos dentro do projeto; gates ligados por checkedBy devem estar passed.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-INTEGRITY-EVIDENCE",
+                  "given": [
+                    "uma mudança com evidência ausente ou gate obrigatório não aprovado"
+                  ],
+                  "when": [
+                    "ready ou archive é solicitado"
+                  ],
+                  "then": [
+                    "a mudança é bloqueada e o cenário sem evidência não conta como verificado"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-INTEGRITY-RECOVERY",
+              "strength": "MUST",
+              "statement": "O archive deve preservar o estado instalado quando a limpeza de backups falhar, e restaurar o estado anterior quando uma troca falhar antes do commit.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-INTEGRITY-RECOVERY",
+                  "given": [
+                    "uma transação de archive com falha injetada de filesystem"
+                  ],
+                  "when": [
+                    "a falha ocorre antes do commit ou durante a limpeza"
+                  ],
+                  "then": [
+                    "o estado antigo é restaurado ou o novo é preservado com aviso de limpeza"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-INTEGRITY-UNIQUE-DELTA",
+              "strength": "MUST",
+              "statement": "Uma mudança deve possuir no máximo um delta por capability.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-INTEGRITY-UNIQUE-DELTA",
+                  "given": [
+                    "dois deltas da mesma capability com requisitos distintos"
+                  ],
+                  "when": [
+                    "a mudança é validada"
+                  ],
+                  "then": [
+                    "a duplicidade bloqueia antes de sobrescrever requisitos"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-INTEGRITY-VALID-OUTPUT",
+              "strength": "MUST",
+              "statement": "O lifecycle deve rejeitar títulos vazios e validar a CapabilitySpec produzida antes de staging.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-INTEGRITY-VALID-OUTPUT",
+                  "given": [
+                    "um delta com título vazio ou apenas espaços"
+                  ],
+                  "when": [
+                    "a mudança é validada ou sincronizada"
+                  ],
+                  "then": [
+                    "a operação falha antes de contaminar a árvore current"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-PERSISTED-TRUTH",
+              "strength": "MUST",
+              "statement": "Decisões arquiteturais e comportamentais devem existir em fontes versionadas do projeto e nunca somente em conversa com IA.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-PERSISTED-DECISION",
+                  "given": [
+                    "uma mudança arquitetural relevante"
+                  ],
+                  "when": [
+                    "a decisão é aprovada"
+                  ],
+                  "then": [
+                    "um ADR ou registro equivalente dentro do projeto contém a decisão e sua evidência"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-SPEC-LIFECYCLE",
+              "strength": "MUST",
+              "statement": "O framework deve isolar propostas em mudanças ativas e só alterar a verdade aceita após validação e archive controlado.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-SPEC-ARCHIVE",
+                  "given": [
+                    "uma mudança pronta com tarefas e evidências completas"
+                  ],
+                  "when": [
+                    "o archive é executado"
+                  ],
+                  "then": [
+                    "as specs atuais são trocadas atomicamente e o contexto completo é arquivado"
+                  ]
+                },
+                {
+                  "id": "SCN-AIFW-SPEC-PREVIEW",
+                  "given": [
+                    "uma mudança ativa com deltas válidos"
+                  ],
+                  "when": [
+                    "o agente solicita o preview de sincronização"
+                  ],
+                  "then": [
+                    "as alterações propostas são exibidas sem mutar as specs atuais"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "REQ-AIFW-TRACEABILITY",
+              "strength": "MUST",
+              "statement": "O framework deve detectar requisitos órfãos, cenários sem verificação, links quebrados e evidências ausentes.",
+              "scenarios": [
+                {
+                  "id": "SCN-AIFW-TRACE-BLOCK",
+                  "given": [
+                    "uma mudança com rastreabilidade incompleta"
+                  ],
+                  "when": [
+                    "a mudança é analisada ou promovida a ready"
+                  ],
+                  "then": [
+                    "findings objetivos bloqueiam a promoção"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "dryRun": true
+  },
+  "ready": {
+    "status": "ready",
+    "change": {
+      "apiVersion": "aifw.dev/v1alpha1",
+      "kind": "SpecChange",
+      "metadata": {
+        "id": "harden-spec-archive",
+        "title": "Corrigir integridade do lifecycle de specs",
+        "level": "L3",
+        "createdAt": "2026-09-06T02:13:06.189Z"
+      },
+      "summary": "Corrigir os cinco achados F1-F5 da auditoria de 2026-09-05, com regressões e checkpoint recuperável.",
+      "status": "ready",
+      "approval": {
+        "approvedBy": "human:DarkSquash",
+        "approvedAt": "2026-09-06T02:22:37.243Z",
+        "record": "docs/decisions/ADR-0010-spec-archive-integrity.md"
+      }
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "status": "warning",
+  "blockers": [],
+  "warnings": [
+    {
+      "gateId": "independent-review",
+      "enforcement": "audit",
+      "status": "not-run",
+      "summary": "No independent reviewer was invoked.",
+      "evidence": []
+    }
+  ],
+  "passed": [
+    {
+      "gateId": "build",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": []
+    },
+    {
+      "gateId": "cli-docs",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": []
+    },
+    {
+      "gateId": "conformance",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": []
+    },
+    {
+      "gateId": "human-approval",
+      "enforcement": "human",
+      "status": "pass",
+      "summary": "Existing user authorization persisted in ADR-0012.",
+      "evidence": [
+        "docs/decisions/ADR-0012-context-intelligence.md"
+      ]
+    },
+    {
+      "gateId": "lint",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": []
+    },
+    {
+      "gateId": "manifest",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": []
+    },
+    {
+      "gateId": "project-map",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": []
+    },
+    {
+      "gateId": "tests",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": [
+        ".aifw/changes/archive/2026-09-19-context-intelligence/evidence/tests.txt"
+      ]
+    },
+    {
+      "gateId": "typecheck",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Verified locally; see recorded command results.",
+      "evidence": []
+    }
+  ]
+}

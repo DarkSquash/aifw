@@ -1,0 +1,10 @@
+caseId: replace-case-id
+events:
+  - type: research
+    evidence: [source:replace-me]
+  - type: human-approval
+    approvalId: approval:replace-me
+  - type: implementation
+    approvalId: approval:replace-me
+  - type: verification
+    evidence: [gate-report:replace-me]

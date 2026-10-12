@@ -1,0 +1,17 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilitySpec
+capability: example-capability
+title: Example capability
+purpose: Describe the accepted user or system capability in one stable sentence.
+requirements:
+  - id: REQ-EXAMPLE-001
+    strength: MUST
+    statement: The system must provide an observable outcome.
+    scenarios:
+      - id: SCN-EXAMPLE-001
+        given:
+          - a valid precondition
+        when:
+          - the capability is exercised
+        then:
+          - the observable outcome occurs

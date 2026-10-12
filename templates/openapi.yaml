@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: Example API
+  version: 0.1.0
+  description: Replace with the API purpose and compatibility policy.
+servers:
+  - url: https://example.invalid
+    description: Placeholder; do not use as a real environment.
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Report service health
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+components:
+  securitySchemes: {}
+  schemas:
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]

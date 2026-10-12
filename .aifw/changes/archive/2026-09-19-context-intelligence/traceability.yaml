@@ -1,0 +1,35 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: context-intelligence
+artifacts:
+- id: TEST-CONTEXT
+  type: test
+  path: .aifw/changes/archive/2026-09-19-context-intelligence/evidence/tests.txt
+  status: passed
+- id: WHEEL-CONTEXT
+  type: evidence
+  path: .aifw/changes/archive/2026-09-19-context-intelligence/evidence/isolated-wheel.json
+  status: passed
+- id: GATE-CONTEXT
+  type: gate
+  path: .aifw/changes/archive/2026-09-19-context-intelligence/evidence/quality-gates.json
+  status: passed
+links:
+- from: SCN-CONTEXT-ADR
+  relation: verifiedBy
+  to: TEST-CONTEXT
+- from: SCN-CONTEXT-SELECTION
+  relation: verifiedBy
+  to: TEST-CONTEXT
+- from: SCN-CONTEXT-INTEGRITY
+  relation: verifiedBy
+  to: TEST-CONTEXT
+- from: SCN-CONTEXT-INSTRUCTIONS
+  relation: verifiedBy
+  to: TEST-CONTEXT
+- from: SCN-CONTEXT-GATES
+  relation: verifiedBy
+  to: TEST-CONTEXT
+- from: REQ-CONTEXT-GATES
+  relation: checkedBy
+  to: GATE-CONTEXT

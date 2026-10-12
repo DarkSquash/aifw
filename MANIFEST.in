@@ -1,0 +1,12 @@
+recursive-include python *.py
+recursive-include schemas *.json
+recursive-include templates *
+recursive-include profiles *
+recursive-include decision-catalogs *
+recursive-include principle-catalogs *
+recursive-include policies *
+recursive-include evals *
+recursive-include tests_python *.py *.json
+include CONSTITUTION.md LICENSE HOW_TO_USE.md CHANGELOG.md uv.lock
+exclude package.json package-lock.json
+global-exclude __pycache__ *.pyc

@@ -1,0 +1,62 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: harden-spec-archive
+artifacts:
+  - id: TEST-INTEGRITY
+    type: test
+    status: passed
+    path: tests/spec-integrity.test.ts
+  - id: GATE-CHECK
+    type: gate
+    status: passed
+    path: .aifw/changes/archive/2026-09-06-harden-spec-archive/evidence/check.json
+  - id: ADR-INTEGRITY
+    type: adr
+    status: passed
+    path: docs/decisions/ADR-0010-spec-archive-integrity.md
+links:
+  - from: SCN-AIFW-INTEGRITY-RECOVERY
+    relation: verifiedBy
+    to: TEST-INTEGRITY
+  - from: REQ-AIFW-INTEGRITY-RECOVERY
+    relation: checkedBy
+    to: GATE-CHECK
+  - from: REQ-AIFW-INTEGRITY-RECOVERY
+    relation: governedBy
+    to: ADR-INTEGRITY
+  - from: SCN-AIFW-INTEGRITY-APPROVAL
+    relation: verifiedBy
+    to: TEST-INTEGRITY
+  - from: REQ-AIFW-INTEGRITY-APPROVAL
+    relation: checkedBy
+    to: GATE-CHECK
+  - from: REQ-AIFW-INTEGRITY-APPROVAL
+    relation: governedBy
+    to: ADR-INTEGRITY
+  - from: SCN-AIFW-INTEGRITY-UNIQUE-DELTA
+    relation: verifiedBy
+    to: TEST-INTEGRITY
+  - from: REQ-AIFW-INTEGRITY-UNIQUE-DELTA
+    relation: checkedBy
+    to: GATE-CHECK
+  - from: REQ-AIFW-INTEGRITY-UNIQUE-DELTA
+    relation: governedBy
+    to: ADR-INTEGRITY
+  - from: SCN-AIFW-INTEGRITY-EVIDENCE
+    relation: verifiedBy
+    to: TEST-INTEGRITY
+  - from: REQ-AIFW-INTEGRITY-EVIDENCE
+    relation: checkedBy
+    to: GATE-CHECK
+  - from: REQ-AIFW-INTEGRITY-EVIDENCE
+    relation: governedBy
+    to: ADR-INTEGRITY
+  - from: SCN-AIFW-INTEGRITY-VALID-OUTPUT
+    relation: verifiedBy
+    to: TEST-INTEGRITY
+  - from: REQ-AIFW-INTEGRITY-VALID-OUTPUT
+    relation: checkedBy
+    to: GATE-CHECK
+  - from: REQ-AIFW-INTEGRITY-VALID-OUTPUT
+    relation: governedBy
+    to: ADR-INTEGRITY

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/brownfield-discovery.schema.json",
+  "title": "AIFW BrownfieldDiscovery",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "projectId", "generatedAt", "digest", "discovery", "candidates", "unknowns"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "BrownfieldDiscovery" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string" },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packageManager", "stacks", "platformTargets", "scripts", "dependencies", "contracts", "ciFiles", "adrFiles", "moduleManifests", "entrypoints", "configurationFiles", "documentationFiles", "sourceRoots"],
+      "properties": {
+        "packageManager": { "enum": ["npm", "pnpm", "yarn", "bun", "unknown"] },
+        "stacks": { "type": "array", "uniqueItems": true, "items": { "enum": ["node", "dart", "flutter", "python"] } },
+        "platformTargets": { "type": "array", "uniqueItems": true, "items": { "enum": ["android", "ios", "web", "windows", "macos", "linux"] } },
+        "scripts": { "type": "object", "additionalProperties": { "type": "string" } },
+        "dependencies": { "$ref": "#/$defs/strings" },
+        "contracts": { "$ref": "#/$defs/strings" },
+        "ciFiles": { "$ref": "#/$defs/strings" },
+        "adrFiles": { "$ref": "#/$defs/strings" },
+        "moduleManifests": { "$ref": "#/$defs/strings" },
+        "entrypoints": { "$ref": "#/$defs/strings" },
+        "configurationFiles": { "$ref": "#/$defs/strings" },
+        "documentationFiles": { "$ref": "#/$defs/strings" },
+        "sourceRoots": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "candidates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourcesOfTruth", "entities"],
+      "properties": {
+        "sourcesOfTruth": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["topic", "source"],
+            "properties": {
+              "topic": { "type": "string", "minLength": 1 },
+              "source": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "entities": { "type": "array", "items": { "$ref": "#/$defs/entity" } }
+      }
+    },
+    "unknowns": { "$ref": "#/$defs/strings" }
+  },
+  "$defs": {
+    "strings": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name", "description", "owner", "source", "visibility", "relations"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["System", "Component", "API", "Resource", "DataStore", "Runtime", "ExternalDependency", "Contract", "Decision", "Runbook"] },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "visibility": { "enum": ["public", "restricted", "internal", "private"] },
+        "origin": { "enum": ["manual", "discovered"] },
+        "confidence": { "enum": ["candidate", "confirmed"] },
+          "lastVerifiedAt": { "type": "string" },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["type", "target"],
+            "properties": {
+              "type": { "enum": ["partOf", "dependsOn", "consumes", "provides", "providedBy", "storesIn", "runsOn", "documentedBy"] },
+              "target": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

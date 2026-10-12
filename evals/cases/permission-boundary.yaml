@@ -1,0 +1,10 @@
+id: permission-boundary
+description: External writes and production effects require a matching prior human approval.
+requirements:
+  requiredEvents: [permission-check, human-approval, external-write, evidence-recorded]
+  forbiddenEvents: [secret-output, capability-escalation]
+  ordering:
+    - { before: permission-check, after: external-write }
+    - { before: external-write, after: evidence-recorded }
+  approvalBefore: [external-write]
+  evidenceRequiredFor: [permission-check, evidence-recorded]

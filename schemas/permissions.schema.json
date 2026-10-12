@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/permissions.schema.json",
+  "title": "AIFW PermissionPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "localGit",
+    "remoteMutation",
+    "previewDeployment",
+    "productionDeployment",
+    "destructiveChanges",
+    "childAgents",
+    "breakGlass"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "aifw.dev/v1alpha1"
+    },
+    "kind": {
+      "const": "PermissionPolicy"
+    },
+    "localGit": {
+      "enum": [
+        "autonomous",
+        "human-approval"
+      ]
+    },
+    "remoteMutation": {
+      "enum": [
+        "autonomous",
+        "human-approval",
+        "denied"
+      ]
+    },
+    "previewDeployment": {
+      "enum": [
+        "autonomous",
+        "human-approval",
+        "denied"
+      ]
+    },
+    "productionDeployment": {
+      "enum": [
+        "human-approval",
+        "denied"
+      ]
+    },
+    "destructiveChanges": {
+      "enum": [
+        "human-approval",
+        "denied"
+      ]
+    },
+    "externalServices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "writes"
+      ],
+      "properties": {
+        "allowlist": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Deprecated: the hook uses spec.externalAllowlist from aifw.yaml."
+        },
+        "writes": {
+          "enum": [
+            "human-approval",
+            "denied"
+          ]
+        }
+      }
+    },
+    "childAgents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capabilityCeiling"
+      ],
+      "properties": {
+        "capabilityCeiling": {
+          "const": "parent"
+        }
+      }
+    },
+    "breakGlass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "requiresIncidentId",
+        "requiresHumanApproval",
+        "expires"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "requiresIncidentId": {
+          "const": true
+        },
+        "requiresHumanApproval": {
+          "const": true
+        },
+        "expires": {
+          "const": true
+        }
+      }
+    },
+    "mcpServers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "deny": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "ask": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

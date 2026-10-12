@@ -1,0 +1,24 @@
+{
+  "at": "2026-09-06T04:27:54.173Z",
+  "version": "0.3.0",
+  "tests": {
+    "total": 1902,
+    "passed": 1902,
+    "failed": 0,
+    "skipped": 0
+  },
+  "leafCommands": 35,
+  "legacyDecisionCases": 1801,
+  "legacyDocumentCommands": 13,
+  "typescriptBaselineTests": 162,
+  "isolatedWheel": "pass, no Node on PATH",
+  "platform": "Windows/Python 3.12.14",
+  "lint": "pass",
+  "format": "pass",
+  "cliReference": "current",
+  "qualityGateStatus": "warning",
+  "remainingValidation": [
+    "Independent review is audit-only and has no configured executor",
+    "Remote CI matrix Windows/Ubuntu Python 3.11-3.13 not run in this session"
+  ]
+}

@@ -1,0 +1,13 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeCase
+id: change-example
+title: Replace with the change title
+level: L1
+status: draft
+intent: Describe the verified outcome this change must produce.
+risks:
+  - Describe the primary regression risk.
+artifacts:
+  - spec:docs/specs/example.md
+  - tests:test/example.test.ts
+rollback: Restore checkpoint git:replace-me and re-run selected gates.

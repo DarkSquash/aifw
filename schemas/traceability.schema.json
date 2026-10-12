@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/traceability.schema.json",
+  "title": "AIFW ChangeTraceability",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "changeId", "artifacts", "links"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "ChangeTraceability" },
+    "changeId": { "type": "string", "pattern": "^[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$" },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "status"],
+        "allOf": [{
+          "if": { "properties": { "status": { "const": "passed" } }, "required": ["status"] },
+          "then": { "required": ["path"], "properties": { "path": { "type": "string", "pattern": "\\S" } } }
+        }],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "type": { "enum": ["test", "gate", "evidence", "adr", "design"] },
+          "path": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["planned", "passed", "failed", "waived"] }
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "relation", "to"],
+        "properties": {
+          "from": { "type": "string", "minLength": 1 },
+          "relation": { "enum": ["verifiedBy", "provedBy", "designedBy", "governedBy", "checkedBy"] },
+          "to": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

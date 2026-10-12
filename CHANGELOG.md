@@ -1,0 +1,31 @@
+# Changelog
+
+## 0.4.0 — 2026-10-11
+
+Claude Code passa a ser o host de referência, ativado por projeto, e a validação deixa de poder parecer verde sem evidência.
+
+### Adicionado
+
+- `aifw claude install|enable|check`, comando `/aifw new|adopt` e skill de projeto `aifw-workflow` (ADR-0014, ADR-0016).
+- Hook `aifw-hook` para PreToolUse, PostToolUse, PostToolUseFailure, Stop e SessionStart (ADR-0015, ADR-0018):
+  - aplica permissões, impasses, arquivos de controle, MCP, delegação a subagentes, `dataClassification` e break-glass;
+  - registra a sessão em `.aifw/runs/`, bloqueia a conclusão com código não verificado e sugere abrir impasse após falhas repetidas;
+  - informa intake, mudanças ativas e impasses ao abrir a sessão.
+- `aifw validate --change <id> --write`, com artefatos exigidos por nível e relatório com digest; `spec archive` exige esse relatório atual (ADR-0017).
+- `aifw impasse open|attempt|status|review|decide|revalidate`.
+- `aifw waiver add|list`, `aifw break-glass grant|list`, `aifw intake set`, `aifw template list|copy`, `aifw runs show`, `aifw change classify --diff`.
+- Receitas de gates aplicadas no `init` para os profiles Python, Web e Flutter (com detecção de FVM).
+- `aifw doctor` informa a integração com o Claude Code quando roda num projeto.
+
+### Alterado
+
+- `intake status` só é `complete` com o Charter aprovado e inalterado (`charterApproved`).
+- A allowlist de serviços externos vem só de `aifw.yaml` (`spec.externalAllowlist`); `externalServices.allowlist` em `permissions.yaml` ficou obsoleta.
+- Roteamento usa haiku/sonnet/opus; a policy volta a `recommendation-only` até nova avaliação.
+- Gates com `python` ignoram o atalho da Microsoft Store e usam o interpretador do AIFW.
+- Git passa a ser dependência obrigatória.
+
+### Removido
+
+- Integração Pi (`extensions/aifw.ts`, `aifw-pi-bridge`, adapter) e Codex (templates e guia).
+- `aifw handoff codex` e `aifw principle review`; a entrevista do intake usa a skill `grilling` e a revisão de princípios usa `code-review` (ADR-0013).

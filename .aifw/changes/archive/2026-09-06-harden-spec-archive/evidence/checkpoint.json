@@ -1,0 +1,14 @@
+{
+  "path": ".aifw/cache/checkpoints/before-harden-spec-archive",
+  "sourceSha256": "1a9b7acd05b2e6a8de79ed3d28b273a56ba1dae4ba4f3903e819f04527df6a11",
+  "excluded": [
+    "node_modules",
+    "dist",
+    ".git",
+    ".agents",
+    ".codex",
+    ".aifw/cache",
+    ".aifw/runs"
+  ],
+  "note": "Snapshot before implementation. Restore selected source/config documents, preserve subsequent evidence/specs, reinstall dependencies if needed, and rebuild dist."
+}

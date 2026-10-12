@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+.aifw/cache/
+.aifw/runs/
+*.log
+.DS_Store
+Thumbs.db
+.venv/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+.ruff_cache/

@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: python-cli-core
+  title: Migrar CLI e núcleo para Python
+  level: L3
+  createdAt: '2026-09-06T03:00:47.026Z'
+summary: Executar todo o AIFW em Python sem Node.js, preservando contratos, comandos e garantias de integridade.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-09-06T04:27:54.174Z'
+  record: docs/decisions/ADR-0011-python-runtime.md
+archivedAt: '2026-09-06T04:27:54.292Z'

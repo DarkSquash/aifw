@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/change-case.schema.json",
+  "title": "AIFW ChangeCase",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "id", "title", "level", "status", "intent", "risks", "artifacts", "rollback"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "ChangeCase" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "level": { "enum": ["L0", "L1", "L2", "L3"] },
+    "status": { "enum": ["draft", "approved", "implementing", "verifying", "complete", "rolled-back"] },
+    "intent": { "type": "string", "minLength": 1 },
+    "risks": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "artifacts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "rollback": { "type": "string", "minLength": 1 },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "approvedAt", "record"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "minLength": 1 },
+        "record": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

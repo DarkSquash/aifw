@@ -1,0 +1,501 @@
+{
+  "apiVersion": "aifw.dev/v1alpha1",
+  "kind": "BrownfieldDiscovery",
+  "projectId": "aifw",
+  "discovery": {
+    "packageManager": "unknown",
+    "stacks": [
+      "python"
+    ],
+    "platformTargets": [],
+    "scripts": {},
+    "dependencies": [],
+    "contracts": [
+      "templates/asyncapi.yaml",
+      "templates/openapi.yaml"
+    ],
+    "ciFiles": [
+      ".github/workflows/ci.yml"
+    ],
+    "adrFiles": [
+      "docs/decisions/ADR-0001-typescript-cli.md",
+      "docs/decisions/ADR-0002-agent-independent-core.md",
+      "docs/decisions/ADR-0003-routing-disabled-default.md",
+      "docs/decisions/ADR-0004-flutter-mobile-profile.md",
+      "docs/decisions/ADR-0005-global-decision-catalogs.md",
+      "docs/decisions/ADR-0006-short-stack-flags.md",
+      "docs/decisions/ADR-0007-contextual-engineering-principles.md",
+      "docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md",
+      "docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md",
+      "docs/decisions/ADR-0010-spec-archive-integrity.md",
+      "docs/decisions/ADR-0011-python-runtime.md",
+      "docs/decisions/ADR-0012-context-intelligence.md",
+      "docs/decisions/ADR-0013-skill-delegation.md",
+      "docs/decisions/ADR-0014-claude-code-host.md"
+    ],
+    "moduleManifests": [
+      "pyproject.toml"
+    ],
+    "entrypoints": [
+      "python/aifw/__main__.py"
+    ],
+    "configurationFiles": [
+      "pyproject.toml"
+    ],
+    "documentationFiles": [
+      "README.md",
+      "docs/agent-conformance.md",
+      "docs/architecture.md",
+      "docs/architecture/discovered.md",
+      "docs/audits/2026-09-05-v02-review.md",
+      "docs/authority.md",
+      "docs/change-lifecycle.md",
+      "docs/claude-code.md",
+      "docs/cli-reference.generated.md",
+      "docs/cli.md",
+      "docs/context-intelligence.md",
+      "docs/decision-catalogs.md",
+      "docs/decisions/ADR-0001-typescript-cli.md",
+      "docs/decisions/ADR-0002-agent-independent-core.md",
+      "docs/decisions/ADR-0003-routing-disabled-default.md",
+      "docs/decisions/ADR-0004-flutter-mobile-profile.md",
+      "docs/decisions/ADR-0005-global-decision-catalogs.md",
+      "docs/decisions/ADR-0006-short-stack-flags.md",
+      "docs/decisions/ADR-0007-contextual-engineering-principles.md",
+      "docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md",
+      "docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md",
+      "docs/decisions/ADR-0010-spec-archive-integrity.md",
+      "docs/decisions/ADR-0011-python-runtime.md",
+      "docs/decisions/ADR-0012-context-intelligence.md",
+      "docs/decisions/ADR-0013-skill-delegation.md",
+      "docs/decisions/ADR-0014-claude-code-host.md",
+      "docs/engineering-principles.md",
+      "docs/existing-project-adoption.md",
+      "docs/flutter-mobile.md",
+      "docs/gap-audit-2026-08-23.md",
+      "docs/impasse-prevention.md",
+      "docs/migrations.md",
+      "docs/observability-and-runbooks.md",
+      "docs/project-intake.md",
+      "docs/project-map.md",
+      "docs/python-migration.md",
+      "docs/quality-gates.md",
+      "docs/routing.md",
+      "docs/runbooks/routing-regression.md",
+      "docs/security.md",
+      "docs/spec-lifecycle.md",
+      "docs/tooling-and-mcps.md",
+      "docs/traceability.md",
+      "docs/windows-wsl.md",
+      "profiles/flutter-mobile/README.md",
+      "profiles/python/README.md",
+      "profiles/web-ts/README.md"
+    ],
+    "sourceRoots": []
+  },
+  "candidates": {
+    "sourcesOfTruth": [
+      {
+        "topic": "Brownfield discovery",
+        "source": ".aifw/adoption/discovery.json"
+      },
+      {
+        "topic": "Contract templates/asyncapi.yaml",
+        "source": "templates/asyncapi.yaml"
+      },
+      {
+        "topic": "Contract templates/openapi.yaml",
+        "source": "templates/openapi.yaml"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0001-typescript-cli.md",
+        "source": "docs/decisions/ADR-0001-typescript-cli.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0002-agent-independent-core.md",
+        "source": "docs/decisions/ADR-0002-agent-independent-core.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0003-routing-disabled-default.md",
+        "source": "docs/decisions/ADR-0003-routing-disabled-default.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0004-flutter-mobile-profile.md",
+        "source": "docs/decisions/ADR-0004-flutter-mobile-profile.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0005-global-decision-catalogs.md",
+        "source": "docs/decisions/ADR-0005-global-decision-catalogs.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0006-short-stack-flags.md",
+        "source": "docs/decisions/ADR-0006-short-stack-flags.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0007-contextual-engineering-principles.md",
+        "source": "docs/decisions/ADR-0007-contextual-engineering-principles.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md",
+        "source": "docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md",
+        "source": "docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0010-spec-archive-integrity.md",
+        "source": "docs/decisions/ADR-0010-spec-archive-integrity.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0011-python-runtime.md",
+        "source": "docs/decisions/ADR-0011-python-runtime.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0012-context-intelligence.md",
+        "source": "docs/decisions/ADR-0012-context-intelligence.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0013-skill-delegation.md",
+        "source": "docs/decisions/ADR-0013-skill-delegation.md"
+      },
+      {
+        "topic": "Decision docs/decisions/ADR-0014-claude-code-host.md",
+        "source": "docs/decisions/ADR-0014-claude-code-host.md"
+      }
+    ],
+    "entities": [
+      {
+        "id": "component:aifw-root",
+        "kind": "Component",
+        "name": "aifw root module",
+        "description": "Discovered module manifest at pyproject.toml; responsibility requires review.",
+        "owner": "human:unassigned",
+        "source": "pyproject.toml",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "contract:templates-asyncapi-yaml",
+        "kind": "Contract",
+        "name": "templates/asyncapi.yaml",
+        "description": "Discovered machine-readable contract at templates/asyncapi.yaml.",
+        "owner": "human:unassigned",
+        "source": "templates/asyncapi.yaml",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "contract:templates-openapi-yaml",
+        "kind": "Contract",
+        "name": "templates/openapi.yaml",
+        "description": "Discovered machine-readable contract at templates/openapi.yaml.",
+        "owner": "human:unassigned",
+        "source": "templates/openapi.yaml",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0001-typescript-cli-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0001-typescript-cli.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0001-typescript-cli.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0001-typescript-cli.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0002-agent-independent-core-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0002-agent-independent-core.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0002-agent-independent-core.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0002-agent-independent-core.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0003-routing-disabled-default-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0003-routing-disabled-default.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0003-routing-disabled-default.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0003-routing-disabled-default.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0004-flutter-mobile-profile-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0004-flutter-mobile-profile.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0004-flutter-mobile-profile.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0004-flutter-mobile-profile.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0005-global-decision-catalogs-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0005-global-decision-catalogs.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0005-global-decision-catalogs.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0005-global-decision-catalogs.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0006-short-stack-flags-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0006-short-stack-flags.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0006-short-stack-flags.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0006-short-stack-flags.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0007-contextual-engineering-principles-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0007-contextual-engineering-principles.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0007-contextual-engineering-principles.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0007-contextual-engineering-principles.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0008-pi-routing-and-codex-fallback-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0009-executable-spec-core-and-brownfield-adoption-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0010-spec-archive-integrity-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0010-spec-archive-integrity.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0010-spec-archive-integrity.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0010-spec-archive-integrity.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0011-python-runtime-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0011-python-runtime.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0011-python-runtime.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0011-python-runtime.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0012-context-intelligence-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0012-context-intelligence.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0012-context-intelligence.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0012-context-intelligence.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0013-skill-delegation-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0013-skill-delegation.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0013-skill-delegation.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0013-skill-delegation.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "decision:docs-decisions-adr-0014-claude-code-host-md",
+        "kind": "Decision",
+        "name": "docs/decisions/ADR-0014-claude-code-host.md",
+        "description": "Discovered architecture decision reference at docs/decisions/ADR-0014-claude-code-host.md.",
+        "owner": "human:unassigned",
+        "source": "docs/decisions/ADR-0014-claude-code-host.md",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      },
+      {
+        "id": "resource:github-workflows-ci-yml",
+        "kind": "Resource",
+        "name": ".github/workflows/ci.yml",
+        "description": "Discovered continuous-integration configuration at .github/workflows/ci.yml.",
+        "owner": "human:unassigned",
+        "source": ".github/workflows/ci.yml",
+        "visibility": "internal",
+        "origin": "discovered",
+        "confidence": "candidate",
+        "lastVerifiedAt": "2026-10-11T22:15:58.585Z",
+        "relations": [
+          {
+            "type": "partOf",
+            "target": "system:aifw"
+          }
+        ]
+      }
+    ]
+  },
+  "unknowns": [
+    "Confirm module responsibilities and boundaries from code evidence.",
+    "Confirm owners, runtime relationships, data flows and deployment topology.",
+    "Resolve conflicting or stale documentation before marking the mapping current."
+  ],
+  "generatedAt": "2026-10-11T22:15:58.585Z",
+  "digest": "84eda1c386f63e20f777fc4840b907487ba9dda6004efd0c8d0ea0aa5c9c85f6"
+}

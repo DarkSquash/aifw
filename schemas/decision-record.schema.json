@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/decision-record.schema.json",
+  "title": "AIFW DecisionRecord",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "category", "optionId", "status", "recommendationDigest", "approvedBy", "approvedAt", "adr"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "DecisionRecord" },
+    "category": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+    "optionId": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+    "status": { "const": "accepted" },
+    "recommendationDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "approvedBy": { "type": "string", "pattern": "^human:.+" },
+    "approvedAt": { "type": "string", "minLength": 20 },
+    "adr": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "digest"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

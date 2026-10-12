@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: context-intelligence
+  title: Contexto seletivo e integridade documental
+  level: L3
+  createdAt: '2026-09-19T03:52:39.246Z'
+summary: Descobrir ADRs convencionais; selecionar contexto por tarefa; detectar referências e snapshots desatualizados; gerar blocos de instruções comuns preservando texto existente; inspecionar ligação de gates à CI.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-09-19T04:09:22.356Z'
+  record: docs/decisions/ADR-0012-context-intelligence.md
+archivedAt: '2026-09-19T18:14:16.210Z'

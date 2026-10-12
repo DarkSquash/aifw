@@ -1,0 +1,7 @@
+{
+  "changeId": "python-cli-core",
+  "archivePath": ".aifw/changes/archive/2026-09-06-python-cli-core",
+  "currentSpecs": [
+    ".aifw/specs/current/aifw-control-plane.yaml"
+  ]
+}

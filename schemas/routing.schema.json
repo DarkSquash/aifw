@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/routing.schema.json",
+  "title": "AIFW RoutingPolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "enabled", "mode", "aliases", "targets", "activation"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "RoutingPolicy" },
+    "enabled": { "type": "boolean" },
+    "mode": { "enum": ["recommendation-only", "automatic"] },
+    "aliases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["FAST", "WORK", "BRAIN"],
+      "properties": { "FAST": { "type": "string" }, "WORK": { "type": "string" }, "BRAIN": { "type": "string" } }
+    },
+    "targets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["FAST", "WORK", "BRAIN"],
+      "properties": {
+        "FAST": { "$ref": "#/$defs/modelTarget" },
+        "WORK": { "$ref": "#/$defs/modelTarget" },
+        "BRAIN": { "$ref": "#/$defs/modelTarget" }
+      }
+    },
+    "activation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimumCases", "minimumPassRate", "criticalFailures", "humanApprovalRequired"],
+      "properties": {
+        "minimumCases": { "type": "integer", "minimum": 1 },
+        "minimumPassRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "criticalFailures": { "const": 0 },
+        "humanApprovalRequired": { "const": true }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "record", "activatedAt", "report"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "record": { "type": "string", "minLength": 1 },
+        "activatedAt": { "type": "string", "minLength": 1 },
+        "report": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cases", "passRate", "criticalFailures"],
+          "properties": {
+            "cases": { "type": "integer", "minimum": 1 },
+            "passRate": { "type": "number", "minimum": 0, "maximum": 1 },
+            "criticalFailures": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "modelTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

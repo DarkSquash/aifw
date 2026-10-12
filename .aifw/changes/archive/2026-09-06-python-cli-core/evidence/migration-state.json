@@ -1,0 +1,7 @@
+{
+  "at": "2026-09-06T03:53:35.571Z",
+  "version": "0.3.0",
+  "authorization": "docs/decisions/ADR-0011-python-runtime.md",
+  "legacy": ".aifw/legacy/typescript",
+  "catalog": "references migrated; existing semantic ownership retained"
+}

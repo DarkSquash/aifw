@@ -1,0 +1,119 @@
+apiVersion: aifw.dev/v1alpha1
+kind: DecisionCatalog
+metadata:
+  id: core-system-topology
+  version: 1.0.0
+  category: system-topology
+  scope: core
+  impact: L3
+spec:
+  title: Deployable system topology
+  drivers:
+    - id: deployment-independence
+      prompt: Do capabilities require independent deployment and scaling?
+      signals: [deployment:together, deployment:independent]
+    - id: operational-capacity
+      prompt: Can the team operate distributed systems reliably?
+      signals: [operations:limited, operations:mature]
+    - id: domain-boundaries
+      prompt: Are stable bounded contexts already known?
+      signals: [boundaries:uncertain, boundaries:stable]
+    - id: consistency-needs
+      prompt: Does the core workflow require simple transactional consistency?
+      signals: [consistency:transactional, consistency:eventual-ok]
+  options:
+    - id: monolith
+      name: Monolith
+      summary: Delivers the application as one deployable unit with minimal internal module enforcement.
+      status: supported
+      maturity: stable
+      criteria:
+        - signal: deployment:together
+          effect: prefer
+          weight: 4
+          reason: One deployment unit matches the release constraint.
+        - signal: operations:limited
+          effect: prefer
+          weight: 3
+          reason: A monolith minimizes distributed operational overhead.
+        - signal: consistency:transactional
+          effect: prefer
+          weight: 3
+          reason: Local transactions are simpler inside one process and datastore boundary.
+        - signal: deployment:independent
+          effect: avoid
+          weight: 4
+          reason: Independent release requirements conflict with one deployable unit.
+      tradeoffs:
+        - Simple deployment, debugging and transactions
+        - Internal coupling can grow without enforced module boundaries
+      requires: []
+      conflicts: []
+      sources:
+        - https://learn.microsoft.com/azure/architecture/guide/architecture-styles/n-tier
+    - id: modular-monolith
+      name: Modular monolith
+      summary: Uses enforced domain modules inside one deployable unit, preserving an extraction path if independence becomes necessary.
+      status: recommended
+      maturity: stable
+      criteria:
+        - signal: deployment:together
+          effect: prefer
+          weight: 4
+          reason: One artifact satisfies current deployment needs.
+        - signal: boundaries:stable
+          effect: prefer
+          weight: 4
+          reason: Stable boundaries can be enforced without distributed deployment.
+        - signal: consistency:transactional
+          effect: prefer
+          weight: 2
+          reason: Modules can retain simple local transactions.
+        - signal: operations:limited
+          effect: prefer
+          weight: 2
+          reason: Module rigor does not require distributed operations.
+      tradeoffs:
+        - Strong boundaries with lower operational cost
+        - Boundary enforcement needs automated architecture tests
+      requires: []
+      conflicts: []
+      sources:
+        - https://learn.microsoft.com/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures
+    - id: microservices
+      name: Microservices
+      summary: Deploys bounded capabilities independently and treats network, data ownership and operations as first-class constraints.
+      status: specialized
+      maturity: stable
+      criteria:
+        - signal: deployment:independent
+          effect: prefer
+          weight: 5
+          reason: Independent deployment is a primary reason to accept distributed complexity.
+        - signal: operations:mature
+          effect: prefer
+          weight: 4
+          reason: Mature observability and incident response can support distributed failure modes.
+        - signal: boundaries:stable
+          effect: prefer
+          weight: 4
+          reason: Stable business boundaries reduce costly service repartitioning.
+        - signal: operations:limited
+          effect: avoid
+          weight: 5
+          reason: Limited operational capacity makes distributed systems unsafe.
+        - signal: boundaries:uncertain
+          effect: avoid
+          weight: 4
+          reason: Premature service boundaries amplify change and coordination cost.
+        - signal: consistency:transactional
+          effect: avoid
+          weight: 3
+          reason: Cross-service transactions add substantial complexity.
+      tradeoffs:
+        - Independent scaling, release and fault containment
+        - Network failures, observability, data ownership and consistency complexity
+      requires: [operations:mature, boundaries:stable]
+      conflicts: []
+      sources:
+        - https://learn.microsoft.com/azure/architecture/guide/architecture-styles/microservices

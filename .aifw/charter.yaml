@@ -1,0 +1,45 @@
+id: aifw
+version: 0.1.0
+projectType: existing
+problem: Tornar desenvolvimento com agentes reproduzível, seguro e independente de fornecedor por meio de decisões e evidências versionadas.
+audiences:
+- owner de produto não especialista
+- engenheiro de software
+- agente implementador
+- auditor e operador
+outcomes:
+- projetos começam por intenção e risco, não por escolha prematura de stack
+- mudanças seguem lifecycle proporcional L0-L3
+- decisões arquiteturais sobrevivem a conversas e troca de agente
+- loops, efeitos externos e model routing possuem travas executáveis
+scope:
+  in:
+  - control plane Python e CLI multiplataforma
+  - Constitution, policies, profiles, schemas, templates e adapters
+  - PROJECT_MAP, gates, conformance evals, segurança e operação
+  out:
+  - ativar automaticamente roteamento Luna/Terra/Sol na v0.1
+  - instalar MCPs ou alterar a configuração pessoal do Pi
+  - escolher infraestrutura de produção para projetos consumidores
+constraints:
+- Windows é o ambiente primário e WSL é validação Linux separada
+- core deve permanecer independente de Pi, Claude e Codex
+- rigor deve ser progressivo e sustentável
+- nenhuma decisão material pode existir apenas em conversa com IA
+dataClassification: internal
+autonomy:
+  localGit: true
+  remoteGit: approval-required
+  previewDeploy: true
+  productionDeploy: approval-required
+technicalPreference:
+  mode: specified
+  values:
+  - Python 3.11+
+  - CLI e núcleo sem Node.js
+unknowns: []
+state: approved
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-12T13:05:59.759Z'
+  contentDigest: f22599e3e954321c9ee916fc86afec78ed97bb6f92fe5c7afc67dfad7c39d45a

@@ -1,0 +1,16 @@
+apiVersion: aifw.dev/v1alpha1
+kind: PermissionPolicy
+localGit: autonomous
+remoteMutation: human-approval
+previewDeployment: autonomous
+productionDeployment: human-approval
+destructiveChanges: human-approval
+externalServices:
+  writes: human-approval
+childAgents:
+  capabilityCeiling: parent
+breakGlass:
+  enabled: true
+  requiresIncidentId: true
+  requiresHumanApproval: true
+  expires: true

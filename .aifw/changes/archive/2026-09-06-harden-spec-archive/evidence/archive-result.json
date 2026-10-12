@@ -1,0 +1,8 @@
+{
+  "status": "archived",
+  "changeId": "harden-spec-archive",
+  "archivePath": ".aifw/changes/archive/2026-09-06-harden-spec-archive",
+  "currentSpecs": [
+    ".aifw/specs/current/aifw-control-plane.yaml"
+  ]
+}

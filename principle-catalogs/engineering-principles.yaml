@@ -1,0 +1,249 @@
+apiVersion: aifw.dev/v1alpha1
+kind: PrincipleCatalog
+metadata:
+  id: core-engineering-principles
+  version: 1.0.0
+  scope: core
+spec:
+  title: Contextual Clean Code, SOLID and foundational engineering principles
+  principles:
+    - id: clean-code-naming
+      name: Meaningful names
+      family: clean-code
+      statement: Names communicate intent using the vocabulary of the problem and remain consistent inside their bounded context.
+      appliesWhen: []
+      reviewQuestions:
+        - Can a maintainer understand the role without tracing the full implementation?
+        - Do names distinguish business concepts instead of hiding them behind generic labels?
+      evidence: [changed-code, public-interfaces, domain-language]
+      misuseRisks:
+        - Renaming without improving shared understanding creates churn and invalidates useful history.
+      exceptions:
+        - Protocol, framework and generated names may be fixed by an external contract.
+      sources:
+        - https://www.pearson.com/en-us/subject-catalog/p/clean-code-a-handbook-of-agile-software-craftsmanship/P200000009044
+    - id: clean-code-cohesion
+      name: Small cohesive units
+      family: clean-code
+      statement: Functions and modules should express one coherent level of intent, with size following responsibility rather than an arbitrary line limit.
+      appliesWhen: []
+      reviewQuestions:
+        - Does this unit mix policy, orchestration and low-level mechanics without a reason?
+        - Can its behavior be described with one coherent purpose?
+      evidence: [changed-code, dependency-map, tests]
+      misuseRisks:
+        - Splitting code solely to reduce line count increases indirection and scatters behavior.
+      exceptions:
+        - A linear algorithm or declarative configuration may be clearer when kept together.
+      sources:
+        - https://www.pearson.com/en-us/subject-catalog/p/clean-code-a-handbook-of-agile-software-craftsmanship/P200000009044
+    - id: clean-code-errors
+      name: Explicit error behavior
+      family: clean-code
+      statement: Errors preserve actionable context, distinguish expected failure from defects and never disappear silently.
+      appliesWhen: [change:behavior, boundary:external, operation:fallible]
+      reviewQuestions:
+        - Can callers distinguish retryable, user-correctable and programmer failures?
+        - Does the error retain the relevant cause without exposing sensitive data?
+      evidence: [error-contracts, failure-tests, logs]
+      misuseRisks:
+        - Excessive custom error types add ceremony without improving recovery decisions.
+      exceptions:
+        - Best-effort telemetry may drop failures when that behavior is explicit and observable.
+      sources:
+        - https://www.pearson.com/en-us/subject-catalog/p/clean-code-a-handbook-of-agile-software-craftsmanship/P200000009044
+    - id: clean-code-comments
+      name: Comments explain why
+      family: clean-code
+      statement: Comments record intent, constraints and non-obvious trade-offs instead of narrating code that can explain itself.
+      appliesWhen: []
+      reviewQuestions:
+        - Does each comment add context the implementation cannot express safely?
+        - Will the comment remain synchronized with the source of truth?
+      evidence: [changed-code, adr, contracts]
+      misuseRisks:
+        - Deleting every comment removes essential rationale and safety constraints.
+      exceptions:
+        - Public API documentation and legally required notices serve contracts beyond local readability.
+      sources:
+        - https://www.pearson.com/en-us/subject-catalog/p/clean-code-a-handbook-of-agile-software-craftsmanship/P200000009044
+    - id: clean-code-tests
+      name: Readable behavioral tests
+      family: clean-code
+      statement: Tests communicate observable behavior, use independent expectations and fail for a specific meaningful regression.
+      appliesWhen: [change:behavior, artifact:tests]
+      reviewQuestions:
+        - Does the test name the production break it catches?
+        - Are expected values independent from the implementation under test?
+      evidence: [tests, red-green-evidence, coverage-of-risk]
+      misuseRisks:
+        - Maximizing coverage or mirroring implementation creates brittle tests without confidence.
+      exceptions:
+        - Generated compatibility matrices may favor systematic data over narrative test bodies.
+      sources:
+        - https://martinfowler.com/articles/practical-test-pyramid.html
+    - id: clean-code-side-effects
+      name: Visible side effects
+      family: clean-code
+      statement: State mutation, I/O and external effects are explicit at boundaries and separated from deterministic decisions where practical.
+      appliesWhen: [effect:state, effect:io, boundary:external]
+      reviewQuestions:
+        - Can a caller identify which operation changes external or shared state?
+        - Is deterministic policy testable without performing the effect?
+      evidence: [public-interfaces, dependency-map, tests]
+      misuseRisks:
+        - Wrapping every trivial operation behind an interface creates indirection without isolation value.
+      exceptions:
+        - Framework lifecycle methods may define effects implicitly as part of their documented contract.
+      sources:
+        - https://alistair.cockburn.us/hexagonal-architecture
+    - id: solid-srp
+      name: Single Responsibility Principle
+      family: solid
+      statement: A module should serve one coherent actor or reason for change, not merely contain one method.
+      appliesWhen: [design:object-oriented, design:modular]
+      reviewQuestions:
+        - Are unrelated actors or policies forcing changes in this module?
+        - Does the proposed split follow change responsibility rather than file size?
+      evidence: [change-history, dependency-map, ownership-map]
+      misuseRisks:
+        - Splitting by method count or vague responsibilities creates fragmentation and navigation cost.
+      exceptions:
+        - A small cohesive module may support several operations for the same actor and policy.
+      sources:
+        - https://blog.cleancoder.com/uncle-bob/2014/05/08/SingleReponsibilityPrinciple.html
+    - id: solid-ocp
+      name: Open-Closed Principle
+      family: solid
+      statement: Stable policy should support known extension pressure without repeated invasive modification.
+      appliesWhen: [change:extension-pressure]
+      reviewQuestions:
+        - Is there demonstrated recurring variation rather than a hypothetical future need?
+        - Does the extension point protect stable policy without hiding simple code?
+      evidence: [change-history, variation-points, compatibility-tests]
+      misuseRisks:
+        - Designing speculative extension points creates abstraction debt and unused flexibility.
+      exceptions:
+        - Direct modification is preferable while requirements and boundaries remain uncertain.
+      sources:
+        - https://blog.cleancoder.com/uncle-bob/2014/05/12/TheOpenClosedPrinciple.html
+    - id: solid-lsp
+      name: Liskov Substitution Principle
+      family: solid
+      statement: Subtypes and implementations preserve the behavioral promises expected through their base contract.
+      appliesWhen: [design:inheritance, design:polymorphism, design:interfaces]
+      reviewQuestions:
+        - Can every implementation be substituted without strengthening preconditions or weakening guarantees?
+        - Are error and side-effect semantics consistent across implementations?
+      evidence: [interface-contracts, contract-tests, subtype-tests]
+      misuseRisks:
+        - Applying substitution language to unrelated data shapes can obscure simpler contract defects.
+      exceptions:
+        - Marker types with no behavioral contract require only their explicitly documented semantics.
+      sources:
+        - https://www.cs.cmu.edu/afs/cs/project/venari/www/subtype-toplas.html
+    - id: solid-isp
+      name: Interface Segregation Principle
+      family: solid
+      statement: Consumers depend only on the capabilities they use, with interfaces shaped around real client needs.
+      appliesWhen: [design:interfaces, dependency:broad-interface]
+      reviewQuestions:
+        - Are clients forced to implement or import operations they do not use?
+        - Would a narrower capability boundary improve ownership and testing?
+      evidence: [consumer-map, interfaces, implementation-map]
+      misuseRisks:
+        - One-method interfaces created mechanically can multiply concepts without reducing coupling.
+      exceptions:
+        - Stable external protocols may require a broad interface that local code cannot change.
+      sources:
+        - https://blog.cleancoder.com/uncle-bob/2014/05/12/TheInterfaceSegregationPrinciple.html
+    - id: solid-dip
+      name: Dependency Inversion Principle
+      family: solid
+      statement: High-level policy should not depend directly on volatile infrastructure details; both meet at a boundary owned by policy needs.
+      appliesWhen: [dependency:volatile-infrastructure, boundary:external, testability:high]
+      reviewQuestions:
+        - Does volatile infrastructure control the shape of business policy?
+        - Is the abstraction owned by the consumer and justified by volatility or testing needs?
+      evidence: [dependency-map, ports, isolated-tests]
+      misuseRisks:
+        - Abstracting every concrete dependency adds indirection without protecting meaningful policy.
+      exceptions:
+        - Stable language or standard-library primitives can remain direct dependencies.
+      sources:
+        - https://blog.cleancoder.com/uncle-bob/2014/05/11/TheDependencyInversionPrinciple.html
+    - id: kiss-simplicity
+      name: KISS and essential simplicity
+      family: foundational
+      statement: Prefer the simplest design that satisfies current constraints, evidence and required quality attributes.
+      appliesWhen: []
+      reviewQuestions:
+        - Which complexity is essential to the problem and which was introduced by the solution?
+        - Is there a smaller design with equal correctness, safety and operability?
+      evidence: [technical-plan, alternatives, complexity-review]
+      misuseRisks:
+        - Calling a design simple can conceal missing security, reliability or domain requirements.
+      exceptions:
+        - Necessary complexity remains necessary and should be isolated rather than denied.
+      sources:
+        - https://www.infoq.com/presentations/Simple-Made-Easy
+    - id: yagni-evidence
+      name: YAGNI and evidence-backed scope
+      family: foundational
+      statement: Do not build speculative capability before a confirmed requirement or a low-cost irreversible constraint justifies it.
+      appliesWhen: []
+      reviewQuestions:
+        - Which accepted requirement or measured risk requires this capability now?
+        - Can the decision be deferred without closing a critical option?
+      evidence: [project-charter, spec, risk-analysis]
+      misuseRisks:
+        - YAGNI used blindly can ignore cheap foundations needed for security, migration or irreversible contracts.
+      exceptions:
+        - Security boundaries, data migration paths and public contracts may require early design.
+      sources:
+        - https://martinfowler.com/bliki/Yagni.html
+    - id: dry-stable-knowledge
+      name: DRY after knowledge stabilizes
+      family: foundational
+      statement: Consolidate duplicated knowledge when occurrences share meaning and are expected to change together.
+      appliesWhen: [duplication:stable]
+      reviewQuestions:
+        - Does the duplication represent the same knowledge or only similar syntax?
+        - Have the occurrences demonstrated coordinated change?
+      evidence: [change-history, duplicate-behavior, domain-model]
+      misuseRisks:
+        - Premature abstraction couples unrelated behavior and turns coincidental similarity into a shared dependency.
+      exceptions:
+        - Independent bounded contexts may intentionally duplicate representations to preserve autonomy.
+      sources:
+        - https://pragprog.com/tips
+    - id: separation-of-concerns
+      name: Separation of concerns
+      family: foundational
+      statement: Separate concerns that change, scale, fail or require authority for different reasons while keeping cohesive behavior together.
+      appliesWhen: [design:modular, boundary:trust, boundary:deployment]
+      reviewQuestions:
+        - Do these concerns have different change drivers, failure modes or owners?
+        - Does separation reduce coupling more than it increases coordination cost?
+      evidence: [project-map, dependency-map, ownership-map]
+      misuseRisks:
+        - Separating every technical activity can scatter one feature across unnecessary layers.
+      exceptions:
+        - A small cohesive feature may keep presentation and behavior close when boundaries remain explicit.
+      sources:
+        - https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD447.html
+    - id: composition-over-inheritance
+      name: Composition over inheritance
+      family: foundational
+      statement: Prefer explicit composition for varying behavior unless inheritance models a stable substitutable relationship.
+      appliesWhen: [design:inheritance, design:object-oriented]
+      reviewQuestions:
+        - Is the relationship truly substitutable or only code reuse?
+        - Would composition make dependencies and variation clearer?
+      evidence: [type-hierarchy, contract-tests, dependency-map]
+      misuseRisks:
+        - Replacing a small stable hierarchy with excessive delegation can reduce clarity.
+      exceptions:
+        - Framework extension points and proven taxonomies may require inheritance.
+      sources:
+        - https://en.wikipedia.org/wiki/Design_Patterns

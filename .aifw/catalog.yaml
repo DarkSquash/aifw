@@ -1,0 +1,613 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ProjectCatalog
+project:
+  purpose: Tornar desenvolvimento com agentes reproduzível, seguro e independente de fornecedor por meio de decisões e evidências versionadas.
+  verifiedRevision: discovery:84eda1c386f6
+sourcesOfTruth:
+- topic: Arquitetura
+  source: docs/architecture.md
+- topic: Brownfield discovery
+  source: .aifw/adoption/discovery.json
+- topic: Capacidades aceitas
+  source: .aifw/specs/current/
+- topic: Catálogo de princípios de engenharia
+  source: principle-catalogs/
+- topic: Catálogos de decisão
+  source: decision-catalogs/
+- topic: Comportamento verificado
+  source: tests_python/
+- topic: Constituição
+  source: CONSTITUTION.md
+- topic: Contexto por tarefa
+  source: docs/context-intelligence.md
+- topic: Contract templates/asyncapi.yaml
+  source: templates/asyncapi.yaml
+- topic: Contract templates/openapi.yaml
+  source: templates/openapi.yaml
+- topic: Contrato do pacote
+  source: pyproject.toml
+- topic: Contratos de documento
+  source: schemas/
+- topic: Decision docs/decisions/ADR-0001-typescript-cli.md
+  source: docs/decisions/ADR-0001-typescript-cli.md
+- topic: Decision docs/decisions/ADR-0002-agent-independent-core.md
+  source: docs/decisions/ADR-0002-agent-independent-core.md
+- topic: Decision docs/decisions/ADR-0003-routing-disabled-default.md
+  source: docs/decisions/ADR-0003-routing-disabled-default.md
+- topic: Decision docs/decisions/ADR-0004-flutter-mobile-profile.md
+  source: docs/decisions/ADR-0004-flutter-mobile-profile.md
+- topic: Decision docs/decisions/ADR-0005-global-decision-catalogs.md
+  source: docs/decisions/ADR-0005-global-decision-catalogs.md
+- topic: Decision docs/decisions/ADR-0006-short-stack-flags.md
+  source: docs/decisions/ADR-0006-short-stack-flags.md
+- topic: Decision docs/decisions/ADR-0007-contextual-engineering-principles.md
+  source: docs/decisions/ADR-0007-contextual-engineering-principles.md
+- topic: Decision docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md
+  source: docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md
+- topic: Decision docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md
+  source: docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md
+- topic: Decision docs/decisions/ADR-0010-spec-archive-integrity.md
+  source: docs/decisions/ADR-0010-spec-archive-integrity.md
+- topic: Decision docs/decisions/ADR-0011-python-runtime.md
+  source: docs/decisions/ADR-0011-python-runtime.md
+- topic: Decision docs/decisions/ADR-0012-context-intelligence.md
+  source: docs/decisions/ADR-0012-context-intelligence.md
+- topic: Decision docs/decisions/ADR-0013-skill-delegation.md
+  source: docs/decisions/ADR-0013-skill-delegation.md
+- topic: Decision docs/decisions/ADR-0014-claude-code-host.md
+  source: docs/decisions/ADR-0014-claude-code-host.md
+- topic: Decisões
+  source: docs/decisions/
+- topic: Guia operacional
+  source: HOW_TO_USE.md
+- topic: Intenção do produto
+  source: .aifw/charter.yaml
+- topic: Regras core
+  source: policies/core.yaml
+entities:
+- id: component:agent-instructions
+  kind: Component
+  name: Shared agent instructions
+  description: Generates bounded instruction blocks while preserving user content.
+  owner: framework:core
+  source: python/aifw/instructions.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: component:aifw-root
+  kind: Component
+  name: aifw root module
+  description: Discovered module manifest at pyproject.toml; responsibility requires review.
+  owner: human:DarkSquash
+  source: pyproject.toml
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: component:brownfield-adoption
+  kind: Component
+  name: Brownfield adoption
+  description: Descobre fatos, persiste candidatos revisáveis e exige confirmação humana antes do baseline aprovado.
+  owner: framework:core
+  source: python/aifw/brownfield.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: component:core
+  - type: documentedBy
+    target: resource:existing-project-adoption
+- id: component:claude-skill
+  kind: Component
+  name: Claude Code skill
+  description: Comando /aifw (new, adopt) que habilita o AIFW por projeto; a skill aifw-workflow do projeto guia o Claude (ADR-0016).
+  owner: framework:adapters
+  source: templates/claude/skills/aifw/SKILL.md
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+  - type: dependsOn
+    target: component:cli
+- id: component:claude-hooks
+  kind: Component
+  name: Claude Code hook
+  description: aifw-hook aplica a política em cada ação, registra a sessão, bloqueia conclusão sem verificação e informa o estado ao abrir a sessão (ADR-0015, ADR-0018).
+  owner: framework:adapters
+  source: python/aifw/hooks.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+  - type: dependsOn
+    target: component:core
+- id: component:cli
+  kind: Component
+  name: Control-plane CLI
+  description: Interface determinística usada por agentes, humanos e CI.
+  owner: framework:core
+  source: python/aifw/cli.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+  - type: dependsOn
+    target: component:core
+  - type: documentedBy
+    target: resource:how-to-use
+- id: component:conformance
+  kind: Component
+  name: Agent conformance evaluator
+  description: Avalia traces contra eventos, ordem, aprovações e evidência esperados.
+  owner: framework:quality
+  source: python/aifw/conformance.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: component:core
+  - type: consumes
+    target: resource:evals
+- id: component:context-intelligence
+  kind: Component
+  name: Context intelligence
+  description: Selects documentation, validates references and detects factual snapshot drift.
+  owner: framework:core
+  source: python/aifw/context.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: component:core
+  kind: Component
+  name: Vendor-neutral core
+  description: Intake, authority, lifecycle, gates, map, permissions, impasse, routing e conformance.
+  owner: framework:core
+  source: python/aifw/
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+  - type: provides
+    target: contract:schemas
+- id: component:decision-engine
+  kind: Component
+  name: Architecture decision engine
+  description: Classifica alternativas, expõe incerteza e exige aprovação humana com ADR antes de registrar uma escolha.
+  owner: framework:core
+  source: python/aifw/catalogs.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: component:core
+  - type: consumes
+    target: resource:decision-catalogs
+- id: component:principle-review
+  kind: Component
+  name: Engineering principle catalog
+  description: Publica os princípios versionados; a revisão do diff é feita pela skill code-review (ADR-0013).
+  owner: framework:quality
+  source: python/aifw/catalogs.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: component:core
+  - type: consumes
+    target: resource:principle-catalogs
+- id: component:spec-lifecycle
+  kind: Component
+  name: Executable spec lifecycle
+  description: Valida capability deltas, rastreabilidade e archive atômico contra a verdade comportamental atual.
+  owner: framework:core
+  source: python/aifw/specs.py
+  visibility: public
+  relations:
+  - type: partOf
+    target: component:core
+  - type: consumes
+    target: contract:schemas
+- id: contract:schemas
+  kind: Contract
+  name: Framework document schemas
+  description: JSON Schema 2020-12 para documentos públicos do AIFW.
+  owner: framework:core
+  source: schemas/
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: contract:templates-asyncapi-yaml
+  kind: Contract
+  name: templates/asyncapi.yaml
+  description: Discovered machine-readable contract at templates/asyncapi.yaml.
+  owner: human:DarkSquash
+  source: templates/asyncapi.yaml
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: contract:templates-openapi-yaml
+  kind: Contract
+  name: templates/openapi.yaml
+  description: Discovered machine-readable contract at templates/openapi.yaml.
+  owner: human:DarkSquash
+  source: templates/openapi.yaml
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:agent-independent-core
+  kind: Decision
+  name: Core independente do agente
+  description: Governança não depende do executor ou fornecedor.
+  owner: human:owner
+  source: docs/decisions/ADR-0002-agent-independent-core.md
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0001-typescript-cli-md
+  kind: Decision
+  name: docs/decisions/ADR-0001-typescript-cli.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0001-typescript-cli.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0001-typescript-cli.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0002-agent-independent-core-md
+  kind: Decision
+  name: docs/decisions/ADR-0002-agent-independent-core.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0002-agent-independent-core.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0002-agent-independent-core.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0003-routing-disabled-default-md
+  kind: Decision
+  name: docs/decisions/ADR-0003-routing-disabled-default.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0003-routing-disabled-default.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0003-routing-disabled-default.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0004-flutter-mobile-profile-md
+  kind: Decision
+  name: docs/decisions/ADR-0004-flutter-mobile-profile.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0004-flutter-mobile-profile.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0004-flutter-mobile-profile.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0005-global-decision-catalogs-md
+  kind: Decision
+  name: docs/decisions/ADR-0005-global-decision-catalogs.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0005-global-decision-catalogs.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0005-global-decision-catalogs.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0006-short-stack-flags-md
+  kind: Decision
+  name: docs/decisions/ADR-0006-short-stack-flags.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0006-short-stack-flags.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0006-short-stack-flags.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0007-contextual-engineering-principles-md
+  kind: Decision
+  name: docs/decisions/ADR-0007-contextual-engineering-principles.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0007-contextual-engineering-principles.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0007-contextual-engineering-principles.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0008-pi-routing-and-codex-fallback-md
+  kind: Decision
+  name: docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0008-pi-routing-and-codex-fallback.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0009-executable-spec-core-and-brownfield-adoption-md
+  kind: Decision
+  name: docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0009-executable-spec-core-and-brownfield-adoption.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0010-spec-archive-integrity-md
+  kind: Decision
+  name: docs/decisions/ADR-0010-spec-archive-integrity.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0010-spec-archive-integrity.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0010-spec-archive-integrity.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0011-python-runtime-md
+  kind: Decision
+  name: docs/decisions/ADR-0011-python-runtime.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0011-python-runtime.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0011-python-runtime.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0012-context-intelligence-md
+  kind: Decision
+  name: docs/decisions/ADR-0012-context-intelligence.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0012-context-intelligence.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0012-context-intelligence.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0013-skill-delegation-md
+  kind: Decision
+  name: docs/decisions/ADR-0013-skill-delegation.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0013-skill-delegation.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0013-skill-delegation.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:docs-decisions-adr-0014-claude-code-host-md
+  kind: Decision
+  name: docs/decisions/ADR-0014-claude-code-host.md
+  description: Discovered architecture decision reference at docs/decisions/ADR-0014-claude-code-host.md.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0014-claude-code-host.md
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:python-runtime
+  kind: Decision
+  name: CLI e núcleo Python
+  description: Migração integral autorizada pelo usuário; ADR-0011.
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0011-python-runtime.md
+  visibility: internal
+  origin: manual
+  confidence: confirmed
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: decision:spec-archive-integrity
+  kind: Decision
+  name: Integridade de archive e evidência
+  description: 'ADR-0010: separar commit de limpeza, revalidar aprovação L3 e impedir deltas/evidências inválidos.'
+  owner: human:DarkSquash
+  source: docs/decisions/ADR-0010-spec-archive-integrity.md
+  visibility: internal
+  origin: manual
+  confidence: confirmed
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: profile:flutter-mobile
+  kind: Resource
+  name: Flutter Mobile profile
+  description: Regras e receitas de gates para Dart, Flutter, Android e iOS sem impor arquitetura de pastas ou biblioteca de estado.
+  owner: framework:profiles
+  source: profiles/flutter-mobile/
+  visibility: public
+  relations:
+  - type: partOf
+    target: resource:profiles
+  - type: dependsOn
+    target: component:core
+- id: profile:python
+  kind: Resource
+  name: Python profile
+  description: Regras portáveis de lint, formato, testes, dependências, segurança e observabilidade para projetos Python.
+  owner: framework:profiles
+  source: profiles/python/
+  visibility: public
+  relations:
+  - type: partOf
+    target: resource:profiles
+  - type: dependsOn
+    target: component:core
+- id: profile:web
+  kind: Resource
+  name: Web profile
+  description: Regras de arquitetura, contratos, design, segurança e observabilidade para React, JavaScript, TypeScript e outras stacks Web.
+  owner: framework:profiles
+  source: profiles/web-ts/
+  visibility: public
+  relations:
+  - type: partOf
+    target: resource:profiles
+  - type: dependsOn
+    target: component:core
+- id: resource:context-intelligence
+  kind: Resource
+  name: Context guide
+  description: Documents context commands, metadata, limits and opt-in gates.
+  owner: framework:core
+  source: docs/context-intelligence.md
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:decision-catalogs
+  kind: Resource
+  name: Global decision catalogs
+  description: Alternativas arquiteturais comparáveis por sinais explícitos, com conflitos, trade-offs e fontes.
+  owner: framework:architecture
+  source: decision-catalogs/
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:evals
+  kind: Resource
+  name: Conformance fixtures
+  description: Casos e traces de fumaça para validar o evaluator.
+  owner: framework:quality
+  source: evals/
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:existing-project-adoption
+  kind: Resource
+  name: Existing-project adoption guide
+  description: Fluxo factual de analyze, apply e human approval para projetos brownfield.
+  owner: framework:docs
+  source: docs/existing-project-adoption.md
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:github-workflows-ci-yml
+  kind: Resource
+  name: .github/workflows/ci.yml
+  description: Discovered continuous-integration configuration at .github/workflows/ci.yml.
+  owner: human:DarkSquash
+  source: .github/workflows/ci.yml
+  visibility: internal
+  origin: discovered
+  confidence: confirmed
+  lastVerifiedAt: '2026-10-11T22:15:58.585Z'
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:how-to-use
+  kind: Resource
+  name: AIFW operational guide
+  description: Instalação, fluxos recomendados, referência completa da CLI e comandos da extensão do Pi.
+  owner: framework:docs
+  source: HOW_TO_USE.md
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:policies
+  kind: Resource
+  name: Core policies
+  description: Invariantes executáveis alinhados à Constitution.
+  owner: framework:governance
+  source: policies/core.yaml
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:principle-catalogs
+  kind: Resource
+  name: Engineering principle catalogs
+  description: Clean Code, SOLID e princípios fundamentais aplicados por sinais, perguntas, evidências, exceções e riscos de mau uso.
+  owner: framework:quality
+  source: principle-catalogs/
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+- id: resource:profiles
+  kind: Resource
+  name: Optional profiles
+  description: Capability e stack rules selecionadas após intake/discovery.
+  owner: framework:profiles
+  source: profiles/
+  visibility: public
+  relations:
+  - type: partOf
+    target: system:aifw
+  - type: dependsOn
+    target: resource:policies
+- id: runtime:python
+  kind: Runtime
+  name: Python
+  description: Runtime do CLI e núcleo, Python 3.11 ou superior, independente de Node.js.
+  owner: framework:runtime
+  source: pyproject.toml
+  visibility: public
+  relations: []
+- id: system:aifw
+  kind: System
+  name: AIFW
+  description: Framework independente de agente para governança e execução verificável de engenharia de software.
+  owner: human:owner
+  source: CONSTITUTION.md
+  visibility: public
+  relations:
+  - type: runsOn
+    target: runtime:python
+  - type: documentedBy
+    target: decision:agent-independent-core

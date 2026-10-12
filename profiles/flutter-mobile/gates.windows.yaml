@@ -1,0 +1,35 @@
+apiVersion: aifw.dev/v1alpha1
+kind: QualityGateSet
+philosophy: progressive-by-risk
+gates:
+  - id: manifest
+    enforcement: hard
+    levels: [L0, L1, L2, L3]
+  - id: project-map
+    enforcement: hard
+    levels: [L1, L2, L3]
+  - id: dart-format
+    enforcement: hard
+    levels: [L1, L2, L3]
+    command: [dart, format, --output=none, --set-exit-if-changed, lib, test]
+  - id: flutter-analyze
+    enforcement: hard
+    levels: [L1, L2, L3]
+    command: [flutter, analyze]
+  - id: flutter-test
+    enforcement: hard
+    levels: [L1, L2, L3]
+    command: [flutter, test]
+  - id: flutter-build-android
+    enforcement: hard
+    levels: [L2, L3]
+    command: [flutter, build, apk, --debug]
+  - id: ios-build-evidence
+    enforcement: audit
+    levels: [L2, L3]
+  - id: independent-review
+    enforcement: audit
+    levels: [L2, L3]
+  - id: human-approval
+    enforcement: human
+    levels: [L3]

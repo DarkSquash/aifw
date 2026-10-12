@@ -1,0 +1,205 @@
+{
+  ".aifw/adoption/README.md": "# Existing-project adoption\n\nBrownfield discovery is factual and reviewable: analyze first, apply candidates second, then require explicit human approval.\n",
+  ".aifw/catalog.yaml": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "ProjectCatalog",
+    "project": {
+      "purpose": "Pending Project Charter approval.",
+      "verifiedRevision": "working-tree"
+    },
+    "sourcesOfTruth": [
+      {
+        "topic": "Project intent",
+        "source": ".aifw/charter.yaml"
+      },
+      {
+        "topic": "Framework configuration",
+        "source": "aifw.yaml"
+      },
+      {
+        "topic": "Architecture decisions",
+        "source": "docs/adr/"
+      },
+      {
+        "topic": "Approved architecture selections",
+        "source": ".aifw/decisions/"
+      },
+      {
+        "topic": "Approved capability specs",
+        "source": ".aifw/specs/current/"
+      },
+      {
+        "topic": "Interface contracts",
+        "source": "contracts/"
+      }
+    ],
+    "entities": [
+      {
+        "id": "system:aifw-template",
+        "kind": "System",
+        "name": "AIFW Template",
+        "description": "Top-level system; refine during discovery.",
+        "owner": "human:owner",
+        "source": ".aifw/charter.yaml",
+        "visibility": "internal",
+        "relations": []
+      }
+    ]
+  },
+  ".aifw/changes/active/README.md": "# Active changes\n\nEach non-trivial change owns a directory with proposal, design, tasks, capability deltas, traceability and evidence.\n",
+  ".aifw/changes/archive/README.md": "# Archived changes\n\nCompleted change context is retained here after validated, atomic synchronization with current capability specs.\n",
+  ".aifw/charter.yaml": {
+    "id": "aifw-template",
+    "version": "0.1.0",
+    "projectType": "new",
+    "problem": "",
+    "audiences": [],
+    "outcomes": [],
+    "scope": {
+      "in": [],
+      "out": []
+    },
+    "constraints": [],
+    "technicalPreference": {
+      "mode": "agent-recommend"
+    },
+    "unknowns": [],
+    "state": "draft"
+  },
+  ".aifw/framework.lock.yaml": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "FrameworkLock",
+    "frameworkVersion": "0.2.0",
+    "profiles": [],
+    "resolutionDigest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "generatedBy": "aifw/0.2.0"
+  },
+  ".aifw/gates.yaml": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "QualityGateSet",
+    "philosophy": "progressive-by-risk",
+    "gates": [
+      {
+        "id": "manifest",
+        "enforcement": "hard",
+        "levels": [
+          "L0",
+          "L1",
+          "L2",
+          "L3"
+        ]
+      },
+      {
+        "id": "project-map",
+        "enforcement": "hard",
+        "levels": [
+          "L1",
+          "L2",
+          "L3"
+        ]
+      },
+      {
+        "id": "tests",
+        "enforcement": "hard",
+        "levels": [
+          "L1",
+          "L2",
+          "L3"
+        ]
+      },
+      {
+        "id": "independent-review",
+        "enforcement": "audit",
+        "levels": [
+          "L2",
+          "L3"
+        ]
+      },
+      {
+        "id": "human-approval",
+        "enforcement": "human",
+        "levels": [
+          "L3"
+        ]
+      }
+    ]
+  },
+  ".aifw/permissions.yaml": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "PermissionPolicy",
+    "localGit": "autonomous",
+    "remoteMutation": "human-approval",
+    "previewDeployment": "autonomous",
+    "productionDeployment": "human-approval",
+    "destructiveChanges": "human-approval",
+    "childAgents": {
+      "capabilityCeiling": "parent"
+    },
+    "breakGlass": {
+      "enabled": true,
+      "requiresIncidentId": true,
+      "requiresHumanApproval": true,
+      "expires": true
+    },
+    "externalServices": {
+      "writes": "human-approval"
+    }
+  },
+  ".aifw/routing.yaml": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "RoutingPolicy",
+    "enabled": false,
+    "mode": "recommendation-only",
+    "aliases": {
+      "FAST": "haiku",
+      "WORK": "sonnet",
+      "BRAIN": "opus"
+    },
+    "targets": {
+      "FAST": {
+        "provider": "anthropic",
+        "model": "claude-haiku-5-5"
+      },
+      "WORK": {
+        "provider": "anthropic",
+        "model": "claude-sonnet-5-5"
+      },
+      "BRAIN": {
+        "provider": "anthropic",
+        "model": "claude-opus-5-5"
+      }
+    },
+    "activation": {
+      "minimumCases": 30,
+      "minimumPassRate": 0.95,
+      "criticalFailures": 0,
+      "humanApprovalRequired": true
+    }
+  },
+  ".aifw/specs/current/README.md": "# Current capability specs\n\nAccepted, executable capability specifications are the current product truth. Active proposals never modify this directory directly.\n",
+  "aifw.yaml": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "Project",
+    "metadata": {
+      "id": "aifw-template",
+      "name": "AIFW Template"
+    },
+    "spec": {
+      "frameworkVersion": "0.2.0",
+      "projectType": "new",
+      "locale": "pt-BR",
+      "primaryEnvironment": "windows",
+      "validationTargets": [
+        "windows",
+        "wsl",
+        "linux-ci"
+      ],
+      "profiles": [],
+      "dataClassification": "internal",
+      "externalAllowlist": []
+    }
+  },
+  "contracts/README.md": "# Contracts\n\nStore versioned OpenAPI, AsyncAPI, GraphQL or other machine-readable interface contracts here.\n",
+  "docs/adr/README.md": "# Architecture Decision Records\n\nPersist every architectural decision here. A conversation with an AI is never a source of truth.\n",
+  "docs/runbooks/README.md": "# Runbooks\n\nOperational diagnosis, mitigation, rollback and recovery procedures live here.\n"
+}

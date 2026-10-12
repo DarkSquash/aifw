@@ -1,0 +1,10 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: example-change
+tasks:
+  - id: TASK-EXAMPLE-001
+    title: Implement the example requirement
+    status: pending
+    dependsOn: []
+    requirementIds: [REQ-EXAMPLE-001]
+    paths: [src/example.ts]

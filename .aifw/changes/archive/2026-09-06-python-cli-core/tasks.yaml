@@ -1,0 +1,28 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: python-cli-core
+tasks:
+- id: TASK-PYTHON-RUNTIME
+  title: Migrar e empacotar núcleo Python
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AIFW-PYTHON-RUNTIME
+  paths:
+  - scripts/verify_wheel.py
+- id: TASK-PYTHON-PARITY
+  title: Verificar paridade, governança e recuperação
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AIFW-PYTHON-PARITY
+  paths:
+  - tests_python/test_spec_integrity.py
+- id: TASK-PYTHON-PI
+  title: Delegar integração Pi ao núcleo Python
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AIFW-PYTHON-PI
+  paths:
+  - tests_python/test_pi_bridge.py

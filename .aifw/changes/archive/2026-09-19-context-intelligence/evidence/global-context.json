@@ -1,0 +1,40 @@
+{
+  "status": "pass",
+  "selected": [
+    {
+      "path": "docs/context-intelligence.md",
+      "scope": "Contexto por tarefa e consistência das instruções",
+      "intents": [],
+      "required": false,
+      "dependencies": [],
+      "sources": [],
+      "sourceHashes": {},
+      "sha256": "d05db92cd5304429783d0093c596eec9904fdf13577f3a7326245ad00053efe3",
+      "estimatedTokens": 1499,
+      "reasons": [
+        "task"
+      ]
+    },
+    {
+      "path": "docs/decisions/ADR-0012-context-intelligence.md",
+      "scope": "ADR-0012 — Contexto seletivo e integridade documental",
+      "intents": [],
+      "required": false,
+      "dependencies": [],
+      "sources": [],
+      "sourceHashes": {},
+      "sha256": "d333e46a4946d8e09563ce98a2ea12310133d8ae7ee7838bce2dd2d67ba384a1",
+      "estimatedTokens": 400,
+      "reasons": [
+        "task"
+      ]
+    }
+  ],
+  "findings": [],
+  "requiredReferences": [],
+  "estimatedTokens": 1899,
+  "budget": 2500,
+  "overBudget": false,
+  "tokenEstimateMethod": "characters/4-ceiling",
+  "semanticValidation": "not-performed"
+}

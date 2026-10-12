@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/quality-gates.schema.json",
+  "title": "AIFW QualityGateSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "philosophy", "gates"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "QualityGateSet" },
+    "philosophy": { "const": "progressive-by-risk" },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "enforcement", "levels"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+          "enforcement": { "enum": ["hard", "audit", "human"] },
+          "levels": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["L0", "L1", "L2", "L3"] } },
+          "command": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "workingDirectory": { "type": "string" }
+        }
+      }
+    }
+  }
+}

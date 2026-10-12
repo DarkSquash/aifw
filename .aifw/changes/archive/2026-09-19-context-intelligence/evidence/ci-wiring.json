@@ -1,0 +1,89 @@
+{
+  "status": "warning",
+  "gates": [
+    {
+      "id": "manifest",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "not-found",
+      "ciFiles": []
+    },
+    {
+      "id": "project-map",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "not-found",
+      "ciFiles": []
+    },
+    {
+      "id": "typecheck",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "not-found",
+      "ciFiles": []
+    },
+    {
+      "id": "lint",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "automatic-reference",
+      "ciFiles": [
+        ".github/workflows/ci.yml"
+      ]
+    },
+    {
+      "id": "tests",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "automatic-reference",
+      "ciFiles": [
+        ".github/workflows/ci.yml"
+      ]
+    },
+    {
+      "id": "build",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "automatic-reference",
+      "ciFiles": [
+        ".github/workflows/ci.yml"
+      ]
+    },
+    {
+      "id": "conformance",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "not-found",
+      "ciFiles": []
+    },
+    {
+      "id": "independent-review",
+      "configured": false,
+      "enforcement": "audit",
+      "execution": "not-run",
+      "ciStatus": "not-found",
+      "ciFiles": []
+    },
+    {
+      "id": "cli-docs",
+      "configured": true,
+      "enforcement": "hard",
+      "execution": "not-run",
+      "ciStatus": "automatic-reference",
+      "ciFiles": [
+        ".github/workflows/ci.yml"
+      ]
+    }
+  ],
+  "execution": "not-run",
+  "branchProtection": "not-verified",
+  "deploymentBlocking": "not-verified",
+  "analysis": "literal GitHub Actions command references only"
+}

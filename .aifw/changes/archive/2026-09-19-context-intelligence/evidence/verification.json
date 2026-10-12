@@ -1,0 +1,35 @@
+{
+  "tests": 1921,
+  "failed": 0,
+  "skipped": 0,
+  "wheelCommands": 16,
+  "nodeOnPath": false,
+  "ruff": "pass",
+  "format": "pass",
+  "compile": "pass",
+  "cliReference": "current",
+  "packageBuild": "pass",
+  "globalCli": "verified",
+  "installedSkill": "synchronized",
+  "independentReview": "not-run",
+  "remoteCI": "not-run",
+  "selfDocumentationFindings": [
+    {
+      "code": "BROKEN_REFERENCE",
+      "path": "docs/audits/2026-09-05-v02-review.md",
+      "severity": "error",
+      "target": "src/core/spec-lifecycle.ts"
+    },
+    {
+      "code": "BROKEN_REFERENCE",
+      "path": "docs/decisions/ADR-0010-spec-archive-integrity.md",
+      "severity": "error",
+      "target": "docs/decisions/tests/spec-integrity.test.ts"
+    }
+  ],
+  "limitations": [
+    "Lexical context selection; no semantic correctness certification.",
+    "Static CI references do not prove deployment protection.",
+    "Historical document references are reported, not rewritten."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/brownfield-adoption.schema.json",
+  "title": "AIFW BrownfieldAdoption",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "projectId", "status", "reportDigest", "analyzedAt"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "BrownfieldAdoption" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["analyzed", "review-required", "approved"] },
+    "reportDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "analyzedAt": { "type": "string" },
+    "appliedAt": { "type": "string" },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "approvedAt", "contentDigest"],
+      "properties": {
+        "approvedBy": { "type": "string", "pattern": "^human:" },
+        "approvedAt": { "type": "string" },
+        "contentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

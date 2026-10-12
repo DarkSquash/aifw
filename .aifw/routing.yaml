@@ -1,0 +1,23 @@
+apiVersion: aifw.dev/v1alpha1
+kind: RoutingPolicy
+enabled: false
+mode: recommendation-only
+aliases:
+  FAST: haiku
+  WORK: sonnet
+  BRAIN: opus
+targets:
+  FAST:
+    provider: anthropic
+    model: claude-haiku-5-5
+  WORK:
+    provider: anthropic
+    model: claude-sonnet-5-5
+  BRAIN:
+    provider: anthropic
+    model: claude-opus-5-5
+activation:
+  minimumCases: 30
+  minimumPassRate: 0.95
+  criticalFailures: 0
+  humanApprovalRequired: true

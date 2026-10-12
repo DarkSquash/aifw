@@ -1,0 +1,28 @@
+apiVersion: aifw.dev/v1alpha1
+kind: QualityGateSet
+philosophy: progressive-by-risk
+gates:
+  - id: manifest
+    enforcement: hard
+    levels: [L0, L1, L2, L3]
+  - id: project-map
+    enforcement: hard
+    levels: [L1, L2, L3]
+  - id: lint
+    enforcement: hard
+    levels: [L1, L2, L3]
+    command: [npm, run, lint]
+  - id: tests
+    enforcement: hard
+    levels: [L1, L2, L3]
+    command: [npm, test]
+  - id: build
+    enforcement: hard
+    levels: [L2, L3]
+    command: [npm, run, build]
+  - id: independent-review
+    enforcement: audit
+    levels: [L2, L3]
+  - id: human-approval
+    enforcement: human
+    levels: [L3]

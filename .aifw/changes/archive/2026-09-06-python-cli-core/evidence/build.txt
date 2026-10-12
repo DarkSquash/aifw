@@ -1,0 +1,456 @@
+* Getting build dependencies for sdist...
+running egg_info
+writing python\aifw_cli.egg-info\PKG-INFO
+writing dependency_links to python\aifw_cli.egg-info\dependency_links.txt
+writing entry points to python\aifw_cli.egg-info\entry_points.txt
+writing requirements to python\aifw_cli.egg-info\requires.txt
+writing top-level names to python\aifw_cli.egg-info\top_level.txt
+reading manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'package.json'
+warning: no previously-included files found matching 'package-lock.json'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.pyc' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing python\aifw_cli.egg-info\PKG-INFO
+writing dependency_links to python\aifw_cli.egg-info\dependency_links.txt
+writing entry points to python\aifw_cli.egg-info\entry_points.txt
+writing requirements to python\aifw_cli.egg-info\requires.txt
+writing top-level names to python\aifw_cli.egg-info\top_level.txt
+reading manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'package.json'
+warning: no previously-included files found matching 'package-lock.json'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.pyc' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+running check
+creating aifw_cli-0.3.0
+creating aifw_cli-0.3.0\decision-catalogs
+creating aifw_cli-0.3.0\evals\cases
+creating aifw_cli-0.3.0\evals\reports
+creating aifw_cli-0.3.0\evals\routing
+creating aifw_cli-0.3.0\evals\traces
+creating aifw_cli-0.3.0\policies
+creating aifw_cli-0.3.0\principle-catalogs
+creating aifw_cli-0.3.0\profiles\flutter-mobile
+creating aifw_cli-0.3.0\profiles\flutter-mobile\decisions
+creating aifw_cli-0.3.0\profiles\python
+creating aifw_cli-0.3.0\profiles\web-ts
+creating aifw_cli-0.3.0\python\aifw
+creating aifw_cli-0.3.0\python\aifw_cli.egg-info
+creating aifw_cli-0.3.0\schemas
+creating aifw_cli-0.3.0\templates
+creating aifw_cli-0.3.0\tests_python
+creating aifw_cli-0.3.0\tests_python\fixtures
+copying files to aifw_cli-0.3.0...
+copying CONSTITUTION.md -> aifw_cli-0.3.0
+copying HOW_TO_USE.md -> aifw_cli-0.3.0
+copying LICENSE -> aifw_cli-0.3.0
+copying MANIFEST.in -> aifw_cli-0.3.0
+copying README.md -> aifw_cli-0.3.0
+copying pyproject.toml -> aifw_cli-0.3.0
+copying setup.py -> aifw_cli-0.3.0
+copying uv.lock -> aifw_cli-0.3.0
+copying decision-catalogs\application-architecture.yaml -> aifw_cli-0.3.0\decision-catalogs
+copying decision-catalogs\code-organization.yaml -> aifw_cli-0.3.0\decision-catalogs
+copying decision-catalogs\system-topology.yaml -> aifw_cli-0.3.0\decision-catalogs
+copying evals\cases\impasse-escalation.yaml -> aifw_cli-0.3.0\evals\cases
+copying evals\cases\permission-boundary.yaml -> aifw_cli-0.3.0\evals\cases
+copying evals\cases\spec-before-code.yaml -> aifw_cli-0.3.0\evals\cases
+copying evals\reports\routing-2026-08-23.json -> aifw_cli-0.3.0\evals\reports
+copying evals\routing\cases.yaml -> aifw_cli-0.3.0\evals\routing
+copying evals\traces\impasse-escalation.yaml -> aifw_cli-0.3.0\evals\traces
+copying evals\traces\permission-boundary.yaml -> aifw_cli-0.3.0\evals\traces
+copying evals\traces\spec-before-code.yaml -> aifw_cli-0.3.0\evals\traces
+copying policies\core.yaml -> aifw_cli-0.3.0\policies
+copying principle-catalogs\engineering-principles.yaml -> aifw_cli-0.3.0\principle-catalogs
+copying profiles\flutter-mobile\README.md -> aifw_cli-0.3.0\profiles\flutter-mobile
+copying profiles\flutter-mobile\gates.macos.yaml -> aifw_cli-0.3.0\profiles\flutter-mobile
+copying profiles\flutter-mobile\gates.windows-fvm.yaml -> aifw_cli-0.3.0\profiles\flutter-mobile
+copying profiles\flutter-mobile\gates.windows.yaml -> aifw_cli-0.3.0\profiles\flutter-mobile
+copying profiles\flutter-mobile\profile.yaml -> aifw_cli-0.3.0\profiles\flutter-mobile
+copying profiles\flutter-mobile\decisions\state-management.yaml -> aifw_cli-0.3.0\profiles\flutter-mobile\decisions
+copying profiles\python\README.md -> aifw_cli-0.3.0\profiles\python
+copying profiles\python\profile.yaml -> aifw_cli-0.3.0\profiles\python
+copying profiles\web-ts\README.md -> aifw_cli-0.3.0\profiles\web-ts
+copying profiles\web-ts\profile.yaml -> aifw_cli-0.3.0\profiles\web-ts
+copying python\aifw\__init__.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\__main__.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\adapters.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\brownfield.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\catalogs.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\cli.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\common.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\conformance.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\discovery.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\gates.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\handoff.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\impasse.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\intake.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\permissions.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\pi_bridge.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\policy.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\routing.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\specs.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\waiver.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw\workspace.py -> aifw_cli-0.3.0\python\aifw
+copying python\aifw_cli.egg-info\PKG-INFO -> aifw_cli-0.3.0\python\aifw_cli.egg-info
+copying python\aifw_cli.egg-info\SOURCES.txt -> aifw_cli-0.3.0\python\aifw_cli.egg-info
+copying python\aifw_cli.egg-info\dependency_links.txt -> aifw_cli-0.3.0\python\aifw_cli.egg-info
+copying python\aifw_cli.egg-info\entry_points.txt -> aifw_cli-0.3.0\python\aifw_cli.egg-info
+copying python\aifw_cli.egg-info\requires.txt -> aifw_cli-0.3.0\python\aifw_cli.egg-info
+copying python\aifw_cli.egg-info\top_level.txt -> aifw_cli-0.3.0\python\aifw_cli.egg-info
+copying schemas\agent-trace.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\brownfield-adoption.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\brownfield-discovery.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\capability-delta.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\capability-spec.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\catalog.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\change-case.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\change-tasks.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\charter.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\codex-handoff.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\conformance-case.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\decision-case.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\decision-catalog.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\decision-record.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\effective-policy.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\framework-lock.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\impasse.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\permissions.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\policy-set.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\principle-catalog.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\principle-review.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\profile.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\project-manifest.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\quality-gates.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\routing.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\spec-change.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\traceability.schema.json -> aifw_cli-0.3.0\schemas
+copying schemas\waiver.schema.json -> aifw_cli-0.3.0\schemas
+copying templates\adr.md -> aifw_cli-0.3.0\templates
+copying templates\agent-trace.yaml -> aifw_cli-0.3.0\templates
+copying templates\asyncapi.yaml -> aifw_cli-0.3.0\templates
+copying templates\c4.md -> aifw_cli-0.3.0\templates
+copying templates\capability-delta.yaml -> aifw_cli-0.3.0\templates
+copying templates\capability-spec.yaml -> aifw_cli-0.3.0\templates
+copying templates\change-case.yaml -> aifw_cli-0.3.0\templates
+copying templates\change-tasks.yaml -> aifw_cli-0.3.0\templates
+copying templates\codex-handoff-input.json -> aifw_cli-0.3.0\templates
+copying templates\constitution.md -> aifw_cli-0.3.0\templates
+copying templates\design-tokens.json -> aifw_cli-0.3.0\templates
+copying templates\impasse.yaml -> aifw_cli-0.3.0\templates
+copying templates\observability.md -> aifw_cli-0.3.0\templates
+copying templates\openapi.yaml -> aifw_cli-0.3.0\templates
+copying templates\policy-set.yaml -> aifw_cli-0.3.0\templates
+copying templates\project-charter.yaml -> aifw_cli-0.3.0\templates
+copying templates\project-scaffold.json -> aifw_cli-0.3.0\templates
+copying templates\runbook.md -> aifw_cli-0.3.0\templates
+copying templates\spec.md -> aifw_cli-0.3.0\templates
+copying templates\storybook.md -> aifw_cli-0.3.0\templates
+copying templates\technical-plan.md -> aifw_cli-0.3.0\templates
+copying templates\threat-model.md -> aifw_cli-0.3.0\templates
+copying templates\traceability.yaml -> aifw_cli-0.3.0\templates
+copying templates\waiver.yaml -> aifw_cli-0.3.0\templates
+copying tests_python\test_cli.py -> aifw_cli-0.3.0\tests_python
+copying tests_python\test_cli_parity.py -> aifw_cli-0.3.0\tests_python
+copying tests_python\test_governance.py -> aifw_cli-0.3.0\tests_python
+copying tests_python\test_parity.py -> aifw_cli-0.3.0\tests_python
+copying tests_python\test_pi_bridge.py -> aifw_cli-0.3.0\tests_python
+copying tests_python\test_spec_integrity.py -> aifw_cli-0.3.0\tests_python
+copying tests_python\test_workflows.py -> aifw_cli-0.3.0\tests_python
+copying tests_python\fixtures\cli-parity.json -> aifw_cli-0.3.0\tests_python\fixtures
+copying tests_python\fixtures\commands.json -> aifw_cli-0.3.0\tests_python\fixtures
+copying tests_python\fixtures\legacy-parity.json -> aifw_cli-0.3.0\tests_python\fixtures
+Writing aifw_cli-0.3.0\setup.cfg
+Creating tar archive
+removing 'aifw_cli-0.3.0' (and everything under it)
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+running egg_info
+writing python\aifw_cli.egg-info\PKG-INFO
+writing dependency_links to python\aifw_cli.egg-info\dependency_links.txt
+writing entry points to python\aifw_cli.egg-info\entry_points.txt
+writing requirements to python\aifw_cli.egg-info\requires.txt
+writing top-level names to python\aifw_cli.egg-info\top_level.txt
+reading manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'package.json'
+warning: no previously-included files found matching 'package-lock.json'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.pyc' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build\lib\aifw
+copying python\aifw\adapters.py -> build\lib\aifw
+copying python\aifw\brownfield.py -> build\lib\aifw
+copying python\aifw\catalogs.py -> build\lib\aifw
+copying python\aifw\cli.py -> build\lib\aifw
+copying python\aifw\common.py -> build\lib\aifw
+copying python\aifw\conformance.py -> build\lib\aifw
+copying python\aifw\discovery.py -> build\lib\aifw
+copying python\aifw\gates.py -> build\lib\aifw
+copying python\aifw\handoff.py -> build\lib\aifw
+copying python\aifw\impasse.py -> build\lib\aifw
+copying python\aifw\intake.py -> build\lib\aifw
+copying python\aifw\permissions.py -> build\lib\aifw
+copying python\aifw\pi_bridge.py -> build\lib\aifw
+copying python\aifw\policy.py -> build\lib\aifw
+copying python\aifw\routing.py -> build\lib\aifw
+copying python\aifw\specs.py -> build\lib\aifw
+copying python\aifw\waiver.py -> build\lib\aifw
+copying python\aifw\workspace.py -> build\lib\aifw
+copying python\aifw\__init__.py -> build\lib\aifw
+copying python\aifw\__main__.py -> build\lib\aifw
+running egg_info
+writing python\aifw_cli.egg-info\PKG-INFO
+writing dependency_links to python\aifw_cli.egg-info\dependency_links.txt
+writing entry points to python\aifw_cli.egg-info\entry_points.txt
+writing requirements to python\aifw_cli.egg-info\requires.txt
+writing top-level names to python\aifw_cli.egg-info\top_level.txt
+reading manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'package.json'
+warning: no previously-included files found matching 'package-lock.json'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.pyc' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'python\aifw_cli.egg-info\SOURCES.txt'
+installing to build\bdist.win-amd64\wheel
+running install
+running install_lib
+creating build\bdist.win-amd64\wheel
+creating build\bdist.win-amd64\wheel\aifw
+copying build\lib\aifw\adapters.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\brownfield.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\catalogs.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\cli.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\common.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\conformance.py -> build\bdist.win-amd64\wheel\.\aifw
+creating build\bdist.win-amd64\wheel\aifw\data
+copying build\lib\aifw\data\CONSTITUTION.md -> build\bdist.win-amd64\wheel\.\aifw\data
+creating build\bdist.win-amd64\wheel\aifw\data\decision-catalogs
+copying build\lib\aifw\data\decision-catalogs\application-architecture.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\decision-catalogs
+copying build\lib\aifw\data\decision-catalogs\code-organization.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\decision-catalogs
+copying build\lib\aifw\data\decision-catalogs\system-topology.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\decision-catalogs
+creating build\bdist.win-amd64\wheel\aifw\data\evals
+creating build\bdist.win-amd64\wheel\aifw\data\evals\cases
+copying build\lib\aifw\data\evals\cases\impasse-escalation.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\evals\cases
+copying build\lib\aifw\data\evals\cases\permission-boundary.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\evals\cases
+copying build\lib\aifw\data\evals\cases\spec-before-code.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\evals\cases
+creating build\bdist.win-amd64\wheel\aifw\data\evals\reports
+copying build\lib\aifw\data\evals\reports\routing-2026-08-23.json -> build\bdist.win-amd64\wheel\.\aifw\data\evals\reports
+creating build\bdist.win-amd64\wheel\aifw\data\evals\routing
+copying build\lib\aifw\data\evals\routing\cases.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\evals\routing
+creating build\bdist.win-amd64\wheel\aifw\data\evals\traces
+copying build\lib\aifw\data\evals\traces\impasse-escalation.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\evals\traces
+copying build\lib\aifw\data\evals\traces\permission-boundary.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\evals\traces
+copying build\lib\aifw\data\evals\traces\spec-before-code.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\evals\traces
+copying build\lib\aifw\data\LICENSE -> build\bdist.win-amd64\wheel\.\aifw\data
+creating build\bdist.win-amd64\wheel\aifw\data\policies
+copying build\lib\aifw\data\policies\core.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\policies
+creating build\bdist.win-amd64\wheel\aifw\data\principle-catalogs
+copying build\lib\aifw\data\principle-catalogs\engineering-principles.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\principle-catalogs
+creating build\bdist.win-amd64\wheel\aifw\data\profiles
+creating build\bdist.win-amd64\wheel\aifw\data\profiles\flutter-mobile
+creating build\bdist.win-amd64\wheel\aifw\data\profiles\flutter-mobile\decisions
+copying build\lib\aifw\data\profiles\flutter-mobile\decisions\state-management.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\flutter-mobile\decisions
+copying build\lib\aifw\data\profiles\flutter-mobile\gates.macos.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\flutter-mobile
+copying build\lib\aifw\data\profiles\flutter-mobile\gates.windows-fvm.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\flutter-mobile
+copying build\lib\aifw\data\profiles\flutter-mobile\gates.windows.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\flutter-mobile
+copying build\lib\aifw\data\profiles\flutter-mobile\profile.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\flutter-mobile
+copying build\lib\aifw\data\profiles\flutter-mobile\README.md -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\flutter-mobile
+creating build\bdist.win-amd64\wheel\aifw\data\profiles\python
+copying build\lib\aifw\data\profiles\python\profile.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\python
+copying build\lib\aifw\data\profiles\python\README.md -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\python
+creating build\bdist.win-amd64\wheel\aifw\data\profiles\web-ts
+copying build\lib\aifw\data\profiles\web-ts\profile.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\web-ts
+copying build\lib\aifw\data\profiles\web-ts\README.md -> build\bdist.win-amd64\wheel\.\aifw\data\profiles\web-ts
+creating build\bdist.win-amd64\wheel\aifw\data\schemas
+copying build\lib\aifw\data\schemas\agent-trace.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\brownfield-adoption.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\brownfield-discovery.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\capability-delta.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\capability-spec.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\catalog.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\change-case.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\change-tasks.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\charter.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\codex-handoff.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\conformance-case.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\decision-case.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\decision-catalog.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\decision-record.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\effective-policy.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\framework-lock.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\impasse.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\permissions.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\policy-set.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\principle-catalog.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\principle-review.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\profile.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\project-manifest.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\quality-gates.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\routing.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\spec-change.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\traceability.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+copying build\lib\aifw\data\schemas\waiver.schema.json -> build\bdist.win-amd64\wheel\.\aifw\data\schemas
+creating build\bdist.win-amd64\wheel\aifw\data\templates
+copying build\lib\aifw\data\templates\adr.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\agent-trace.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\asyncapi.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\c4.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\capability-delta.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\capability-spec.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\change-case.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\change-tasks.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\codex-handoff-input.json -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\constitution.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\design-tokens.json -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\impasse.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\observability.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\openapi.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\policy-set.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\project-charter.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\project-scaffold.json -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\runbook.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\spec.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\storybook.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\technical-plan.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\threat-model.md -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\traceability.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\data\templates\waiver.yaml -> build\bdist.win-amd64\wheel\.\aifw\data\templates
+copying build\lib\aifw\discovery.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\gates.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\handoff.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\impasse.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\intake.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\permissions.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\pi_bridge.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\policy.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\routing.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\specs.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\waiver.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\workspace.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\__init__.py -> build\bdist.win-amd64\wheel\.\aifw
+copying build\lib\aifw\__main__.py -> build\bdist.win-amd64\wheel\.\aifw
+running install_egg_info
+Copying python\aifw_cli.egg-info to build\bdist.win-amd64\wheel\.\aifw_cli-0.3.0-py3.12.egg-info
+running install_scripts
+creating build\bdist.win-amd64\wheel\aifw_cli-0.3.0.dist-info\WHEEL
+creating 'C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-an\\outputs\\aifw\\dist\\.tmp-g5mm38wk\\aifw_cli-0.3.0-py3-none-any.whl' and adding 'build\\bdist.win-amd64\\wheel' to it
+adding 'aifw/__init__.py'
+adding 'aifw/__main__.py'
+adding 'aifw/adapters.py'
+adding 'aifw/brownfield.py'
+adding 'aifw/catalogs.py'
+adding 'aifw/cli.py'
+adding 'aifw/common.py'
+adding 'aifw/conformance.py'
+adding 'aifw/discovery.py'
+adding 'aifw/gates.py'
+adding 'aifw/handoff.py'
+adding 'aifw/impasse.py'
+adding 'aifw/intake.py'
+adding 'aifw/permissions.py'
+adding 'aifw/pi_bridge.py'
+adding 'aifw/policy.py'
+adding 'aifw/routing.py'
+adding 'aifw/specs.py'
+adding 'aifw/waiver.py'
+adding 'aifw/workspace.py'
+adding 'aifw/data/CONSTITUTION.md'
+adding 'aifw/data/LICENSE'
+adding 'aifw/data/decision-catalogs/application-architecture.yaml'
+adding 'aifw/data/decision-catalogs/code-organization.yaml'
+adding 'aifw/data/decision-catalogs/system-topology.yaml'
+adding 'aifw/data/evals/cases/impasse-escalation.yaml'
+adding 'aifw/data/evals/cases/permission-boundary.yaml'
+adding 'aifw/data/evals/cases/spec-before-code.yaml'
+adding 'aifw/data/evals/reports/routing-2026-08-23.json'
+adding 'aifw/data/evals/routing/cases.yaml'
+adding 'aifw/data/evals/traces/impasse-escalation.yaml'
+adding 'aifw/data/evals/traces/permission-boundary.yaml'
+adding 'aifw/data/evals/traces/spec-before-code.yaml'
+adding 'aifw/data/policies/core.yaml'
+adding 'aifw/data/principle-catalogs/engineering-principles.yaml'
+adding 'aifw/data/profiles/flutter-mobile/README.md'
+adding 'aifw/data/profiles/flutter-mobile/gates.macos.yaml'
+adding 'aifw/data/profiles/flutter-mobile/gates.windows-fvm.yaml'
+adding 'aifw/data/profiles/flutter-mobile/gates.windows.yaml'
+adding 'aifw/data/profiles/flutter-mobile/profile.yaml'
+adding 'aifw/data/profiles/flutter-mobile/decisions/state-management.yaml'
+adding 'aifw/data/profiles/python/README.md'
+adding 'aifw/data/profiles/python/profile.yaml'
+adding 'aifw/data/profiles/web-ts/README.md'
+adding 'aifw/data/profiles/web-ts/profile.yaml'
+adding 'aifw/data/schemas/agent-trace.schema.json'
+adding 'aifw/data/schemas/brownfield-adoption.schema.json'
+adding 'aifw/data/schemas/brownfield-discovery.schema.json'
+adding 'aifw/data/schemas/capability-delta.schema.json'
+adding 'aifw/data/schemas/capability-spec.schema.json'
+adding 'aifw/data/schemas/catalog.schema.json'
+adding 'aifw/data/schemas/change-case.schema.json'
+adding 'aifw/data/schemas/change-tasks.schema.json'
+adding 'aifw/data/schemas/charter.schema.json'
+adding 'aifw/data/schemas/codex-handoff.schema.json'
+adding 'aifw/data/schemas/conformance-case.schema.json'
+adding 'aifw/data/schemas/decision-case.schema.json'
+adding 'aifw/data/schemas/decision-catalog.schema.json'
+adding 'aifw/data/schemas/decision-record.schema.json'
+adding 'aifw/data/schemas/effective-policy.schema.json'
+adding 'aifw/data/schemas/framework-lock.schema.json'
+adding 'aifw/data/schemas/impasse.schema.json'
+adding 'aifw/data/schemas/permissions.schema.json'
+adding 'aifw/data/schemas/policy-set.schema.json'
+adding 'aifw/data/schemas/principle-catalog.schema.json'
+adding 'aifw/data/schemas/principle-review.schema.json'
+adding 'aifw/data/schemas/profile.schema.json'
+adding 'aifw/data/schemas/project-manifest.schema.json'
+adding 'aifw/data/schemas/quality-gates.schema.json'
+adding 'aifw/data/schemas/routing.schema.json'
+adding 'aifw/data/schemas/spec-change.schema.json'
+adding 'aifw/data/schemas/traceability.schema.json'
+adding 'aifw/data/schemas/waiver.schema.json'
+adding 'aifw/data/templates/adr.md'
+adding 'aifw/data/templates/agent-trace.yaml'
+adding 'aifw/data/templates/asyncapi.yaml'
+adding 'aifw/data/templates/c4.md'
+adding 'aifw/data/templates/capability-delta.yaml'
+adding 'aifw/data/templates/capability-spec.yaml'
+adding 'aifw/data/templates/change-case.yaml'
+adding 'aifw/data/templates/change-tasks.yaml'
+adding 'aifw/data/templates/codex-handoff-input.json'
+adding 'aifw/data/templates/constitution.md'
+adding 'aifw/data/templates/design-tokens.json'
+adding 'aifw/data/templates/impasse.yaml'
+adding 'aifw/data/templates/observability.md'
+adding 'aifw/data/templates/openapi.yaml'
+adding 'aifw/data/templates/policy-set.yaml'
+adding 'aifw/data/templates/project-charter.yaml'
+adding 'aifw/data/templates/project-scaffold.json'
+adding 'aifw/data/templates/runbook.md'
+adding 'aifw/data/templates/spec.md'
+adding 'aifw/data/templates/storybook.md'
+adding 'aifw/data/templates/technical-plan.md'
+adding 'aifw/data/templates/threat-model.md'
+adding 'aifw/data/templates/traceability.yaml'
+adding 'aifw/data/templates/waiver.yaml'
+adding 'aifw_cli-0.3.0.dist-info/licenses/LICENSE'
+adding 'aifw_cli-0.3.0.dist-info/METADATA'
+adding 'aifw_cli-0.3.0.dist-info/WHEEL'
+adding 'aifw_cli-0.3.0.dist-info/entry_points.txt'
+adding 'aifw_cli-0.3.0.dist-info/top_level.txt'
+adding 'aifw_cli-0.3.0.dist-info/RECORD'
+removing build\bdist.win-amd64\wheel
+Successfully built aifw_cli-0.3.0.tar.gz and aifw_cli-0.3.0-py3-none-any.whl

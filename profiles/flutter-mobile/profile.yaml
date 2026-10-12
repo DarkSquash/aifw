@@ -1,0 +1,122 @@
+apiVersion: aifw.dev/v1alpha1
+kind: Profile
+metadata:
+  id: flutter-mobile
+  version: 0.1.0
+spec:
+  kind: stack
+  provides:
+    - capability:dart
+    - capability:flutter
+    - capability:mobile-ui
+  requires: []
+  conflicts: []
+  rules:
+    - id: architecture.flutter-declared-boundaries
+      version: 1.0.0
+      keyword: MUST
+      statement: Follow the module and dependency boundaries declared by the project without imposing a framework-wide folder layout, state-management library or architecture pattern.
+      scope: [mobile, dart]
+      rationale: Flutter projects need explicit boundaries, but the appropriate pattern depends on product scale and existing code.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: hard
+        evidence: [project-map, dependency-review]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: true
+    - id: quality.dart-format
+      version: 1.0.0
+      keyword: MUST
+      statement: Keep project-owned Dart source formatted with the pinned Dart formatter.
+      scope: [dart]
+      rationale: Deterministic formatting reduces review noise and agent-generated drift.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: hard
+        evidence: [dart-format]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: true
+    - id: quality.flutter-analyze
+      version: 1.0.0
+      keyword: MUST
+      statement: Run Flutter static analysis with the repository's committed analysis options.
+      scope: [mobile, dart]
+      rationale: Analyzer errors and configured lints are deterministic defects.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: hard
+        evidence: [flutter-analyze]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: true
+    - id: quality.flutter-tests
+      version: 1.0.0
+      keyword: MUST
+      statement: Run applicable Dart unit and Flutter widget tests for every behavior change.
+      scope: [mobile, dart]
+      rationale: Unit and widget tests provide the fastest repeatable feedback independent of a physical device.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: hard
+        evidence: [flutter-test]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: true
+    - id: mobile.target-specific-evidence
+      version: 1.0.0
+      keyword: MUST
+      statement: Validate platform-specific changes on every affected checked-in target and never treat success on Android as evidence that iOS also builds or behaves correctly.
+      scope: [android, ios, mobile]
+      rationale: Flutter shares Dart code while retaining different native toolchains, permissions, lifecycle behavior and packaging.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: hard
+        evidence: [platform-build, integration-tests]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: true
+    - id: mobile.ios-macos-toolchain
+      version: 1.0.0
+      keyword: MUST
+      statement: Produce iOS build evidence on a macOS executor with the required Apple toolchain; Windows or WSL evidence alone is insufficient.
+      scope: [ios, release]
+      rationale: The iOS native build and signing toolchain depends on macOS and Xcode.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: hard
+        evidence: [macos-ci, ios-build]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: false
+    - id: design.flutter-adaptive-states
+      version: 1.0.0
+      keyword: SHOULD
+      statement: Cover critical layouts at representative viewport sizes, text scales, themes and loading, empty, error and offline states.
+      scope: [mobile, frontend]
+      rationale: A single happy-path screenshot does not detect overflow, accessibility or adaptive-layout regressions.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: audit
+        evidence: [widget-tests, golden-tests, accessibility-review]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: true
+    - id: security.mobile-client-secrets
+      version: 1.0.0
+      keyword: MUST_NOT
+      statement: Store server secrets, signing credentials or privileged long-lived tokens in Dart source, bundled assets or committed native configuration.
+      scope: [mobile, security]
+      rationale: Client application contents are recoverable by end users and must not be treated as a secret store.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: hard
+        evidence: [secret-scan, threat-model]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: false
+    - id: observability.mobile-failures
+      version: 1.0.0
+      keyword: MUST
+      statement: Define privacy-safe diagnostics and user-visible recovery behavior for production-critical mobile failures.
+      scope: [mobile, production]
+      rationale: Mobile failures must remain diagnosable across devices, networks and application lifecycle transitions.
+      owner: profile:flutter-mobile
+      enforcement:
+        mode: audit
+        evidence: [observability-plan, runbook]
+      source: profiles/flutter-mobile/profile.yaml
+      overridable: true

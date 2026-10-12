@@ -1,0 +1,64 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: harden-spec-archive
+capability: aifw-control-plane
+title: AIFW control plane
+operations:
+  added:
+    - id: REQ-AIFW-INTEGRITY-RECOVERY
+      strength: MUST
+      statement: O archive deve preservar o estado instalado quando a limpeza de backups falhar, e restaurar o estado anterior quando uma troca falhar antes do commit.
+      scenarios:
+        - id: SCN-AIFW-INTEGRITY-RECOVERY
+          given:
+            - uma transação de archive com falha injetada de filesystem
+          when:
+            - a falha ocorre antes do commit ou durante a limpeza
+          then:
+            - o estado antigo é restaurado ou o novo é preservado com aviso de limpeza
+    - id: REQ-AIFW-INTEGRITY-APPROVAL
+      strength: MUST
+      statement: O archive L3 deve revalidar aprovação humana e arquivo de registro existente dentro da raiz real do projeto.
+      scenarios:
+        - id: SCN-AIFW-INTEGRITY-APPROVAL
+          given:
+            - uma mudança ready cuja aprovação ou classificação foi alterada
+          when:
+            - archive é solicitado
+          then:
+            - a aprovação inválida bloqueia sem alterar current ou active
+    - id: REQ-AIFW-INTEGRITY-UNIQUE-DELTA
+      strength: MUST
+      statement: Uma mudança deve possuir no máximo um delta por capability.
+      scenarios:
+        - id: SCN-AIFW-INTEGRITY-UNIQUE-DELTA
+          given:
+            - dois deltas da mesma capability com requisitos distintos
+          when:
+            - a mudança é validada
+          then:
+            - a duplicidade bloqueia antes de sobrescrever requisitos
+    - id: REQ-AIFW-INTEGRITY-EVIDENCE
+      strength: MUST
+      statement: Artefatos passed devem apontar para arquivos dentro do projeto; gates ligados por checkedBy devem estar passed.
+      scenarios:
+        - id: SCN-AIFW-INTEGRITY-EVIDENCE
+          given:
+            - uma mudança com evidência ausente ou gate obrigatório não aprovado
+          when:
+            - ready ou archive é solicitado
+          then:
+            - a mudança é bloqueada e o cenário sem evidência não conta como verificado
+    - id: REQ-AIFW-INTEGRITY-VALID-OUTPUT
+      strength: MUST
+      statement: O lifecycle deve rejeitar títulos vazios e validar a CapabilitySpec produzida antes de staging.
+      scenarios:
+        - id: SCN-AIFW-INTEGRITY-VALID-OUTPUT
+          given:
+            - um delta com título vazio ou apenas espaços
+          when:
+            - a mudança é validada ou sincronizada
+          then:
+            - a operação falha antes de contaminar a árvore current
+  modified: []
+  removed: []

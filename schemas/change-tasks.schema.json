@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/change-tasks.schema.json",
+  "title": "AIFW ChangeTasks",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "changeId", "tasks"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "ChangeTasks" },
+    "changeId": { "type": "string", "pattern": "^[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$" },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "status", "dependsOn", "requirementIds", "paths"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^TASK-[A-Z0-9-]+$" },
+          "title": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["pending", "in-progress", "blocked", "done"] },
+          "dependsOn": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^TASK-[A-Z0-9-]+$" } },
+          "requirementIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^REQ-[A-Z0-9-]+$" } },
+          "paths": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    }
+  }
+}

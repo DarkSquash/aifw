@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/principle-catalog.schema.json",
+  "title": "AIFW PrincipleCatalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "PrincipleCatalog" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "scope"],
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+        "scope": { "const": "core" }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "principles"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "principles": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/principle" } }
+      }
+    }
+  },
+  "definitions": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+    "strings": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "nonEmptyStrings": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "principle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "family", "statement", "appliesWhen", "reviewQuestions", "evidence", "misuseRisks", "exceptions", "sources"],
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "family": { "enum": ["clean-code", "solid", "foundational"] },
+        "statement": { "type": "string", "minLength": 1 },
+        "appliesWhen": { "$ref": "#/definitions/strings" },
+        "reviewQuestions": { "$ref": "#/definitions/nonEmptyStrings" },
+        "evidence": { "$ref": "#/definitions/nonEmptyStrings" },
+        "misuseRisks": { "$ref": "#/definitions/nonEmptyStrings" },
+        "exceptions": { "$ref": "#/definitions/nonEmptyStrings" },
+        "sources": { "$ref": "#/definitions/nonEmptyStrings" }
+      }
+    }
+  }
+}

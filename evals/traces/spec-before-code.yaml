@@ -1,0 +1,12 @@
+caseId: spec-before-code
+events:
+  - type: research
+    evidence: [official-docs, repository-discovery]
+  - type: spec
+  - type: technical-plan
+  - type: human-approval
+    approvalId: approval:spec-1
+  - type: implementation
+    approvalId: approval:spec-1
+  - type: verification
+    evidence: [tests-pass, typecheck-pass]

@@ -1,0 +1,78 @@
+{
+  "name": "@aifw/cli",
+  "version": "0.2.0",
+  "description": "Agent-independent AI Software Engineering Framework control plane",
+  "keywords": ["pi-package", "ai-software-engineering", "agent-governance"],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "aifw": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./adapter-sdk": {
+      "types": "./dist/adapters/sdk.d.ts",
+      "import": "./dist/adapters/sdk.js"
+    },
+    "./pi-adapter": {
+      "types": "./dist/adapters/pi.d.ts",
+      "import": "./dist/adapters/pi.js"
+    }
+  },
+  "files": [
+    "dist",
+    "extensions",
+    "schemas",
+    "templates",
+    "profiles",
+    "decision-catalogs",
+    "principle-catalogs",
+    "policies",
+    "evals",
+    "docs",
+    "scripts",
+    "CONSTITUTION.md",
+    "HOW_TO_USE.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "extensions": ["extensions/aifw.ts"]
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "check": "npm run typecheck && npm run lint && npm run docs:check && npm run test",
+    "docs:generate": "node scripts/generate-cli-reference.mjs",
+    "docs:check": "node scripts/generate-cli-reference.mjs --check",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "test:watch": "node --test --watch \"tests/**/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "aifw": "node src/cli.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "commander": "^14.0.1",
+    "fast-glob": "^3.3.3",
+    "semver": "^7.7.2",
+    "yaml": "^2.8.1"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@types/node": "^24.3.0",
+    "@types/semver": "^7.7.0",
+    "eslint": "^9.35.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0"
+  }
+}

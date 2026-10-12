@@ -1,0 +1,109 @@
+apiVersion: aifw.dev/v1alpha1
+kind: Profile
+metadata:
+  id: python
+  version: 0.1.0
+spec:
+  kind: stack
+  provides:
+    - capability:python
+    - capability:backend
+  requires: []
+  conflicts: []
+  rules:
+    - id: architecture.python-declared-boundaries
+      version: 1.0.0
+      keyword: MUST
+      statement: Follow the module and dependency boundaries declared by the project without imposing one framework, folder layout or architecture pattern on every Python application.
+      scope: [python, backend]
+      rationale: Python projects range from scripts to services and data systems, so boundaries must follow the actual product and deployment shape.
+      owner: profile:python
+      enforcement:
+        mode: hard
+        evidence: [project-map, dependency-review]
+      source: profiles/python/profile.yaml
+      overridable: true
+    - id: quality.python-lint
+      version: 1.0.0
+      keyword: MUST
+      statement: Run the repository-pinned Python linter with committed configuration and treat reported errors as deterministic defects.
+      scope: [python]
+      rationale: A project-owned lint configuration catches defects consistently without forcing one tool on every existing codebase.
+      owner: profile:python
+      enforcement:
+        mode: hard
+        evidence: [python-lint]
+      source: profiles/python/profile.yaml
+      overridable: true
+    - id: quality.python-format
+      version: 1.0.0
+      keyword: MUST
+      statement: Keep project-owned Python source formatted with the repository-pinned formatter.
+      scope: [python]
+      rationale: Deterministic formatting reduces review noise and agent-generated drift.
+      owner: profile:python
+      enforcement:
+        mode: hard
+        evidence: [python-format]
+      source: profiles/python/profile.yaml
+      overridable: true
+    - id: quality.python-tests
+      version: 1.0.0
+      keyword: MUST
+      statement: Run the applicable automated Python tests for every behavior change.
+      scope: [python, backend]
+      rationale: Repeatable tests protect behavior across refactoring and dependency updates.
+      owner: profile:python
+      enforcement:
+        mode: hard
+        evidence: [python-tests]
+      source: profiles/python/profile.yaml
+      overridable: true
+    - id: quality.python-types
+      version: 1.0.0
+      keyword: SHOULD
+      statement: Run the repository-pinned static type checker when the project declares type-checking configuration.
+      scope: [python]
+      rationale: Type checks improve interface safety while respecting gradually typed existing projects.
+      owner: profile:python
+      enforcement:
+        mode: audit
+        evidence: [python-typecheck]
+      source: profiles/python/profile.yaml
+      overridable: true
+    - id: dependencies.python-reproducible
+      version: 1.0.0
+      keyword: MUST
+      statement: Use the dependency and environment workflow declared by the repository and keep production dependency resolution reproducible.
+      scope: [python, build, production]
+      rationale: Mixing pip, Poetry, uv, Conda or other workflows silently creates non-reproducible environments.
+      owner: profile:python
+      enforcement:
+        mode: hard
+        evidence: [dependency-lock, environment-build]
+      source: profiles/python/profile.yaml
+      overridable: true
+    - id: security.python-secrets
+      version: 1.0.0
+      keyword: MUST_NOT
+      statement: Store credentials, private keys or privileged tokens in Python source, notebooks, fixtures or committed environment files.
+      scope: [python, security]
+      rationale: Repository contents and generated artifacts must not become secret stores.
+      owner: profile:python
+      enforcement:
+        mode: hard
+        evidence: [secret-scan, threat-model]
+      source: profiles/python/profile.yaml
+      overridable: false
+    - id: observability.python-failures
+      version: 1.0.0
+      keyword: MUST
+      statement: Define privacy-safe structured diagnostics and recovery behavior for production-critical Python failures.
+      scope: [python, backend, production]
+      rationale: Services and jobs must remain diagnosable without leaking sensitive inputs.
+      owner: profile:python
+      enforcement:
+        mode: audit
+        evidence: [observability-plan, runbook]
+      source: profiles/python/profile.yaml
+      overridable: true

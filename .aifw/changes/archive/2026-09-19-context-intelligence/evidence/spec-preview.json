@@ -1,0 +1,130 @@
+{
+  "changeId": "context-intelligence",
+  "pass": true,
+  "findings": [],
+  "changes": [
+    {
+      "capability": "context-intelligence",
+      "action": "create",
+      "outputPath": ".aifw/specs/current/context-intelligence.yaml",
+      "added": [
+        "REQ-CONTEXT-ADR",
+        "REQ-CONTEXT-GATES",
+        "REQ-CONTEXT-INSTRUCTIONS",
+        "REQ-CONTEXT-INTEGRITY",
+        "REQ-CONTEXT-SELECTION"
+      ],
+      "modified": [],
+      "removed": []
+    }
+  ],
+  "outputs": [
+    {
+      "relativePath": ".aifw/specs/current/context-intelligence.yaml",
+      "spec": {
+        "apiVersion": "aifw.dev/v1alpha1",
+        "kind": "CapabilitySpec",
+        "capability": "context-intelligence",
+        "title": "Context intelligence",
+        "purpose": "Select and maintain reviewable project context without promoting imported content to authority.",
+        "requirements": [
+          {
+            "id": "REQ-CONTEXT-ADR",
+            "strength": "MUST",
+            "statement": "Recognize conventional ADR directories and exclude documentation templates.",
+            "scenarios": [
+              {
+                "id": "SCN-CONTEXT-ADR",
+                "given": [
+                  "Conventional decisions exist under docs/decisions."
+                ],
+                "when": [
+                  "Discovery inventories the project."
+                ],
+                "then": [
+                  "Decision files are classified as ADRs without executing code."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "REQ-CONTEXT-GATES",
+            "strength": "MUST",
+            "statement": "Require pass for mandatory gates and distinguish static CI references from executed evidence.",
+            "scenarios": [
+              {
+                "id": "SCN-CONTEXT-GATES",
+                "given": [
+                  "A gate is missing, skipped, conditional or referenced by CI."
+                ],
+                "when": [
+                  "Gate evaluation or wiring inspection runs."
+                ],
+                "then": [
+                  "Unproven mandatory checks block and CI inspection never claims execution."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "REQ-CONTEXT-INSTRUCTIONS",
+            "strength": "MUST",
+            "statement": "Generate shared managed instruction blocks preserving user text and recovery on write failure.",
+            "scenarios": [
+              {
+                "id": "SCN-CONTEXT-INSTRUCTIONS",
+                "given": [
+                  "Project rules and existing agent instruction files exist."
+                ],
+                "when": [
+                  "Managed blocks are built or checked."
+                ],
+                "then": [
+                  "External bytes are preserved, source changes detected and failed writes restored."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "REQ-CONTEXT-INTEGRITY",
+            "strength": "MUST",
+            "statement": "Check local references and source drift without disclosing private file contents.",
+            "scenarios": [
+              {
+                "id": "SCN-CONTEXT-INTEGRITY",
+                "given": [
+                  "A project contains missing references, restricted paths or a saved snapshot."
+                ],
+                "when": [
+                  "Context is indexed or checked."
+                ],
+                "then": [
+                  "Findings distinguish broken references and drift; secret files are not read as context."
+                ]
+              }
+            ]
+          },
+          {
+            "id": "REQ-CONTEXT-SELECTION",
+            "strength": "MUST",
+            "statement": "Select task-relevant documents with dependency closure and explicit budget overflow.",
+            "scenarios": [
+              {
+                "id": "SCN-CONTEXT-SELECTION",
+                "given": [
+                  "Documents declare scope, sources and dependencies."
+                ],
+                "when": [
+                  "A task requests context with a small budget."
+                ],
+                "then": [
+                  "Required dependencies remain present, reasons are explicit and overflow is reported."
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

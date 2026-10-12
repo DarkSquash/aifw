@@ -1,0 +1,217 @@
+{
+  "change": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "SpecChange",
+    "metadata": {
+      "id": "python-cli-core",
+      "title": "Migrar CLI e núcleo para Python",
+      "level": "L3",
+      "createdAt": "2026-09-06T03:00:47.026Z"
+    },
+    "summary": "Executar todo o AIFW em Python sem Node.js, preservando contratos, comandos e garantias de integridade.",
+    "status": "draft",
+    "approval": {
+      "approvedBy": "human:DarkSquash",
+      "approvedAt": "2026-09-06T04:27:54.174Z",
+      "record": "docs/decisions/ADR-0011-python-runtime.md"
+    }
+  },
+  "pass": true,
+  "findings": [],
+  "coverage": {
+    "requirements": {
+      "total": 3,
+      "linkedToTask": 3
+    },
+    "scenarios": {
+      "total": 3,
+      "verified": 3
+    },
+    "tasks": {
+      "total": 3,
+      "completed": 3
+    }
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "ADR-PYTHON",
+        "type": "adr",
+        "path": "docs/decisions/ADR-0011-python-runtime.md"
+      },
+      {
+        "id": "EVIDENCE-PI",
+        "type": "evidence",
+        "path": ".aifw/changes/active/python-cli-core/evidence/pi-adapter-smoke.json"
+      },
+      {
+        "id": "EVIDENCE-PYTEST",
+        "type": "evidence",
+        "path": ".aifw/changes/active/python-cli-core/evidence/pytest.xml"
+      },
+      {
+        "id": "EVIDENCE-WHEEL",
+        "type": "evidence",
+        "path": ".aifw/changes/active/python-cli-core/evidence/isolated-wheel.json"
+      },
+      {
+        "id": "FILE:scripts/verify_wheel.py",
+        "type": "code",
+        "path": "scripts/verify_wheel.py"
+      },
+      {
+        "id": "FILE:tests_python/test_pi_bridge.py",
+        "type": "code",
+        "path": "tests_python/test_pi_bridge.py"
+      },
+      {
+        "id": "FILE:tests_python/test_spec_integrity.py",
+        "type": "code",
+        "path": "tests_python/test_spec_integrity.py"
+      },
+      {
+        "id": "REQ-AIFW-PYTHON-PARITY",
+        "type": "requirement"
+      },
+      {
+        "id": "REQ-AIFW-PYTHON-PI",
+        "type": "requirement"
+      },
+      {
+        "id": "REQ-AIFW-PYTHON-RUNTIME",
+        "type": "requirement"
+      },
+      {
+        "id": "SCN-AIFW-PYTHON-PARITY",
+        "type": "scenario"
+      },
+      {
+        "id": "SCN-AIFW-PYTHON-PI",
+        "type": "scenario"
+      },
+      {
+        "id": "SCN-AIFW-PYTHON-RUNTIME",
+        "type": "scenario"
+      },
+      {
+        "id": "TASK-PYTHON-PARITY",
+        "type": "task"
+      },
+      {
+        "id": "TASK-PYTHON-PI",
+        "type": "task"
+      },
+      {
+        "id": "TASK-PYTHON-RUNTIME",
+        "type": "task"
+      },
+      {
+        "id": "TEST-PYTHON-PARITY",
+        "type": "test",
+        "path": "tests_python/test_spec_integrity.py"
+      },
+      {
+        "id": "TEST-PYTHON-PI",
+        "type": "test",
+        "path": "tests_python/test_pi_bridge.py"
+      },
+      {
+        "id": "TEST-PYTHON-RUNTIME",
+        "type": "test",
+        "path": "scripts/verify_wheel.py"
+      }
+    ],
+    "links": [
+      {
+        "from": "REQ-AIFW-PYTHON-PARITY",
+        "relation": "governedBy",
+        "to": "ADR-PYTHON"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-PARITY",
+        "relation": "hasScenario",
+        "to": "SCN-AIFW-PYTHON-PARITY"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-PARITY",
+        "relation": "implementedBy",
+        "to": "TASK-PYTHON-PARITY"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-PARITY",
+        "relation": "provedBy",
+        "to": "EVIDENCE-PYTEST"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-PI",
+        "relation": "governedBy",
+        "to": "ADR-PYTHON"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-PI",
+        "relation": "hasScenario",
+        "to": "SCN-AIFW-PYTHON-PI"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-PI",
+        "relation": "implementedBy",
+        "to": "TASK-PYTHON-PI"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-PI",
+        "relation": "provedBy",
+        "to": "EVIDENCE-PI"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-RUNTIME",
+        "relation": "governedBy",
+        "to": "ADR-PYTHON"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-RUNTIME",
+        "relation": "hasScenario",
+        "to": "SCN-AIFW-PYTHON-RUNTIME"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-RUNTIME",
+        "relation": "implementedBy",
+        "to": "TASK-PYTHON-RUNTIME"
+      },
+      {
+        "from": "REQ-AIFW-PYTHON-RUNTIME",
+        "relation": "provedBy",
+        "to": "EVIDENCE-WHEEL"
+      },
+      {
+        "from": "SCN-AIFW-PYTHON-PARITY",
+        "relation": "verifiedBy",
+        "to": "TEST-PYTHON-PARITY"
+      },
+      {
+        "from": "SCN-AIFW-PYTHON-PI",
+        "relation": "verifiedBy",
+        "to": "TEST-PYTHON-PI"
+      },
+      {
+        "from": "SCN-AIFW-PYTHON-RUNTIME",
+        "relation": "verifiedBy",
+        "to": "TEST-PYTHON-RUNTIME"
+      },
+      {
+        "from": "TASK-PYTHON-PARITY",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_spec_integrity.py"
+      },
+      {
+        "from": "TASK-PYTHON-PI",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_pi_bridge.py"
+      },
+      {
+        "from": "TASK-PYTHON-RUNTIME",
+        "relation": "changes",
+        "to": "FILE:scripts/verify_wheel.py"
+      }
+    ]
+  }
+}

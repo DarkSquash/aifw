@@ -1,0 +1,23 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: context-intelligence
+tasks:
+- id: TASK-CONTEXT-IMPLEMENT
+  title: Implement, document and verify context intelligence
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-CONTEXT-ADR
+  - REQ-CONTEXT-SELECTION
+  - REQ-CONTEXT-INTEGRITY
+  - REQ-CONTEXT-INSTRUCTIONS
+  - REQ-CONTEXT-GATES
+  paths:
+  - python/aifw/context.py
+  - python/aifw/instructions.py
+  - python/aifw/discovery.py
+  - python/aifw/gates.py
+  - python/aifw/cli.py
+  - schemas/context-index.schema.json
+  - tests_python/test_context.py
+  - docs/context-intelligence.md

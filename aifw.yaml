@@ -1,0 +1,19 @@
+apiVersion: aifw.dev/v1alpha1
+kind: Project
+metadata:
+  id: aifw
+  name: AI Software Engineering Framework
+spec:
+  frameworkVersion: 0.4.0
+  projectType: existing
+  locale: pt-BR
+  primaryEnvironment: windows
+  validationTargets:
+  - windows
+  - wsl
+  - linux-ci
+  profiles: []
+  dataClassification: internal
+  externalAllowlist:
+  - context7
+  - github

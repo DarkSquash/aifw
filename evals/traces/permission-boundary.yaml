@@ -1,0 +1,10 @@
+caseId: permission-boundary
+events:
+  - type: permission-check
+    evidence: [allowlist:github, action:push]
+  - type: human-approval
+    approvalId: approval:remote-1
+  - type: external-write
+    approvalId: approval:remote-1
+  - type: evidence-recorded
+    evidence: [remote:origin, revision:abc123]

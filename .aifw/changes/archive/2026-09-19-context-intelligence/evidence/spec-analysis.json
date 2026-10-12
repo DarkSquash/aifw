@@ -1,0 +1,260 @@
+{
+  "change": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "SpecChange",
+    "metadata": {
+      "id": "context-intelligence",
+      "title": "Contexto seletivo e integridade documental",
+      "level": "L3",
+      "createdAt": "2026-09-19T03:52:39.246Z"
+    },
+    "summary": "Descobrir ADRs convencionais; selecionar contexto por tarefa; detectar referências e snapshots desatualizados; gerar blocos de instruções comuns preservando texto existente; inspecionar ligação de gates à CI.",
+    "status": "draft",
+    "approval": {
+      "approvedBy": "human:DarkSquash",
+      "approvedAt": "2026-09-19T04:09:22.356Z",
+      "record": "docs/decisions/ADR-0012-context-intelligence.md"
+    }
+  },
+  "pass": true,
+  "findings": [],
+  "coverage": {
+    "requirements": {
+      "total": 5,
+      "linkedToTask": 5
+    },
+    "scenarios": {
+      "total": 5,
+      "verified": 5
+    },
+    "tasks": {
+      "total": 1,
+      "completed": 1
+    }
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "FILE:docs/context-intelligence.md",
+        "type": "code",
+        "path": "docs/context-intelligence.md"
+      },
+      {
+        "id": "FILE:python/aifw/cli.py",
+        "type": "code",
+        "path": "python/aifw/cli.py"
+      },
+      {
+        "id": "FILE:python/aifw/context.py",
+        "type": "code",
+        "path": "python/aifw/context.py"
+      },
+      {
+        "id": "FILE:python/aifw/discovery.py",
+        "type": "code",
+        "path": "python/aifw/discovery.py"
+      },
+      {
+        "id": "FILE:python/aifw/gates.py",
+        "type": "code",
+        "path": "python/aifw/gates.py"
+      },
+      {
+        "id": "FILE:python/aifw/instructions.py",
+        "type": "code",
+        "path": "python/aifw/instructions.py"
+      },
+      {
+        "id": "FILE:schemas/context-index.schema.json",
+        "type": "code",
+        "path": "schemas/context-index.schema.json"
+      },
+      {
+        "id": "FILE:tests_python/test_context.py",
+        "type": "code",
+        "path": "tests_python/test_context.py"
+      },
+      {
+        "id": "GATE-CONTEXT",
+        "type": "gate",
+        "path": ".aifw\\changes\\active\\context-intelligence\\evidence\\quality-gates.json"
+      },
+      {
+        "id": "REQ-CONTEXT-ADR",
+        "type": "requirement"
+      },
+      {
+        "id": "REQ-CONTEXT-GATES",
+        "type": "requirement"
+      },
+      {
+        "id": "REQ-CONTEXT-INSTRUCTIONS",
+        "type": "requirement"
+      },
+      {
+        "id": "REQ-CONTEXT-INTEGRITY",
+        "type": "requirement"
+      },
+      {
+        "id": "REQ-CONTEXT-SELECTION",
+        "type": "requirement"
+      },
+      {
+        "id": "SCN-CONTEXT-ADR",
+        "type": "scenario"
+      },
+      {
+        "id": "SCN-CONTEXT-GATES",
+        "type": "scenario"
+      },
+      {
+        "id": "SCN-CONTEXT-INSTRUCTIONS",
+        "type": "scenario"
+      },
+      {
+        "id": "SCN-CONTEXT-INTEGRITY",
+        "type": "scenario"
+      },
+      {
+        "id": "SCN-CONTEXT-SELECTION",
+        "type": "scenario"
+      },
+      {
+        "id": "TASK-CONTEXT-IMPLEMENT",
+        "type": "task"
+      },
+      {
+        "id": "TEST-CONTEXT",
+        "type": "test",
+        "path": ".aifw/changes/active/context-intelligence/evidence/tests.txt"
+      },
+      {
+        "id": "WHEEL-CONTEXT",
+        "type": "evidence",
+        "path": ".aifw/changes/active/context-intelligence/evidence/isolated-wheel.json"
+      }
+    ],
+    "links": [
+      {
+        "from": "REQ-CONTEXT-ADR",
+        "relation": "hasScenario",
+        "to": "SCN-CONTEXT-ADR"
+      },
+      {
+        "from": "REQ-CONTEXT-ADR",
+        "relation": "implementedBy",
+        "to": "TASK-CONTEXT-IMPLEMENT"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "checkedBy",
+        "to": "GATE-CONTEXT"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "hasScenario",
+        "to": "SCN-CONTEXT-GATES"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "implementedBy",
+        "to": "TASK-CONTEXT-IMPLEMENT"
+      },
+      {
+        "from": "REQ-CONTEXT-INSTRUCTIONS",
+        "relation": "hasScenario",
+        "to": "SCN-CONTEXT-INSTRUCTIONS"
+      },
+      {
+        "from": "REQ-CONTEXT-INSTRUCTIONS",
+        "relation": "implementedBy",
+        "to": "TASK-CONTEXT-IMPLEMENT"
+      },
+      {
+        "from": "REQ-CONTEXT-INTEGRITY",
+        "relation": "hasScenario",
+        "to": "SCN-CONTEXT-INTEGRITY"
+      },
+      {
+        "from": "REQ-CONTEXT-INTEGRITY",
+        "relation": "implementedBy",
+        "to": "TASK-CONTEXT-IMPLEMENT"
+      },
+      {
+        "from": "REQ-CONTEXT-SELECTION",
+        "relation": "hasScenario",
+        "to": "SCN-CONTEXT-SELECTION"
+      },
+      {
+        "from": "REQ-CONTEXT-SELECTION",
+        "relation": "implementedBy",
+        "to": "TASK-CONTEXT-IMPLEMENT"
+      },
+      {
+        "from": "SCN-CONTEXT-ADR",
+        "relation": "verifiedBy",
+        "to": "TEST-CONTEXT"
+      },
+      {
+        "from": "SCN-CONTEXT-GATES",
+        "relation": "verifiedBy",
+        "to": "TEST-CONTEXT"
+      },
+      {
+        "from": "SCN-CONTEXT-INSTRUCTIONS",
+        "relation": "verifiedBy",
+        "to": "TEST-CONTEXT"
+      },
+      {
+        "from": "SCN-CONTEXT-INTEGRITY",
+        "relation": "verifiedBy",
+        "to": "TEST-CONTEXT"
+      },
+      {
+        "from": "SCN-CONTEXT-SELECTION",
+        "relation": "verifiedBy",
+        "to": "TEST-CONTEXT"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:docs/context-intelligence.md"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:python/aifw/cli.py"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:python/aifw/context.py"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:python/aifw/discovery.py"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:python/aifw/gates.py"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:python/aifw/instructions.py"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:schemas/context-index.schema.json"
+      },
+      {
+        "from": "TASK-CONTEXT-IMPLEMENT",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_context.py"
+      }
+    ]
+  }
+}

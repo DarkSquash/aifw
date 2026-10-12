@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/policy-set.schema.json",
+  "title": "AIFW PolicySet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "rules"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "PolicySet" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+        "version": { "$ref": "#/definitions/semver" }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/rule" }
+    }
+  },
+  "definitions": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$"
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "keyword", "statement", "scope", "rationale", "owner", "enforcement", "source", "overridable"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+        "version": { "$ref": "#/definitions/semver" },
+        "keyword": { "enum": ["MUST", "MUST_NOT", "SHOULD", "MAY"] },
+        "statement": { "type": "string", "minLength": 1 },
+        "scope": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "rationale": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "minLength": 1 },
+        "enforcement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "evidence"],
+          "properties": {
+            "mode": { "enum": ["hard", "audit", "human"] },
+            "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "source": { "type": "string", "minLength": 1 },
+        "overridable": { "type": "boolean" }
+      }
+    }
+  }
+}

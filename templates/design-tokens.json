@@ -1,0 +1,17 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "color": {
+    "action": {
+      "background": { "$type": "color", "$value": "#1f2937" },
+      "foreground": { "$type": "color", "$value": "#ffffff" }
+    }
+  },
+  "radius": {
+    "control": { "$type": "dimension", "$value": { "value": 8, "unit": "px" } },
+    "controlCompact": { "$type": "dimension", "$value": { "value": 4, "unit": "px" } }
+  },
+  "space": {
+    "controlInline": { "$type": "dimension", "$value": { "value": 12, "unit": "px" } },
+    "controlInlineCompact": { "$type": "dimension", "$value": { "value": 8, "unit": "px" } }
+  }
+}

@@ -1,0 +1,104 @@
+apiVersion: aifw.dev/v1alpha1
+kind: DecisionCatalog
+metadata:
+  id: core-code-organization
+  version: 1.0.0
+  category: code-organization
+  scope: core
+  impact: L2
+spec:
+  title: Code and folder organization
+  drivers:
+    - id: change-locality
+      prompt: Do changes usually stay inside one feature or cross many features in the same technical layer?
+      signals: [changes:feature-local, changes:cross-feature]
+    - id: team-ownership
+      prompt: Is ownership assigned by product capability or technical specialty?
+      signals: [ownership:feature, ownership:technical-layer]
+    - id: project-size
+      prompt: What is the expected project size and lifetime?
+      signals: [size:small, size:medium, size:large]
+  options:
+    - id: layer-first
+      name: Layer-first organization
+      summary: Groups files by technical role such as UI, services, domain and data.
+      status: supported
+      maturity: stable
+      criteria:
+        - signal: size:small
+          effect: prefer
+          weight: 3
+          reason: Small projects remain easy to scan with a few technical folders.
+        - signal: ownership:technical-layer
+          effect: prefer
+          weight: 4
+          reason: The directory boundary follows team ownership.
+        - signal: changes:feature-local
+          effect: avoid
+          weight: 2
+          reason: One feature change may scatter across many layer folders.
+      tradeoffs:
+        - Familiar and simple at small scale
+        - Feature behavior becomes distributed across the tree
+      requires: []
+      conflicts: []
+      sources:
+        - https://learn.microsoft.com/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures
+    - id: feature-first
+      name: Feature-first organization
+      summary: Co-locates a feature's UI, behavior, tests and infrastructure-facing code behind an explicit feature boundary.
+      status: recommended
+      maturity: stable
+      criteria:
+        - signal: changes:feature-local
+          effect: prefer
+          weight: 5
+          reason: Co-location keeps the most common change inside one boundary.
+        - signal: ownership:feature
+          effect: prefer
+          weight: 4
+          reason: The folder tree mirrors product-capability ownership.
+        - signal: size:medium
+          effect: prefer
+          weight: 2
+          reason: Feature boundaries improve navigation as the codebase grows.
+        - signal: size:large
+          effect: prefer
+          weight: 3
+          reason: Large codebases benefit from explicit capability boundaries.
+      tradeoffs:
+        - High change locality and clearer feature ownership
+        - Shared abstractions require strict promotion criteria
+      requires: []
+      conflicts: []
+      sources:
+        - https://martinfowler.com/bliki/PresentationDomainDataLayering.html
+    - id: hybrid-feature-layered
+      name: Hybrid feature-first with internal layers
+      summary: Uses features as top-level boundaries and lightweight technical layers only inside features that need them.
+      status: recommended
+      maturity: stable
+      criteria:
+        - signal: changes:feature-local
+          effect: prefer
+          weight: 4
+          reason: Top-level feature boundaries preserve change locality.
+        - signal: size:large
+          effect: prefer
+          weight: 4
+          reason: Internal structure helps complex features scale without flattening the entire repository.
+        - signal: ownership:feature
+          effect: prefer
+          weight: 3
+          reason: Features stay aligned with product ownership.
+        - signal: size:small
+          effect: avoid
+          weight: 2
+          reason: Nested layers add navigation cost to a small project.
+      tradeoffs:
+        - Scales feature ownership while allowing local rigor
+        - Requires rules preventing empty or ceremonial layers
+      requires: []
+      conflicts: []
+      sources:
+        - https://martinfowler.com/articles/modularizing-react-apps.html

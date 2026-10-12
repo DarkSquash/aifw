@@ -1,0 +1,235 @@
+FFFFFF.F.                                                                [100%]
+================================== FAILURES ===================================
+____________________ test_conventional_adrs_and_templates _____________________
+tests_python\test_context.py:27: in test_conventional_adrs_and_templates
+    assert discover_project(tmp_path)["adrFiles"] == [
+E   AssertionError: assert ['docs/adr/002-api.md'] == ['docs/adr-00.../001-auth.md']
+E     
+E     At index 0 diff: 'docs/adr/002-api.md' != 'docs/adr-003-cache.md'
+E     Right contains 2 more items, first extra item: 'docs/adr/002-api.md'
+E     Use -v to get more diff
+_________ test_context_selection_keeps_dependency_closure_over_budget _________
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1943: in _parse_known_args2
+    namespace, args = self._parse_known_args(args, namespace, intermixed)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2165: in _parse_known_args
+    positionals_end_index = consume_positionals(start_index)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2141: in consume_positionals
+    take_action(action, args)
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2003: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2523: in _get_values
+    self._check_value(action, value[0])
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2573: in _check_value
+    raise ArgumentError(action, msg % args)
+E   argparse.ArgumentError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+
+During handling of the above exception, another exception occurred:
+tests_python\test_context.py:39: in test_context_selection_keeps_dependency_closure_over_budget
+    value, code = run(tmp_path, "context", "select", "--task", "login", "--intent", "bugfix", "--files", "src/auth.ts", "--budget", "10")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_python\test_context.py:20: in run
+    return execute(create_parser().parse_args(args), root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1904: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1914: in parse_known_args
+    return self._parse_known_args2(args, namespace, intermixed=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1945: in _parse_known_args2
+    self.error(str(err))
+python\aifw\cli.py:45: in error
+    raise AifwError("MANIFEST_INVALID", message)
+E   aifw.common.AifwError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+________________ test_context_freshness_and_broken_references _________________
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1943: in _parse_known_args2
+    namespace, args = self._parse_known_args(args, namespace, intermixed)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2188: in _parse_known_args
+    stop_index = consume_positionals(start_index)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2141: in consume_positionals
+    take_action(action, args)
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2003: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2523: in _get_values
+    self._check_value(action, value[0])
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2573: in _check_value
+    raise ArgumentError(action, msg % args)
+E   argparse.ArgumentError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+
+During handling of the above exception, another exception occurred:
+tests_python\test_context.py:50: in test_context_freshness_and_broken_references
+    value, code = run(tmp_path, "context", "check")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_python\test_context.py:20: in run
+    return execute(create_parser().parse_args(args), root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1904: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1914: in parse_known_args
+    return self._parse_known_args2(args, namespace, intermixed=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1945: in _parse_known_args2
+    self.error(str(err))
+python\aifw\cli.py:45: in error
+    raise AifwError("MANIFEST_INVALID", message)
+E   aifw.common.AifwError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+_______ test_private_files_traversal_and_malformed_metadata_do_not_leak _______
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1943: in _parse_known_args2
+    namespace, args = self._parse_known_args(args, namespace, intermixed)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2188: in _parse_known_args
+    stop_index = consume_positionals(start_index)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2141: in consume_positionals
+    take_action(action, args)
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2003: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2523: in _get_values
+    self._check_value(action, value[0])
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2573: in _check_value
+    raise ArgumentError(action, msg % args)
+E   argparse.ArgumentError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+
+During handling of the above exception, another exception occurred:
+tests_python\test_context.py:70: in test_private_files_traversal_and_malformed_metadata_do_not_leak
+    value, code = run(tmp_path, "context", "index")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_python\test_context.py:20: in run
+    return execute(create_parser().parse_args(args), root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1904: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1914: in parse_known_args
+    return self._parse_known_args2(args, namespace, intermixed=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1945: in _parse_known_args2
+    self.error(str(err))
+python\aifw\cli.py:45: in error
+    raise AifwError("MANIFEST_INVALID", message)
+E   aifw.common.AifwError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+_______ test_dependency_cycle_terminates_and_missing_dependency_blocks ________
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1943: in _parse_known_args2
+    namespace, args = self._parse_known_args(args, namespace, intermixed)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2165: in _parse_known_args
+    positionals_end_index = consume_positionals(start_index)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2141: in consume_positionals
+    take_action(action, args)
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2003: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2523: in _get_values
+    self._check_value(action, value[0])
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2573: in _check_value
+    raise ArgumentError(action, msg % args)
+E   argparse.ArgumentError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+
+During handling of the above exception, another exception occurred:
+tests_python\test_context.py:81: in test_dependency_cycle_terminates_and_missing_dependency_blocks
+    value, code = run(tmp_path, "context", "select", "--task", "login")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_python\test_context.py:20: in run
+    return execute(create_parser().parse_args(args), root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1904: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1914: in parse_known_args
+    return self._parse_known_args2(args, namespace, intermixed=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1945: in _parse_known_args2
+    self.error(str(err))
+python\aifw\cli.py:45: in error
+    raise AifwError("MANIFEST_INVALID", message)
+E   aifw.common.AifwError: argument command: invalid choice: 'context' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+_________ test_instruction_blocks_preserve_user_text_and_detect_drift _________
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1943: in _parse_known_args2
+    namespace, args = self._parse_known_args(args, namespace, intermixed)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2165: in _parse_known_args
+    positionals_end_index = consume_positionals(start_index)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2141: in consume_positionals
+    take_action(action, args)
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2003: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2523: in _get_values
+    self._check_value(action, value[0])
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2573: in _check_value
+    raise ArgumentError(action, msg % args)
+E   argparse.ArgumentError: argument command: invalid choice: 'instructions' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+
+During handling of the above exception, another exception occurred:
+tests_python\test_context.py:90: in test_instruction_blocks_preserve_user_text_and_detect_drift
+    value, code = run(tmp_path, "instructions", "build", "--agent", "all")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_python\test_context.py:20: in run
+    return execute(create_parser().parse_args(args), root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1904: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1914: in parse_known_args
+    return self._parse_known_args2(args, namespace, intermixed=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1945: in _parse_known_args2
+    self.error(str(err))
+python\aifw\cli.py:45: in error
+    raise AifwError("MANIFEST_INVALID", message)
+E   aifw.common.AifwError: argument command: invalid choice: 'instructions' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+_________________ test_ci_inspection_does_not_claim_execution _________________
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1943: in _parse_known_args2
+    namespace, args = self._parse_known_args(args, namespace, intermixed)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2165: in _parse_known_args
+    positionals_end_index = consume_positionals(start_index)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2141: in consume_positionals
+    take_action(action, args)
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2003: in take_action
+    argument_values = self._get_values(action, argument_strings)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2523: in _get_values
+    self._check_value(action, value[0])
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2573: in _check_value
+    raise ArgumentError(action, msg % args)
+E   argparse.ArgumentError: argument command: invalid choice: 'gates' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+
+During handling of the above exception, another exception occurred:
+tests_python\test_context.py:114: in test_ci_inspection_does_not_claim_execution
+    value, code = run(tmp_path, "gates", "check", "--level", "L1")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_python\test_context.py:20: in run
+    return execute(create_parser().parse_args(args), root)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1904: in parse_args
+    args, argv = self.parse_known_args(args, namespace)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1914: in parse_known_args
+    return self._parse_known_args2(args, namespace, intermixed=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1945: in _parse_known_args2
+    self.error(str(err))
+python\aifw\cli.py:45: in error
+    raise AifwError("MANIFEST_INVALID", message)
+E   aifw.common.AifwError: argument command: invalid choice: 'gates' (choose from init, audit, intake, map, adopt, spec, decision, principle, resolve, change, route, handoff, doctor, eval, validate)
+=========================== short test summary info ===========================
+FAILED tests_python/test_context.py::test_conventional_adrs_and_templates - A...
+FAILED tests_python/test_context.py::test_context_selection_keeps_dependency_closure_over_budget
+FAILED tests_python/test_context.py::test_context_freshness_and_broken_references
+FAILED tests_python/test_context.py::test_private_files_traversal_and_malformed_metadata_do_not_leak
+FAILED tests_python/test_context.py::test_dependency_cycle_terminates_and_missing_dependency_blocks
+FAILED tests_python/test_context.py::test_instruction_blocks_preserve_user_text_and_detect_drift
+FAILED tests_python/test_context.py::test_ci_inspection_does_not_claim_execution
+7 failed, 2 passed in 1.63s

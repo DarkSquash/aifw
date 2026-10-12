@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/effective-policy.schema.json",
+  "title": "AIFW EffectivePolicy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "projectId", "frameworkVersion", "rules", "profileLock"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "EffectivePolicy" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "frameworkVersion": { "type": "string", "minLength": 1 },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "version", "keyword", "statement", "scope", "rationale", "owner", "enforcement", "source", "overridable", "origin"],
+        "properties": {
+          "id": { "type": "string" },
+          "version": { "type": "string" },
+          "keyword": { "enum": ["MUST", "MUST_NOT", "SHOULD", "MAY"] },
+          "statement": { "type": "string" },
+          "scope": { "type": "array", "items": { "type": "string" } },
+          "rationale": { "type": "string" },
+          "owner": { "type": "string" },
+          "enforcement": { "type": "object" },
+          "source": { "type": "string" },
+          "overridable": { "type": "boolean" },
+          "origin": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "profileLock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profiles", "digest"],
+      "properties": {
+        "profiles": { "type": "array" },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

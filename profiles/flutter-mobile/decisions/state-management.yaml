@@ -1,0 +1,78 @@
+apiVersion: aifw.dev/v1alpha1
+kind: DecisionCatalog
+metadata:
+  id: flutter-state-management
+  version: 1.0.0
+  category: state-management
+  scope: profile
+  impact: L2
+spec:
+  title: Flutter state management
+  drivers:
+    - id: existing-state-library
+      prompt: Is a state-management library already established in the codebase?
+      signals: [existing:none, existing:provider, existing:riverpod, existing:bloc]
+    - id: state-complexity
+      prompt: How complex are state transitions and asynchronous workflows?
+      signals: [state:simple, state:moderate, state:complex]
+    - id: team-familiarity
+      prompt: Which approach can the team maintain confidently?
+      signals: [team:flutter-sdk, team:provider, team:riverpod, team:bloc]
+  options:
+    - id: flutter-sdk-state
+      name: Flutter SDK state primitives
+      summary: Uses StatefulWidget, ValueNotifier, ChangeNotifier and inherited widgets without adding a package.
+      status: recommended
+      maturity: stable
+      criteria:
+        - { signal: stack:flutter, effect: prefer, weight: 1, reason: The option is available in the selected Flutter stack. }
+        - { signal: state:simple, effect: prefer, weight: 5, reason: Local or simple shared state does not require an external framework. }
+        - { signal: existing:none, effect: prefer, weight: 2, reason: No migration or compatibility constraint exists. }
+        - { signal: state:complex, effect: avoid, weight: 3, reason: Complex asynchronous transitions need more explicit structure. }
+      tradeoffs: [No external dependency and direct alignment with Flutter, Application-wide state conventions must be designed by the team]
+      requires: [stack:flutter]
+      conflicts: []
+      sources: [https://docs.flutter.dev/data-and-backend/state-mgmt/options]
+    - id: flutter-provider
+      name: Provider
+      summary: Uses a common wrapper around inherited widgets for straightforward dependency exposure and ChangeNotifier state.
+      status: supported
+      maturity: stable
+      criteria:
+        - { signal: stack:flutter, effect: prefer, weight: 1, reason: The option belongs to the selected Flutter stack. }
+        - { signal: existing:provider, effect: prefer, weight: 5, reason: Preserves the established codebase convention and avoids migration risk. }
+        - { signal: project:existing, effect: prefer, weight: 2, reason: Continuity is valuable when adapting an existing project. }
+        - { signal: state:simple, effect: prefer, weight: 2, reason: Provider handles common shared-state needs with low ceremony. }
+        - { signal: state:complex, effect: avoid, weight: 2, reason: Highly explicit event and state flows may be easier to govern with another option. }
+      tradeoffs: [Familiar Flutter integration and modest ceremony, Mutable ChangeNotifier patterns require discipline at scale]
+      requires: [stack:flutter]
+      conflicts: []
+      sources: [https://pub.dev/packages/provider]
+    - id: flutter-riverpod
+      name: Riverpod
+      summary: Provides testable state and dependency management without BuildContext coupling.
+      status: supported
+      maturity: stable
+      criteria:
+        - { signal: stack:flutter, effect: prefer, weight: 1, reason: The option belongs to the selected Flutter stack. }
+        - { signal: existing:riverpod, effect: prefer, weight: 5, reason: Preserves the existing state model. }
+        - { signal: state:moderate, effect: prefer, weight: 3, reason: Providers compose asynchronous and derived state cleanly. }
+        - { signal: state:complex, effect: prefer, weight: 3, reason: Explicit provider dependencies improve testability of complex state. }
+      tradeoffs: [Strong testability and dependency composition, Adds concepts and generated-code choices the team must standardize]
+      requires: [stack:flutter]
+      conflicts: []
+      sources: [https://riverpod.dev/docs/introduction/why_riverpod]
+    - id: flutter-bloc
+      name: BLoC
+      summary: Models behavior as explicit events and states with tooling and conventions for predictable reactive flows.
+      status: specialized
+      maturity: stable
+      criteria:
+        - { signal: stack:flutter, effect: prefer, weight: 1, reason: The option belongs to the selected Flutter stack. }
+        - { signal: existing:bloc, effect: prefer, weight: 5, reason: Preserves the existing event and state conventions. }
+        - { signal: state:complex, effect: prefer, weight: 5, reason: Explicit transitions support complex workflows and auditability. }
+        - { signal: state:simple, effect: avoid, weight: 3, reason: Event and state classes can be excessive for simple state. }
+      tradeoffs: [Predictable transitions and strong testing conventions, More boilerplate and concepts than simple state requires]
+      requires: [stack:flutter]
+      conflicts: []
+      sources: [https://bloclibrary.dev]

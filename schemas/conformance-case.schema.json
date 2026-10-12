@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/conformance-case.schema.json",
+  "title": "AIFW ConformanceCase",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "description", "requirements"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+    "description": { "type": "string", "minLength": 1 },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredEvents", "forbiddenEvents", "ordering", "approvalBefore", "evidenceRequiredFor"],
+      "properties": {
+        "requiredEvents": { "$ref": "#/definitions/events" },
+        "forbiddenEvents": { "$ref": "#/definitions/events" },
+        "ordering": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["before", "after"],
+            "properties": { "before": { "type": "string", "minLength": 1 }, "after": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "approvalBefore": { "$ref": "#/definitions/events" },
+        "evidenceRequiredFor": { "$ref": "#/definitions/events" }
+      }
+    }
+  },
+  "definitions": { "events": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } } }
+}

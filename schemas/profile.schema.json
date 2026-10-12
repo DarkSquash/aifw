@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/profile.schema.json",
+  "title": "AIFW Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "Profile" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+        "version": { "$ref": "#/definitions/semver" }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "provides", "requires", "conflicts", "rules"],
+      "properties": {
+        "kind": { "enum": ["capability", "stack"] },
+        "provides": { "$ref": "#/definitions/strings" },
+        "requires": { "$ref": "#/definitions/strings" },
+        "conflicts": { "$ref": "#/definitions/strings" },
+        "rules": { "type": "array", "items": { "$ref": "#/definitions/rule" } }
+      }
+    }
+  },
+  "definitions": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+    "strings": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "keyword", "statement", "scope", "rationale", "owner", "enforcement", "source", "overridable"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+        "version": { "$ref": "#/definitions/semver" },
+        "keyword": { "enum": ["MUST", "MUST_NOT", "SHOULD", "MAY"] },
+        "statement": { "type": "string", "minLength": 1 },
+        "scope": { "$ref": "#/definitions/strings" },
+        "rationale": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "minLength": 1 },
+        "enforcement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "evidence"],
+          "properties": {
+            "mode": { "enum": ["hard", "audit", "human"] },
+            "evidence": { "$ref": "#/definitions/strings" }
+          }
+        },
+        "source": { "type": "string", "minLength": 1 },
+        "overridable": { "type": "boolean" }
+      }
+    }
+  }
+}

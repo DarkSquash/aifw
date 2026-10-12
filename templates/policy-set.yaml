@@ -1,0 +1,18 @@
+apiVersion: aifw.dev/v1alpha1
+kind: PolicySet
+metadata:
+  id: replace-policy-id
+  version: 1.0.0
+rules:
+  - id: domain.replace-rule
+    version: 1.0.0
+    keyword: SHOULD
+    statement: Replace with one precise and verifiable rule.
+    scope: [project]
+    rationale: Replace with the reason this rule exists.
+    owner: human:owner
+    enforcement:
+      mode: audit
+      evidence: [review]
+    source: .aifw/project-rules.yaml
+    overridable: true

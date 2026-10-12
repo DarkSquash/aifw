@@ -1,0 +1,136 @@
+apiVersion: aifw.dev/v1alpha1
+kind: DecisionCatalog
+metadata:
+  id: core-application-architecture
+  version: 1.0.0
+  category: application-architecture
+  scope: core
+  impact: L2
+spec:
+  title: Application architecture
+  drivers:
+    - id: domain-complexity
+      prompt: How complex and changeable are the business rules?
+      signals: [domain:simple, domain:moderate, domain:complex]
+    - id: integration-count
+      prompt: How many external systems or infrastructure providers must be isolated?
+      signals: [integrations:few, integrations:many]
+    - id: delivery-shape
+      prompt: Is delivery organized mainly by end-to-end features or shared technical layers?
+      signals: [delivery:feature-oriented, delivery:layer-oriented]
+    - id: testability
+      prompt: How strongly must business behavior be testable without UI, database or network?
+      signals: [testability:standard, testability:high]
+  options:
+    - id: pragmatic-layered
+      name: Pragmatic layered architecture
+      summary: Separates presentation, application and data concerns with a deliberately small abstraction budget.
+      status: recommended
+      maturity: stable
+      criteria:
+        - signal: domain:simple
+          effect: prefer
+          weight: 4
+          reason: A simple domain benefits from low ceremony and direct boundaries.
+        - signal: integrations:few
+          effect: prefer
+          weight: 2
+          reason: Few volatile integrations need fewer adapter abstractions.
+        - signal: delivery:layer-oriented
+          effect: prefer
+          weight: 2
+          reason: Technical layers match the intended delivery shape.
+        - signal: domain:complex
+          effect: avoid
+          weight: 3
+          reason: Complex business rules need stronger dependency isolation.
+      tradeoffs:
+        - Lower initial ceremony and faster onboarding
+        - Technical layers can become coupled as domain complexity grows
+      requires: []
+      conflicts: []
+      sources:
+        - https://learn.microsoft.com/azure/architecture/guide/architecture-styles/n-tier
+    - id: ports-and-adapters
+      name: Ports and adapters
+      summary: Keeps application and domain behavior behind explicit ports implemented by replaceable adapters.
+      status: supported
+      maturity: stable
+      criteria:
+        - signal: domain:complex
+          effect: prefer
+          weight: 4
+          reason: Strong boundaries isolate complex business behavior.
+        - signal: integrations:many
+          effect: prefer
+          weight: 3
+          reason: Adapters contain integration-specific change.
+        - signal: testability:high
+          effect: prefer
+          weight: 3
+          reason: Ports allow business behavior to run without external infrastructure.
+        - signal: domain:simple
+          effect: avoid
+          weight: 2
+          reason: The abstraction cost can exceed the value for a simple domain.
+      tradeoffs:
+        - High isolation and replaceable infrastructure
+        - More interfaces, mapping and initial design effort
+      requires: []
+      conflicts: [active-record-only]
+      sources:
+        - https://alistair.cockburn.us/hexagonal-architecture
+    - id: clean-architecture
+      name: Clean Architecture
+      summary: Organizes dependencies inward around entities and use cases, independent of delivery and infrastructure details.
+      status: supported
+      maturity: stable
+      criteria:
+        - signal: domain:complex
+          effect: prefer
+          weight: 4
+          reason: Use-case and domain boundaries protect complex business policy.
+        - signal: testability:high
+          effect: prefer
+          weight: 3
+          reason: Dependency inversion enables isolated use-case tests.
+        - signal: integrations:many
+          effect: prefer
+          weight: 2
+          reason: Outer layers isolate volatile frameworks and services.
+        - signal: domain:simple
+          effect: avoid
+          weight: 3
+          reason: Multiple boundaries and mappings can be unnecessary ceremony.
+      tradeoffs:
+        - Explicit dependency direction and long-lived domain isolation
+        - More concepts and mapping code to maintain consistently
+      requires: []
+      conflicts: [framework-coupled-domain]
+      sources:
+        - https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+    - id: vertical-slice
+      name: Vertical Slice Architecture
+      summary: Groups code and behavior by use case so each feature can evolve with minimal cross-feature coupling.
+      status: supported
+      maturity: stable
+      criteria:
+        - signal: delivery:feature-oriented
+          effect: prefer
+          weight: 5
+          reason: End-to-end feature ownership is the central organizing constraint.
+        - signal: domain:moderate
+          effect: prefer
+          weight: 2
+          reason: Feature boundaries can contain moderately complex behavior.
+        - signal: delivery:layer-oriented
+          effect: avoid
+          weight: 2
+          reason: Layer-oriented ownership conflicts with slice autonomy.
+      tradeoffs:
+        - Localized feature changes and reduced cross-feature coupling
+        - Shared behavior needs deliberate extraction to avoid duplication
+      requires: []
+      conflicts: []
+      sources:
+        - https://www.jimmybogard.com/vertical-slice-architecture

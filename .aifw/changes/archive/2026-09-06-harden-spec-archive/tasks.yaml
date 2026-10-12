@@ -1,0 +1,49 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: harden-spec-archive
+tasks:
+  - id: TASK-INTEGRITY-RECOVERY
+    title: "Corrigir F1: RECOVERY"
+    status: done
+    dependsOn: []
+    requirementIds:
+      - REQ-AIFW-INTEGRITY-RECOVERY
+    paths:
+      - src/core/spec-lifecycle.ts
+      - tests/spec-integrity.test.ts
+  - id: TASK-INTEGRITY-APPROVAL
+    title: "Corrigir F2: APPROVAL"
+    status: done
+    dependsOn: []
+    requirementIds:
+      - REQ-AIFW-INTEGRITY-APPROVAL
+    paths:
+      - src/core/spec-lifecycle.ts
+      - tests/spec-integrity.test.ts
+  - id: TASK-INTEGRITY-UNIQUE-DELTA
+    title: "Corrigir F3: UNIQUE-DELTA"
+    status: done
+    dependsOn: []
+    requirementIds:
+      - REQ-AIFW-INTEGRITY-UNIQUE-DELTA
+    paths:
+      - src/core/spec-lifecycle.ts
+      - tests/spec-integrity.test.ts
+  - id: TASK-INTEGRITY-EVIDENCE
+    title: "Corrigir F4: EVIDENCE"
+    status: done
+    dependsOn: []
+    requirementIds:
+      - REQ-AIFW-INTEGRITY-EVIDENCE
+    paths:
+      - src/core/spec-lifecycle.ts
+      - tests/spec-integrity.test.ts
+  - id: TASK-INTEGRITY-VALID-OUTPUT
+    title: "Corrigir F5: VALID-OUTPUT"
+    status: done
+    dependsOn: []
+    requirementIds:
+      - REQ-AIFW-INTEGRITY-VALID-OUTPUT
+    paths:
+      - src/core/spec-lifecycle.ts
+      - tests/spec-integrity.test.ts

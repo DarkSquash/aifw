@@ -1,0 +1,9 @@
+{
+  "status": "pass",
+  "registeredTools": 2,
+  "registeredCommands": 3,
+  "recommendationPreservesModel": true,
+  "activatedRoutingUsesPython": true,
+  "manualHandoff": true,
+  "host": "Pi-installed loader/typebox, mocked Pi API; no real model or message changed"
+}

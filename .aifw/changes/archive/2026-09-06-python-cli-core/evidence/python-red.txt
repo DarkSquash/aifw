@@ -1,0 +1,816 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.                                  [100%]
+================================== FAILURES ===================================
+_____________________ test_python_entrypoint_without_node _____________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_python_entrypoint_without0')
+
+    def test_python_entrypoint_without_node(tmp_path):
+        process = cli(tmp_path, "--version")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:28: AssertionError
+_______________ test_all_existing_commands_have_help[command0] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav0')
+command = ['init']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command1] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav1')
+command = ['audit']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command2] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav2')
+command = ['intake', 'status']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command3] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav3')
+command = ['intake', 'approve']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command4] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav4')
+command = ['map', 'build']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command5] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav5')
+command = ['map', 'check']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command6] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav6')
+command = ['adopt', 'analyze']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command7] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav7')
+command = ['adopt', 'apply']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command8] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav8')
+command = ['adopt', 'status']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command9] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav9')
+command = ['adopt', 'approve']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command10] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav10')
+command = ['spec', 'new']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command11] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav11')
+command = ['spec', 'list']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command12] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav12')
+command = ['spec', 'show']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command13] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav13')
+command = ['spec', 'status']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command14] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav14')
+command = ['spec', 'validate']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command15] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav15')
+command = ['spec', 'analyze']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command16] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav16')
+command = ['spec', 'sync']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command17] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav17')
+command = ['spec', 'approve']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command18] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav18')
+command = ['spec', 'archive']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command19] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav19')
+command = ['decision', 'list']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command20] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav20')
+command = ['decision', 'recommend']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command21] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav21')
+command = ['decision', 'approve']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command22] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav22')
+command = ['principle', 'list']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command23] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav23')
+command = ['principle', 'review']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command24] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav24')
+command = ['resolve', 'build']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command25] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav25')
+command = ['resolve', 'check']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command26] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav26')
+command = ['change', 'classify']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command27] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav27')
+command = ['route', 'explain']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command28] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav28')
+command = ['route', 'status']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command29] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav29')
+command = ['route', 'eval']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command30] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav30')
+command = ['route', 'activate']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command31] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav31')
+command = ['handoff', 'codex']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command32] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav32')
+command = ['doctor']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command33] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav33')
+command = ['eval']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_______________ test_all_existing_commands_have_help[command34] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_all_existing_commands_hav34')
+command = ['validate']
+
+    @pytest.mark.parametrize("command", COMMANDS)
+    def test_all_existing_commands_have_help(tmp_path, command):
+        process = cli(tmp_path, *command, "--help")
+>       assert process.returncode == 0, process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:35: AssertionError
+_________________ test_init_map_resolution_and_pending_intake _________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_init_map_resolution_and_p0')
+
+    def test_init_map_resolution_and_pending_intake(tmp_path):
+>       initialized = result(tmp_path, "init", "--id", "northstar", "--name", "Northstar", "--python")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_python\test_cli.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_init_map_resolution_and_p0')
+args = ('init', '--id', 'northstar', '--name', 'Northstar', '--python')
+
+    def result(root, *args):
+        process = cli(root, *args, "--json")
+>       assert process.returncode == 0, process.stderr or process.stdout
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:22: AssertionError
+_________________ test_framework_changes_remain_l3_and_brain __________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_framework_changes_remain_0')
+
+    def test_framework_changes_remain_l3_and_brain(tmp_path):
+>       change = result(tmp_path, "change", "classify", "--framework-core")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests_python\test_cli.py:56: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-1/test_framework_changes_remain_0')
+args = ('change', 'classify', '--framework-core')
+
+    def result(root, *args):
+        process = cli(root, *args, "--json")
+>       assert process.returncode == 0, process.stderr or process.stdout
+E       AssertionError: Traceback (most recent call last):
+E           File "<frozen runpy>", line 198, in _run_module_as_main
+E           File "<frozen runpy>", line 88, in _run_code
+E           File "C:\Users\DarkSquash\Documents\Codex\2026-08-22\referenced-chatgpt-conversation-this-is-an\outputs\aifw\python\aifw\__main__.py", line 1, in <module>
+E             from .cli import main
+E         ModuleNotFoundError: No module named 'aifw.cli'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\DarkSquash\\Documents\\Codex\\2026-08-22\\referenced-chatgpt-conversation-this-is-a...fw\\__main__.py", line 1, in <module>\n    from .cli import main\nModuleNotFoundError: No module named \'aifw.cli\'\n').returncode
+
+tests_python\test_cli.py:22: AssertionError
+=========================== short test summary info ===========================
+FAILED tests_python/test_cli.py::test_python_entrypoint_without_node - Assert...
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command0]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command1]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command2]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command3]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command4]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command5]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command6]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command7]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command8]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command9]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command10]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command11]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command12]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command13]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command14]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command15]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command16]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command17]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command18]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command19]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command20]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command21]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command22]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command23]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command24]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command25]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command26]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command27]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command28]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command29]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command30]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command31]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command32]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command33]
+FAILED tests_python/test_cli.py::test_all_existing_commands_have_help[command34]
+FAILED tests_python/test_cli.py::test_init_map_resolution_and_pending_intake
+FAILED tests_python/test_cli.py::test_framework_changes_remain_l3_and_brain
+38 failed, 1 passed in 5.04s

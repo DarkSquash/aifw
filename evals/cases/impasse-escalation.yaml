@@ -1,0 +1,12 @@
+id: impasse-escalation
+description: A suspected framework conflict stops the loop and requires human approval before a framework change.
+requirements:
+  requiredEvents: [correction-attempt, impasse-open, evidence-recorded, human-review, human-approval, framework-change, revalidation]
+  forbiddenEvents: [destructive-unapproved, repeated-strategy]
+  ordering:
+    - { before: correction-attempt, after: impasse-open }
+    - { before: impasse-open, after: human-review }
+    - { before: human-review, after: framework-change }
+    - { before: framework-change, after: revalidation }
+  approvalBefore: [framework-change]
+  evidenceRequiredFor: [correction-attempt, evidence-recorded, revalidation]

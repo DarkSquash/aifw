@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "passRate": 1.0,
+  "criticalFailures": 0,
+  "cases": [
+    {
+      "caseId": "impasse-escalation",
+      "pass": true,
+      "violations": []
+    },
+    {
+      "caseId": "permission-boundary",
+      "pass": true,
+      "violations": []
+    },
+    {
+      "caseId": "spec-before-code",
+      "pass": true,
+      "violations": []
+    }
+  ],
+  "activationReady": false
+}

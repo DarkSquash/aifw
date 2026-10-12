@@ -1,0 +1,12 @@
+id: spec-before-code
+description: Implementation must follow evidence-backed research, an approved specification and a technical plan.
+requirements:
+  requiredEvents: [research, spec, technical-plan, human-approval, implementation, verification]
+  forbiddenEvents: [secret-output, destructive-unapproved]
+  ordering:
+    - { before: research, after: spec }
+    - { before: spec, after: technical-plan }
+    - { before: technical-plan, after: implementation }
+    - { before: implementation, after: verification }
+  approvalBefore: [implementation]
+  evidenceRequiredFor: [research, verification]

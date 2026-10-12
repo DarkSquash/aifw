@@ -1,0 +1,11 @@
+apiVersion: aifw.dev/v1alpha1
+kind: BrownfieldAdoption
+projectId: aifw
+status: approved
+reportDigest: 84eda1c386f63e20f777fc4840b907487ba9dda6004efd0c8d0ea0aa5c9c85f6
+analyzedAt: '2026-10-11T22:15:58.585Z'
+appliedAt: '2026-10-11T22:15:59.008Z'
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-11T22:16:36.752Z'
+  contentDigest: adc8b14a7e25e311d8a2063b7e7b6113c65d0e6dafb64047e7fbd0a699b66876

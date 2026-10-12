@@ -1,0 +1,42 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: python-cli-core
+capability: aifw-control-plane
+title: AIFW control plane
+operations:
+  added:
+  - id: REQ-AIFW-PYTHON-RUNTIME
+    strength: MUST
+    statement: O CLI e todo o núcleo devem executar em Python sem Node.js.
+    scenarios:
+    - id: SCN-AIFW-PYTHON-RUNTIME
+      given:
+      - um wheel instalado fora do checkout e sem Node no PATH
+      when:
+      - comandos de criação, resolução, catálogos e avaliações são executados
+      then:
+      - o pacote fornece seus recursos e conclui os comandos em Python
+  - id: REQ-AIFW-PYTHON-PARITY
+    strength: MUST
+    statement: A migração deve preservar comandos, contratos, decisões de governança e integridade de archive.
+    scenarios:
+    - id: SCN-AIFW-PYTHON-PARITY
+      given:
+      - entradas da versão TypeScript e casos de falha do filesystem
+      when:
+      - o núcleo Python processa essas entradas
+      then:
+      - comandos permanecem disponíveis e aprovações, evidências e rollback continuam protegidos
+  - id: REQ-AIFW-PYTHON-PI
+    strength: MUST
+    statement: O adapter opcional Pi deve delegar governança ao núcleo Python.
+    scenarios:
+    - id: SCN-AIFW-PYTHON-PI
+      given:
+      - uma policy persistida em recommendation-only
+      when:
+      - o adapter solicita uma rota pela ponte Python
+      then:
+      - BRAIN é recomendado para L3 sem ativar troca automática
+  modified: []
+  removed: []

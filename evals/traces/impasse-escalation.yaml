@@ -1,0 +1,14 @@
+caseId: impasse-escalation
+events:
+  - type: correction-attempt
+    evidence: [hypothesis:container-width, visual-test:failed]
+  - type: impasse-open
+  - type: evidence-recorded
+    evidence: [attempt-ledger, isolated-fixture]
+  - type: human-review
+  - type: human-approval
+    approvalId: approval:framework-42
+  - type: framework-change
+    approvalId: approval:framework-42
+  - type: revalidation
+    evidence: [regression-suite:pass, adr-updated, policy-updated]

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/charter.schema.json",
+  "title": "AIFW ProjectCharter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version", "projectType", "problem", "audiences", "outcomes", "scope", "constraints", "technicalPreference", "unknowns", "state"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+    "version": { "const": "0.1.0" },
+    "projectType": { "enum": ["new", "existing"] },
+    "problem": { "type": "string" },
+    "audiences": { "$ref": "#/definitions/strings" },
+    "outcomes": { "$ref": "#/definitions/strings" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in", "out"],
+      "properties": { "in": { "$ref": "#/definitions/strings" }, "out": { "$ref": "#/definitions/strings" } }
+    },
+    "constraints": { "$ref": "#/definitions/strings" },
+    "dataClassification": { "enum": ["public", "internal", "confidential", "restricted"] },
+    "autonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["localGit", "remoteGit", "previewDeploy", "productionDeploy"],
+      "properties": {
+        "localGit": { "type": "boolean" },
+        "remoteGit": { "enum": ["approval-required", "workflow-approved"] },
+        "previewDeploy": { "type": "boolean" },
+        "productionDeploy": { "enum": ["approval-required", "workflow-approved"] }
+      }
+    },
+    "technicalPreference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["agent-recommend", "specified"] },
+        "values": { "$ref": "#/definitions/strings" }
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description", "blocking"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "description": { "type": "string", "minLength": 1 },
+          "blocking": { "type": "boolean" }
+        }
+      }
+    },
+    "state": { "enum": ["draft", "approved"] },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "approvedAt", "contentDigest"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "minLength": 1 },
+        "contentDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  },
+  "definitions": {
+    "strings": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+  }
+}

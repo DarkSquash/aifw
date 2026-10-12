@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/decision-catalog.schema.json",
+  "title": "AIFW DecisionCatalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "DecisionCatalog" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "category", "scope", "impact"],
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" },
+        "category": { "$ref": "#/definitions/id" },
+        "scope": { "enum": ["core", "profile"] },
+        "impact": { "enum": ["L1", "L2", "L3"] }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "drivers", "options"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "drivers": { "type": "array", "items": { "$ref": "#/definitions/driver" } },
+        "options": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/option" } }
+      }
+    }
+  },
+  "definitions": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]+$" },
+    "strings": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "driver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "prompt", "signals"],
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "prompt": { "type": "string", "minLength": 1 },
+        "signals": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signal", "effect", "weight", "reason"],
+      "properties": {
+        "signal": { "type": "string", "minLength": 1 },
+        "effect": { "enum": ["prefer", "avoid"] },
+        "weight": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "summary", "status", "maturity", "criteria", "tradeoffs", "requires", "conflicts", "sources"],
+      "properties": {
+        "id": { "$ref": "#/definitions/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["recommended", "supported", "specialized", "discouraged"] },
+        "maturity": { "enum": ["stable", "evolving", "legacy"] },
+        "criteria": { "type": "array", "items": { "$ref": "#/definitions/criterion" } },
+        "tradeoffs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "requires": { "$ref": "#/definitions/strings" },
+        "conflicts": { "$ref": "#/definitions/strings" },
+        "sources": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+apiVersion: aifw.dev/v1alpha1
+kind: QualityGateSet
+philosophy: progressive-by-risk
+gates:
+- id: manifest
+  enforcement: hard
+  levels:
+  - L0
+  - L1
+  - L2
+  - L3
+- id: project-map
+  enforcement: hard
+  levels:
+  - L1
+  - L2
+  - L3
+- id: typecheck
+  enforcement: hard
+  levels:
+  - L1
+  - L2
+  - L3
+  command:
+  - python
+  - -m
+  - compileall
+  - -q
+  - python/aifw
+- id: lint
+  enforcement: hard
+  levels:
+  - L1
+  - L2
+  - L3
+  command:
+  - python
+  - -m
+  - ruff
+  - check
+  - python
+  - tests_python
+  - scripts
+  - setup.py
+- id: tests
+  enforcement: hard
+  levels:
+  - L1
+  - L2
+  - L3
+  command:
+  - python
+  - -m
+  - pytest
+  - -q
+- id: build
+  enforcement: hard
+  levels:
+  - L2
+  - L3
+  command:
+  - python
+  - -m
+  - build
+  - --no-isolation
+- id: conformance
+  enforcement: hard
+  levels:
+  - L2
+  - L3
+  command:
+  - python
+  - -m
+  - aifw
+  - eval
+  - --json
+- id: independent-review
+  enforcement: audit
+  levels:
+  - L2
+  - L3
+- id: human-approval
+  enforcement: human
+  levels:
+  - L3
+- id: cli-docs
+  enforcement: hard
+  levels:
+  - L1
+  - L2
+  - L3
+  command:
+  - python
+  - scripts/generate_cli_reference.py
+  - --check

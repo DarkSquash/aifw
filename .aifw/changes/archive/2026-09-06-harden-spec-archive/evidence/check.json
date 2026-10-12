@@ -1,0 +1,46 @@
+{
+  "verifiedAt": "2026-09-06T02:22:36.853Z",
+  "environment": {
+    "platform": "win32",
+    "node": "v24.15.0"
+  },
+  "commands": [
+    {
+      "command": "npm run check",
+      "exitCode": 0,
+      "tests": 162,
+      "suites": 34,
+      "passed": 162,
+      "failed": 0,
+      "log": "full-check.log",
+      "sha256": "67d1847891b0307189396888f4488f2d890c32b957e53aa1bedebadde09a218e"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "log": "build.log",
+      "sha256": "9c31f4233888d91ef2cdd7bb3228c070db2aa29efebb16dd3047d1a6b9536fd8"
+    }
+  ],
+  "regression": {
+    "before": {
+      "tests": 20,
+      "passed": 5,
+      "failed": 15,
+      "log": "red.log"
+    },
+    "after": {
+      "tests": 38,
+      "passed": 38,
+      "failed": 0,
+      "log": "green.log"
+    },
+    "addedTests": 22
+  },
+  "sources": {
+    "src/core/spec-lifecycle.ts": "387da1978384c4f1576a6dc319490c16f48e005621111d00ae7a6fce86d68d95",
+    "tests/spec-integrity.test.ts": "2d609c964d99eae0a3e358ebf522649a59ba448c3cf9f2a5199e47e5a089a671",
+    "schemas/capability-delta.schema.json": "b9d729778fb78dd11ea5edb10655e0fbde19873494c87566f0a4fe17f77d9d6b",
+    "schemas/traceability.schema.json": "f185c3fe1a09936d495eb05abcebaa88f13ff4f59e477720cb86827c4aa8de46"
+  }
+}

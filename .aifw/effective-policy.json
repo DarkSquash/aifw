@@ -1,0 +1,210 @@
+{
+  "apiVersion": "aifw.dev/v1alpha1",
+  "kind": "EffectivePolicy",
+  "projectId": "aifw",
+  "frameworkVersion": "0.4.0",
+  "rules": [
+    {
+      "id": "authority.core-invariants",
+      "version": "1.0.0",
+      "keyword": "MUST",
+      "statement": "Preserve non-overridable core invariants across every lower authority layer.",
+      "scope": [
+        "framework",
+        "project"
+      ],
+      "rationale": "Lower-precedence preferences must never weaken safety or governance guarantees.",
+      "owner": "framework:governance",
+      "enforcement": {
+        "mode": "hard",
+        "evidence": [
+          "effective-policy"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    },
+    {
+      "id": "decisions.persist-architecture",
+      "version": "1.0.0",
+      "keyword": "MUST",
+      "statement": "Persist and version every material architectural decision in the project repository.",
+      "scope": [
+        "architecture",
+        "project"
+      ],
+      "rationale": "An AI conversation is context, never an authoritative project record.",
+      "owner": "framework:architecture",
+      "enforcement": {
+        "mode": "hard",
+        "evidence": [
+          "adr",
+          "project-map"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    },
+    {
+      "id": "quality.contextual-principle-review",
+      "version": "1.0.0",
+      "keyword": "SHOULD",
+      "statement": "Review material code and design changes against the applicable Clean Code, SOLID and foundational principles without treating heuristics as universal hard gates.",
+      "scope": [
+        "project",
+        "agent",
+        "code",
+        "architecture"
+      ],
+      "rationale": "Contextual review improves maintainability while misuse risks and exceptions prevent dogmatic abstractions or mechanical fragmentation.",
+      "owner": "framework:quality",
+      "enforcement": {
+        "mode": "audit",
+        "evidence": [
+          "code-review"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": true,
+      "origin": "core"
+    },
+    {
+      "id": "quality.evidence-before-completion",
+      "version": "1.0.0",
+      "keyword": "MUST",
+      "statement": "Produce fresh verification evidence before claiming a change complete or correct.",
+      "scope": [
+        "project",
+        "agent"
+      ],
+      "rationale": "Assertions without current evidence are not reliable completion criteria.",
+      "owner": "framework:quality",
+      "enforcement": {
+        "mode": "hard",
+        "evidence": [
+          "gate-report"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    },
+    {
+      "id": "quality.progressive-gates",
+      "version": "1.0.0",
+      "keyword": "MUST",
+      "statement": "Apply quality gates proportionally to L0-L3 impact and never treat a missing required gate as passing.",
+      "scope": [
+        "framework",
+        "project"
+      ],
+      "rationale": "Sustainable rigor should rise with risk while deterministic omissions remain visible.",
+      "owner": "framework:quality",
+      "enforcement": {
+        "mode": "hard",
+        "evidence": [
+          "change-classification",
+          "gate-report"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    },
+    {
+      "id": "routing.eval-before-automation",
+      "version": "1.0.0",
+      "keyword": "MUST",
+      "statement": "Keep model routing recommendation-only until conformance thresholds and explicit human activation are recorded.",
+      "scope": [
+        "framework",
+        "adapter"
+      ],
+      "rationale": "Cost and capability routing must be proven before it can autonomously select models.",
+      "owner": "framework:governance",
+      "enforcement": {
+        "mode": "hard",
+        "evidence": [
+          "routing-eval",
+          "approval-record"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    },
+    {
+      "id": "safety.destructive-human-approval",
+      "version": "1.0.0",
+      "keyword": "MUST",
+      "statement": "Obtain explicit human approval before destructive, irreversible or production-impacting actions.",
+      "scope": [
+        "project",
+        "agent",
+        "production"
+      ],
+      "rationale": "High-impact side effects require accountable human intent.",
+      "owner": "framework:governance",
+      "enforcement": {
+        "mode": "human",
+        "evidence": [
+          "approval-record",
+          "rollback"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    },
+    {
+      "id": "safety.impasse-stop-loop",
+      "version": "1.0.0",
+      "keyword": "MUST",
+      "statement": "Stop repeated correction loops, preserve evidence and escalate suspected framework conflicts for human review.",
+      "scope": [
+        "project",
+        "agent"
+      ],
+      "rationale": "Repetition without new hypotheses increases damage while producing no information.",
+      "owner": "framework:reliability",
+      "enforcement": {
+        "mode": "hard",
+        "evidence": [
+          "attempt-ledger",
+          "impasse-record"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    },
+    {
+      "id": "security.no-secret-output",
+      "version": "1.0.0",
+      "keyword": "MUST_NOT",
+      "statement": "Expose credentials, tokens, private keys or other secrets in output, logs or committed artifacts.",
+      "scope": [
+        "framework",
+        "project",
+        "agent"
+      ],
+      "rationale": "Secret disclosure crosses a non-recoverable security boundary.",
+      "owner": "framework:security",
+      "enforcement": {
+        "mode": "hard",
+        "evidence": [
+          "secret-scan"
+        ]
+      },
+      "source": "policies/core.yaml",
+      "overridable": false,
+      "origin": "core"
+    }
+  ],
+  "profileLock": {
+    "profiles": [],
+    "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  }
+}

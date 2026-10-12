@@ -1,0 +1,12 @@
+id: replace-project-id
+version: 0.1.0
+projectType: new
+problem: ""
+audiences: []
+outcomes: []
+scope: { in: [], out: [] }
+constraints: []
+technicalPreference:
+  mode: agent-recommend
+unknowns: []
+state: draft

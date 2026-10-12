@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/capability-delta.schema.json",
+  "title": "AIFW CapabilityDelta",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "changeId", "capability", "title", "operations"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "CapabilityDelta" },
+    "changeId": { "$ref": "#/$defs/slug" },
+    "capability": { "$ref": "#/$defs/slug" },
+    "title": { "type": "string", "minLength": 1, "pattern": "\\S" },
+    "purpose": { "type": "string", "minLength": 1 },
+    "operations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["added", "modified", "removed"],
+      "properties": {
+        "added": { "type": "array", "items": { "$ref": "#/$defs/requirement" } },
+        "modified": { "type": "array", "items": { "$ref": "#/$defs/requirement" } },
+        "removed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "reason"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^REQ-[A-Z0-9-]+$" },
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$" },
+    "strings": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "given", "when", "then"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^SCN-[A-Z0-9-]+$" },
+        "given": { "$ref": "#/$defs/strings" },
+        "when": { "$ref": "#/$defs/strings" },
+        "then": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "strength", "statement", "scenarios"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^REQ-[A-Z0-9-]+$" },
+        "strength": { "enum": ["MUST", "SHALL", "SHOULD", "MAY"] },
+        "statement": { "type": "string", "minLength": 1 },
+        "scenarios": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/scenario" } }
+      }
+    }
+  }
+}

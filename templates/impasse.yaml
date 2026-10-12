@@ -1,0 +1,6 @@
+id: impasse:example
+impact: L1
+state: NORMAL
+attempts: []
+attemptFingerprints: []
+stopDestructiveChanges: false

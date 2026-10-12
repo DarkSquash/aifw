@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/context-index.schema.json",
+  "title": "AIFW ContextIndex",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "documents", "findings", "status", "semanticValidation", "tokenEstimateMethod"],
+  "properties": {
+    "apiVersion": {"const": "aifw.dev/v1alpha1"},
+    "kind": {"const": "ContextIndex"},
+    "status": {"enum": ["pass", "blocked"]},
+    "semanticValidation": {"const": "not-performed"},
+    "tokenEstimateMethod": {"const": "characters/4-ceiling"},
+    "findings": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "path", "severity"],
+      "properties": {"code": {"type": "string"}, "path": {"type": "string"}, "target": {"type": "string"}, "severity": {"enum": ["error", "warning"]}}
+    }},
+    "documents": {"type": "array", "items": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "scope", "intents", "required", "dependencies", "sources", "sourceHashes", "sha256", "estimatedTokens"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "scope": {"type": "string"},
+        "intents": {"$ref": "#/$defs/strings"},
+        "required": {"type": "boolean"},
+        "dependencies": {"$ref": "#/$defs/strings"},
+        "sources": {"$ref": "#/$defs/strings"},
+        "sourceHashes": {"type": "object", "additionalProperties": {"$ref": "#/$defs/hash"}},
+        "sha256": {"$ref": "#/$defs/hash"},
+        "estimatedTokens": {"type": "integer", "minimum": 0}
+      }
+    }}
+  },
+  "$defs": {
+    "strings": {"type": "array", "items": {"type": "string"}},
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

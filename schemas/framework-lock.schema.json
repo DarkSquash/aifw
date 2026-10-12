@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifw.dev/schemas/framework-lock.schema.json",
+  "title": "AIFW FrameworkLock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "frameworkVersion", "profiles", "resolutionDigest", "generatedBy"],
+  "properties": {
+    "apiVersion": { "const": "aifw.dev/v1alpha1" },
+    "kind": { "const": "FrameworkLock" },
+    "frameworkVersion": { "$ref": "#/definitions/semver" },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "version", "kind", "digest"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "$ref": "#/definitions/semver" },
+          "kind": { "enum": ["capability", "stack"] },
+          "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "resolutionDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "generatedBy": { "type": "string", "pattern": "^aifw/" }
+  },
+  "definitions": {
+    "semver": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$" }
+  }
+}
