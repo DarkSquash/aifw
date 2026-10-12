@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from .common import AifwError, now, read_yaml, require, sort_key, timestamp, validate
+from .common import AifwError, now, read_valid_yaml, read_yaml, require, sort_key, timestamp
 
 DEFAULT_PERMISSION_POLICY = dict(
     externalAllowlist=[],
@@ -81,7 +81,7 @@ def validate_break_glass(grant, requested_scope, at=None):
 
 
 def load_permission_policy(root):
-    return validate(read_yaml(Path(root) / ".aifw/permissions.yaml"), "permissions.schema.json")
+    return read_valid_yaml(Path(root) / ".aifw/permissions.yaml", "permissions.schema.json")
 
 
 def decide_action(request, data, allowlist=None):

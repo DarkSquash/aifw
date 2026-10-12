@@ -36,10 +36,10 @@ Para desabilitar, remova a entrada `aifw-hook` de `.claude/settings.json` e a pa
 
 | Evento | Ação |
 | --- | --- |
-| PreToolUse | aplica permissões, impasses, arquivos de controle, MCP, delegação, classificação dos dados e break-glass (detalhes abaixo); se o `aifw-hook` não puder rodar, a ação é bloqueada (`onFailure: block`) |
+| PreToolUse | cobre Bash, PowerShell, edições, Read, Grep, Glob, web, subagentes e MCP; aplica permissões, impasses, arquivos de controle, MCP, delegação, classificação dos dados e break-glass (detalhes abaixo); se o `aifw-hook` não puder rodar, a ação é bloqueada (`onFailure: block`) |
 | PostToolUse | registra comandos e edições em `.aifw/runs/<sessão>.jsonl`, em segundo plano |
 | PostToolUseFailure | registra a falha; se o mesmo comando de teste falhar duas vezes sem impasse aberto, sugere `aifw impasse open` |
-| Stop | impede concluir com código alterado depois da última verificação bem-sucedida, uma vez por resposta. Compara o estado do git, então pega edições feitas por qualquer caminho (scripts, `sed -i`, geradores). Só conta como verificação o próprio executor de testes ou `aifw validate`, não um `echo pytest` |
+| Stop | é um aviso, não uma trava: o Claude Code repassa o bloqueio uma vez por resposta. Impede concluir com código alterado depois da última verificação bem-sucedida, uma vez por resposta. Compara o estado do git, então pega edições feitas por qualquer caminho (scripts, `sed -i`, geradores). Só conta como verificação o próprio executor de testes ou `aifw validate`, não um `echo pytest` |
 | SessionStart | informa intake incompleto, mudanças ativas e impasses abertos; guarda o estado inicial do git e apaga registros de sessão com mais de 30 dias |
 
 Como o PreToolUse bloqueia quando falha, quem clonar um projeto habilitado precisa instalar o AIFW antes de usar o Claude Code nele. `aifw claude check` mostra o que falta: hooks, skill do projeto, `aifw-hook` no PATH, comando `/aifw` e skills obrigatórias.
@@ -59,7 +59,7 @@ Controles adicionais:
 - **Subagentes:** delegar para `haiku` pede confirmação enquanto houver mudança L2 ou L3 ativa.
 - **Break-glass:** `aifw break-glass grant --incident <id> --scope git-remote,deploy --reason ... --by human:<nome> --hours 4` libera esses tipos de ação até expirar, se `breakGlass.enabled` estiver ativo. Não libera arquivos de controle, impasses nem aprovações.
 
-O hook lê o comando como um shell leria: respeita aspas, separa as partes ligadas por `&&`, `;` e `|`, ignora as opções globais do git (`git -C . push` é um push) e analisa o conteúdo de `bash -c "..."`. Texto entre aspas não conta como comando, então `grep "git push" notas.txt` é só uma leitura. `cmd /c` e `powershell -Command` são analisados até o fim da linha. Código que o hook não consegue ler pede confirmação: `eval`, `python -c` e afins, `Start-Process`, `xargs`, comandos codificados, texto enviado para um shell por pipe e subcomandos desconhecidos do git, que podem ser aliases. Publicação (`npm publish`, `docker push`, `twine upload`) e acesso remoto (`ssh`, `scp`, `rsync`) são escrita externa; instalação de pacotes é leitura externa do serviço `package-registry`. Para liberar, inclua `package-registry` ou `remote-host` em `spec.externalAllowlist`. O que um script faz por dentro (`python publicar.py`) continua invisível para o hook. Consulte o [ADR-0019](decisions/ADR-0019-hook-hardening.md).
+O hook lê o comando como um shell leria: respeita aspas, separa as partes ligadas por `&&`, `;` e `|`, ignora as opções globais do git (`git -C . push` é um push) e analisa o conteúdo de `bash -c "..."`. Texto entre aspas não conta como comando, então `grep "git push" notas.txt` é só uma leitura. `cmd /c` e `powershell -Command` são analisados até o fim da linha, assim como o conteúdo de `$(...)`, crases e blocos `{ }`. Programa vindo de variável (`$G push`), `Invoke-Command`, blocos do PowerShell e `.` para rodar script pedem confirmação. `printenv`, `env`, `set` e `env:` contam como leitura de segredo, e `git commit -S` pede confirmação, porque commit assinado é a prova de aprovação. Código que o hook não consegue ler pede confirmação: `eval`, `python -c` e afins, `Start-Process`, `xargs`, comandos codificados, texto enviado para um shell por pipe e subcomandos desconhecidos do git, que podem ser aliases. Publicação (`npm publish`, `docker push`, `twine upload`) e acesso remoto (`ssh`, `scp`, `rsync`) são escrita externa; instalação de pacotes é leitura externa do serviço `package-registry`. Para liberar, inclua `package-registry` ou `remote-host` em `spec.externalAllowlist`. A allowlist casa por domínio, não por pedaço do nome: `github` vale para `github.com`, `githubusercontent.com` e `githubassets.com`, nunca para `github.attacker.example`. Um nome com ponto é o próprio domínio; outros nomes são definidos em `serviceDomains` no `permissions.yaml`. O que um script faz por dentro (`python publicar.py`) continua invisível para o hook. Consulte o [ADR-0019](decisions/ADR-0019-hook-hardening.md).
 
 ### Aprovações
 
@@ -70,7 +70,11 @@ Os comandos de aprovação (`intake approve`, `adopt approve`, `decision approve
 
 O agente mostra o comando, e você o roda no seu terminal; no app desktop, serve o painel Terminal.
 
-Para uma prova mais forte, ative `approvals.requireSignedCommit: true` em `.aifw/permissions.yaml`. A partir daí, Charter, aprovação de spec, waivers e break-glass só valem se o arquivo estiver num commit assinado (`git commit -S`) e inalterado desde então. O agente consegue escrever arquivos, mas não consegue assinar um commit com uma chave cuja senha só você conhece.
+Para uma prova mais forte, ative `approvals.requireSignedCommit: true` em `.aifw/permissions.yaml`. A partir daí, Charter, aprovação de spec, waivers e break-glass só valem se o arquivo estiver num commit assinado (`git commit -S`) e inalterado desde então. O agente consegue escrever arquivos, mas não consegue assinar um commit com uma chave cuja senha só você conhece. Para isso valer, o gpg-agent não pode guardar a senha em cache: use `default-cache-ttl 0` e `max-cache-ttl 0` em `gpg-agent.conf`. O modo cobre Charter, aprovação de spec, adoção, waivers, break-glass e decisões de impasse. Decisões de arquitetura e ativação de roteamento são registros: o AIFW não os usa para liberar nenhuma ação.
+
+### Caminhos protegidos e break-glass
+
+`protectedPaths` no `permissions.yaml` lista pastas ou arquivos que o hook trata como arquivos de controle; cada alteração pede confirmação. No repositório do próprio AIFW, `python/aifw/` fica protegido, porque a instalação editável roda esse código como o hook. Cada ação liberada por um break-glass é registrada em `.aifw/break-glass/<incidente>.log`.
 
 ### Projeto clonado sem o AIFW
 

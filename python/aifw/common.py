@@ -9,8 +9,6 @@ from pathlib import Path
 import re
 import unicodedata
 
-import jsonschema
-from referencing import Registry, Resource
 import yaml
 
 API = "aifw.dev/v1alpha1"
@@ -176,6 +174,9 @@ def assets():
 
 @lru_cache(maxsize=None)
 def schema_validator(schema_name):
+    import jsonschema
+    from referencing import Registry, Resource
+
     resources = []
     for file in (assets() / "schemas").glob("*.json"):
         content = read_json(file)
@@ -194,6 +195,31 @@ def validate(value, schema_name):
         details=[f"{list(e.path)}: {e.message}" for e in errors[:20]],
     )
     return deepcopy(value)
+
+
+def read_valid_yaml(file, schema_name):
+    """read_yaml + validate, remembering validated content so short-lived hooks skip loading jsonschema.
+
+    The cache only records that some content passed a schema; values always come from the file itself.
+    """
+    import tempfile
+
+    data = Path(file).read_bytes()
+    key = f"{schema_name}:{sha256(data).hexdigest()}"
+    cache = Path(tempfile.gettempdir()) / "aifw-validated.txt"
+    try:
+        known = key in cache.read_text(encoding="utf-8").split()
+    except OSError:
+        known = False
+    value = read_yaml(file)
+    if not known:
+        validate(value, schema_name)
+        try:
+            with cache.open("a", encoding="utf-8") as stream:
+                stream.write(key + "\n")
+        except OSError:
+            pass
+    return value
 
 
 def project_path(root, relative, *, file=False):

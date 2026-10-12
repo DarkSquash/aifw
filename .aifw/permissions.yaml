@@ -7,6 +7,9 @@ productionDeployment: human-approval
 destructiveChanges: human-approval
 externalServices:
   writes: human-approval
+# The editable aifw install runs this source as the hook itself.
+protectedPaths:
+  - python/aifw/
 childAgents:
   capabilityCeiling: parent
 breakGlass:

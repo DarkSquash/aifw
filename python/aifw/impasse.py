@@ -5,7 +5,17 @@ from hashlib import sha256
 
 from pathlib import Path
 
-from .common import AifwError, human, project_path, read_yaml, require, timestamp, validate, write_yaml
+from .common import (
+    AifwError,
+    human,
+    project_path,
+    read_valid_yaml,
+    read_yaml,
+    require,
+    timestamp,
+    validate,
+    write_yaml,
+)
 
 
 def create_impasse_case(case_id, impact):
@@ -136,4 +146,4 @@ def save_case(root, case, exclusive=False):
 
 def load_cases(root):
     folder = Path(root) / ".aifw/impasses"
-    return [validate(read_yaml(f), "impasse.schema.json") for f in sorted(folder.glob("*.yaml"))]
+    return [read_valid_yaml(f, "impasse.schema.json") for f in sorted(folder.glob("*.yaml"))]

@@ -28,7 +28,18 @@ INLINE = {"-c", "-command", "/c", "/k"}
 REST_OF_LINE = {"cmd", "pwsh", "powershell"}
 ENCODED = {"-encodedcommand", "-enc", "-ec", "-e"}
 # Programs that run code or other programs the hook cannot see.
-OPAQUE = {"eval", "iex", "invoke-expression", "start-process", "saps", "start", "xargs"}
+OPAQUE = {
+    "eval",
+    "iex",
+    "invoke-expression",
+    "invoke-command",
+    "icm",
+    "start-process",
+    "saps",
+    "start",
+    "xargs",
+    ".",
+}
 INTERPRETERS = {"python", "python3", "py", "node", "perl", "ruby", "deno", "bun"}
 PUBLISH = {
     "npm": "publish", "pnpm": "publish", "yarn": "publish", "twine": "upload", "docker": "push",
@@ -61,7 +72,7 @@ GIT_READ = {
 GIT_LISTING = {"branch", "tag", "remote", "stash", "config", "worktree", "submodule"}
 LIST_ARGS = {"-a", "-r", "-v", "-vv", "-l", "--list", "list", "show", "--show-current", "--get", "--get-all"}
 SEVERITY = [
-    "opaque", "destructive", "deploy", "git-remote", "external-write", "secret-read",
+    "opaque", "destructive", "deploy", "git-remote", "external-write", "secret-read", "signing",
     "git-local", "filesystem-write", "external-read", "read-only",
 ]  # fmt: skip
 
@@ -70,12 +81,48 @@ def request(kind, **extra):
     return dict(kind=kind, mutation=kind not in {"read-only", "external-read", "secret-read"}, **extra)
 
 
+def prints_environment(words, name, args):
+    """Commands that print environment variables, where tokens and passwords often live."""
+    lowered = [a.lower() for a in args]
+    return (
+        name == "printenv"
+        or (name in {"set", "export"} and lowered in ([], ["-p"]))
+        or (not name and words and name_of(words[0]) == "env")
+        or (
+            name in {"get-childitem", "gci", "dir", "ls", "get-item", "gi"}
+            and any(a.startswith("env:") for a in lowered)
+        )
+    )
+
+
+# Domains each allowlisted service name stands for; a name with a dot is a domain itself.
+SERVICE_DOMAINS = {
+    "github": ["github.com", "githubusercontent.com", "githubassets.com"],
+    "gitlab": ["gitlab.com"],
+    "context7": ["context7.com"],
+    "npm": ["npmjs.org", "npmjs.com"],
+    "pypi": ["pypi.org", "pythonhosted.org"],
+}
+
+
+def domains_for(allowlist):
+    if isinstance(allowlist, dict):
+        return allowlist
+    return {name: SERVICE_DOMAINS.get(name, [name] if "." in name else []) for name in allowlist}
+
+
 def service_of(text, allowlist):
     match = URL.search(text or "")
-    host = match.group(1).lower() if match else ""
-    # shortcut: an allowlisted name matches a host label (github -> api.github.com); map
-    # explicit hosts per service if names collide.
-    return next((name for name in allowlist if name in host.split(".")), host or "unknown")
+    host = match.group(1).lower().split(":")[0] if match else ""
+    known = domains_for(allowlist)
+    return next(
+        (
+            name
+            for name, domains in known.items()
+            if any(host == d or host.endswith("." + d) for d in domains)
+        ),
+        host or "unknown",
+    )
 
 
 def lex(line):
@@ -122,6 +169,56 @@ def segments(command):
     return out
 
 
+EMBEDDED = "__aifw_embedded__"
+
+
+def split_embedded(command):
+    """Command text with embedded code replaced by a placeholder, plus each embedded body."""
+    out, bodies, quote, i = [], [], None, 0
+    while i < len(command):
+        c = command[i]
+        if quote == "'":
+            quote = None if c == "'" else quote
+            out.append(c)
+            i += 1
+            continue
+        if c in "'\"" and quote in (None, c):
+            quote = None if quote == c else c
+            out.append(c)
+            i += 1
+            continue
+        if c == "`":
+            end = command.find("`", i + 1)
+            if end < 0:
+                raise ValueError("unterminated backtick")
+            bodies.append(command[i + 1 : end])
+            out.append(f" {EMBEDDED} ")
+            i = end + 1
+            continue
+        process = command.startswith(("$(", "<(", ">("), i) and not command.startswith("$((", i)
+        block = c == "{" and quote is None and (i == 0 or command[i - 1] not in "$@")
+        if process or block:
+            opener, close = ("(", ")") if process else ("{", "}")
+            start = i + (2 if process else 1)
+            depth, j = 1, start
+            while j < len(command) and depth:
+                depth += {opener: 1, close: -1}.get(command[j], 0)
+                j += 1
+            if depth:
+                raise ValueError("unbalanced embedded code")
+            body = command[start : j - 1]
+            if process or any(ch.isspace() for ch in body.strip()) or ";" in body:
+                bodies.append(body)  # brace expansion such as {a,b} is not code
+                out.append(f" {EMBEDDED} ")
+            else:
+                out.append(command[i:j])
+            i = j
+            continue
+        out.append(c)
+        i += 1
+    return "".join(out), bodies
+
+
 def name_of(word):
     name = re.split(r"[\\/]", word)[-1].lower()
     return re.sub(r"\.(exe|cmd|bat|ps1|com)$", "", name)
@@ -146,10 +243,21 @@ def program(words):
 
 
 def git_requests(args):
-    i = 0
+    i, configs = 0, []
     while i < len(args) and args[i].startswith("-"):
+        if args[i] == "-c" and i + 1 < len(args):
+            configs.append(args[i + 1].lower())
         i += 2 if args[i] in GIT_VALUE_OPTIONS else 1
     sub, rest = (args[i], args[i + 1 :]) if i < len(args) else ("", [])
+    signs = any(c.startswith(("commit.gpgsign=true", "tag.gpgsign=true")) for c in configs) or (
+        sub in {"commit", "tag", "merge", "rebase", "revert", "cherry-pick", "am"}
+        and any(
+            a.startswith(("-S", "--gpg-sign"))
+            or (sub == "tag" and a in {"-s", "--sign", "-u", "--local-user"})
+            for a in rest
+        )
+    )
+    signing = [request("signing")] if signs else []
     destructive = (
         (sub == "reset" and "--hard" in rest)
         or (
@@ -169,11 +277,11 @@ def git_requests(args):
         )
         return [request("git-remote")] + ([request("filesystem-write", destructive=True)] if force else [])
     if destructive:
-        return [request("filesystem-write", destructive=True)]
+        return [request("filesystem-write", destructive=True)] + signing
     if sub in GIT_READ or (sub in GIT_LISTING and (not rest or rest[0] in LIST_ARGS)):
         return [request("read-only")]
     # Unknown subcommands include aliases, which can expand to anything (git p -> git push).
-    return [request("git-local" if sub in GIT_LOCAL else "opaque")]
+    return [request("git-local" if sub in GIT_LOCAL else "opaque")] + signing
 
 
 def http_request(name, args, allowlist):
@@ -251,6 +359,8 @@ def segment_requests(words, piped, allowlist, depth):
     if (
         depth > 3
         or name in OPAQUE
+        or name.startswith(("$", "%"))
+        or name == EMBEDDED
         or interpreted
         or (name in SHELLS and (set(lowered) & ENCODED or (piped and not args)))
     ):
@@ -261,7 +371,7 @@ def segment_requests(words, piped, allowlist, depth):
         found += git_requests(args)
     elif name == "gh":
         if lowered[:1] == ["api"]:
-            found.append(http_request(name, args, ["github"] + list(allowlist)))
+            found.append(dict(http_request(name, args, allowlist), service="github"))
         elif lowered[:1] in (["pr"], ["release"], ["repo"], ["workflow"], ["issue"]) and len(lowered) > 1:
             read = lowered[1] in {"list", "view", "status", "checks", "diff"}
             found.append(request("external-read" if read else "git-remote", service="github"))
@@ -269,6 +379,8 @@ def segment_requests(words, piped, allowlist, depth):
             found.append(request("read-only"))
     elif name in {"curl", "wget", "invoke-webrequest", "invoke-restmethod", "iwr", "irm"}:
         found.append(http_request(name, args, allowlist))
+    elif prints_environment(words, name, args):
+        found.append(request("secret-read"))
     elif name in PUBLISH and PUBLISH[name] in lowered[:2]:
         found.append(request("external-write", service="package-registry"))
     elif name in REMOTE_SHELL:
@@ -307,11 +419,17 @@ def rank(item):
 
 def analyze(command, allowlist=(), depth=0):
     """The most severe request in the command, with every request under "requests"."""
-    parts = segments(command)
+    try:
+        command, bodies = split_embedded(command)
+    except ValueError:
+        bodies, command = [], None
+    parts = segments(command) if command is not None and depth <= 3 else None
     if parts is None:
         found = [request("opaque")]
     else:
         found, previous = [], ""
+        for body in bodies:
+            found += analyze(body, allowlist, depth + 1)["requests"]
         for words, operator in parts:
             found += segment_requests(words, previous in {"|", "|&"}, allowlist, depth)
             previous = operator

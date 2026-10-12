@@ -4,6 +4,7 @@ from copy import deepcopy
 from pathlib import Path, PurePosixPath
 import re
 
+from . import signing
 from .common import (
     API,
     AifwError,
@@ -255,6 +256,13 @@ def assess_adoption(root):
                     blockingHumanApproval=True,
                     reason="The approved brownfield catalog changed after its recorded content digest.",
                     nextAction="aifw adopt apply",
+                )
+            if not signing.approved(root, Path(root) / ".aifw/adoption/status.yaml"):
+                return dict(
+                    result,
+                    status="invalid",
+                    blockingHumanApproval=True,
+                    reason="The adoption approval is not in a signed commit.",
                 )
             return dict(result, reason="The discovered mapping is applied and approved by a human.")
         if state["status"] == "review-required":

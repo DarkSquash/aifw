@@ -20,7 +20,7 @@ COMMAND = dict(type="command", command="aifw-hook || true", shell="bash", timeou
 HOOKS = {
     # A project that opted into AIFW must not fail open: a missing hook blocks with instructions.
     "PreToolUse": dict(
-        matcher=TOOLS + "|Read|WebFetch|WebSearch|Agent|Task|mcp__.*",
+        matcher=TOOLS + "|Read|Grep|Glob|WebFetch|WebSearch|Agent|Task|mcp__.*",
         hooks=[dict(COMMAND, command=f"aifw-hook || {{ echo '{MISSING}' >&2; exit 2; }}", onFailure="block")],
     ),
     # Logging runs in the background so successful calls pay no hook latency.
@@ -66,14 +66,21 @@ def enable_project(root):
     skill = project_path(root, ".claude/skills/aifw-workflow/SKILL.md")
     skill.parent.mkdir(parents=True, exist_ok=True)
     text = (assets() / "templates/claude/skills/aifw-workflow/SKILL.md").read_text(encoding="utf-8")
-    skill.write_text(
-        text.rstrip("\n") + "\n\n" + STAMP.format(__version__) + "\n", encoding="utf-8", newline="\n"
-    )
+    content = text.rstrip("\n") + "\n\n" + STAMP.format(__version__) + "\n"
+    backup = None
+    if skill.is_file():
+        existing = skill.read_text(encoding="utf-8")
+        if existing != content:
+            # Someone edited the project copy, or it came from another version: keep it before replacing.
+            backup = skill.with_name("SKILL.md.bak")
+            backup.write_text(existing, encoding="utf-8", newline="\n")
+    skill.write_text(content, encoding="utf-8", newline="\n")
     return dict(
         status="enabled",
         hooksChanged=changed,
         settings=".claude/settings.json",
         skill=".claude/skills/aifw-workflow/SKILL.md",
+        skillBackup=backup and ".claude/skills/aifw-workflow/SKILL.md.bak",
         nextAction="Open a new Claude Code session in this project so the hooks and skill load.",
     )
 

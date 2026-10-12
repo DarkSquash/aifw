@@ -16,9 +16,9 @@ import time
 
 from . import signing
 from .common import now, read_yaml
-from .impasse import load_cases, mutation_allowed
+from .impasse import case_file, load_cases, mutation_allowed
 from .permissions import decide_action, load_permission_policy, validate_break_glass
-from .shell import SECRET_FILE, analyze, runs_tests, service_of, verification_visible
+from .shell import SECRET_FILE, analyze, domains_for, runs_tests, service_of, verification_visible
 
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 RUN_RETENTION_DAYS = 30
@@ -56,7 +56,7 @@ def find_root(cwd):
     return None
 
 
-def control_target(root, tool_name, tool_input, mutation):
+def control_target(root, tool_name, tool_input, mutation, protected=()):
     """The AIFW control file this call would change, if any."""
     if tool_name in EDIT_TOOLS:
         target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
@@ -66,12 +66,14 @@ def control_target(root, tool_name, tool_input, mutation):
             settings = target.parent.name == ".claude" and target.name.startswith("settings")
             return f"{target.parent.name}/{target.name}" if settings else None
         text = target.relative_to(Path(root).resolve()).as_posix()
-        matches = [c for c in CONTROL if text == c or text.startswith(c) or text.endswith("/" + c)]
+        matches = [
+            c for c in (*CONTROL, *protected) if text == c or text.startswith(c) or text.endswith("/" + c)
+        ]
         if text.startswith(".aifw/changes/") and text.endswith("/change.yaml"):
             matches.append("change.yaml")  # holds the spec approval
     elif tool_name in SHELL_TOOLS and mutation:
         text = tool_input.get("command", "").replace("\\", "/")
-        matches = [c for c in (*CONTROL, "change.yaml", ".claude/settings") if c in text]
+        matches = [c for c in (*CONTROL, *protected, "change.yaml", ".claude/settings") if c in text]
     else:
         return None
     return matches[0] if matches else None
@@ -91,8 +93,14 @@ def classify(tool_name, tool_input, allowlist):
         return dict(kind="delegation", model=tool_input.get("model"), mutation=False)
     if tool_name == "WebSearch":
         return dict(kind="external-read", service="web-search", mutation=False)
-    if tool_name == "Read" and SECRET_FILE.search(tool_input.get("file_path") or ""):
-        return dict(kind="secret-read", mutation=False)
+    if tool_name in {"Read", "Grep", "Glob"}:
+        targets = [tool_input.get(k) or "" for k in ("file_path", "path", "glob", "pattern")]
+        secret = tool_name != "Grep" or tool_input.get("path") or tool_input.get("glob")
+        if secret and any(
+            SECRET_FILE.search(t.replace("*", "x")) for t in targets[: 4 if tool_name == "Glob" else 3]
+        ):
+            return dict(kind="secret-read", mutation=False)
+        return dict(kind="read-only", mutation=False)
     if tool_name not in SHELL_TOOLS:
         return dict(kind="read-only", mutation=False)
     return analyze(tool_input.get("command", ""), allowlist)
@@ -102,6 +110,11 @@ def project_settings(root):
     """Manifest fields the hook enforces: the single external allowlist and the data classification."""
     spec = read_yaml(Path(root) / "aifw.yaml")["spec"]
     return spec.get("externalAllowlist", []), spec.get("dataClassification", "internal")
+
+
+def service_domains(policy, allowlist):
+    custom = policy.get("serviceDomains", {})
+    return {name: custom.get(name) or domains_for([name])[name] for name in allowlist}
 
 
 def active_levels(root):
@@ -115,15 +128,25 @@ def active_grants(root, policy):
     """Action kinds covered by a valid, unexpired break-glass grant."""
     if not policy.get("breakGlass", {}).get("enabled"):
         return set()
-    kinds = set()
+    kinds = {}
     for file in (Path(root) / ".aifw/break-glass").glob("*.yaml"):
         grant = read_yaml(file)
         if signing.approved(root, file):
-            kinds |= {s for s in grant.get("scope", []) if validate_break_glass(grant, s)["valid"]}
+            kinds.update({s: file for s in grant.get("scope", []) if validate_break_glass(grant, s)["valid"]})
     return kinds
 
 
-def item_findings(root, policy, item, allowlist, classification):
+def log_break_glass(file, kind, tool_name, tool_input):
+    """Audit trail for every action a break-glass grant lets through."""
+    from .context import redact
+
+    detail = redact(str(tool_input.get("command") or tool_input.get("file_path") or ""))[:300]
+    entry = dict(at=now(), kind=kind, tool=tool_name, detail=detail)
+    with file.with_suffix(".log").open("a", encoding="utf-8", newline="\n") as stream:
+        stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+def item_findings(root, policy, item, allowlist, classification, tool_name="", tool_input=None):
     """Policy findings for one action of a tool call."""
     kind, findings = item["kind"], []
     if kind == "opaque":
@@ -131,7 +154,9 @@ def item_findings(root, policy, item, allowlist, classification):
             ("ask", "runs code the hook cannot read (eval, inline code, aliases or piped into a shell)")
         )
     elif kind == "secret-read":
-        findings.append(("ask", "reads a file that usually holds secrets"))
+        findings.append(("ask", "reads files or variables that usually hold secrets"))
+    elif kind == "signing":
+        findings.append(("ask", "signs a commit; signed commits are the proof of human approval"))
     elif kind == "mcp":
         servers = policy.get("mcpServers", {})
         if item["server"] in servers.get("deny", []):
@@ -145,7 +170,9 @@ def item_findings(root, policy, item, allowlist, classification):
             findings.append(("ask", f"delegates to haiku while an active {max(risky)} change exists"))
     else:
         decision = decide_action(item, policy, allowlist)
-        if decision["decision"] != "allow" and kind in active_grants(root, policy):
+        grants = active_grants(root, policy) if decision["decision"] != "allow" else {}
+        if kind in grants:
+            log_break_glass(grants[kind], kind, tool_name, tool_input or {})
             decision = dict(decision="allow", reason="break-glass")
         outside = kind == "external-read" and decision["decision"] == "deny"
         if outside and classification in {"confidential", "restricted"}:
@@ -164,9 +191,11 @@ def evaluate(root, tool_name, tool_input):
     """Return ("deny"|"ask", reasons) or None when AIFW has no objection."""
     policy = load_permission_policy(root)
     allowlist, classification = project_settings(root)
-    request = classify(tool_name, tool_input, allowlist)
+    request = classify(tool_name, tool_input, service_domains(policy, allowlist))
     findings = []
     for case in load_cases(root):
+        if case.get("humanDecision") and not signing.approved(root, case_file(root, case["id"])):
+            case = dict(case, state="HUMAN_REVIEW")  # an unsigned decision does not release the freeze
         if request["mutation"] and not mutation_allowed(case, request.get("destructive", False)):
             # Shell text is classified heuristically, so a frozen case asks instead of denying it.
             soft = case["state"] in {"OPEN", "HUMAN_REVIEW"} and tool_name in SHELL_TOOLS
@@ -177,8 +206,10 @@ def evaluate(root, tool_name, tool_input):
                 )
             )
     for item in request.get("requests", [request]):
-        findings += item_findings(root, policy, item, allowlist, classification)
-    control = control_target(root, tool_name, tool_input, request["mutation"])
+        findings += item_findings(root, policy, item, allowlist, classification, tool_name, tool_input)
+    control = control_target(
+        root, tool_name, tool_input, request["mutation"], policy.get("protectedPaths", [])
+    )
     if control:
         findings.append(("ask", f"changes the AIFW control file {control}"))
     if request.get("approval"):

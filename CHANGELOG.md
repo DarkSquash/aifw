@@ -33,6 +33,10 @@ Claude Code passa a ser o host de referência, ativado por projeto, e a validaç
 - O leitor de shell cobre `cmd /c`, `powershell -Command`, `Start-Process`, `xargs`, `python -c`, aliases do git, publicação, acesso remoto e instalação de pacotes.
 - `aifw secrets scan` e gates `secret-scan` e `session-conformance` nos scaffolds; leitura de arquivos de segredo pede confirmação.
 - Modo opcional `approvals.requireSignedCommit`: aprovações só valem em commit assinado.
+- O leitor de shell analisa `$(...)`, crases e blocos `{ }`; programa vindo de variável, `Invoke-Command` e `.` pedem confirmação; `printenv`/`env`/`set` são leitura de segredo; `git commit -S` pede confirmação (ADR-0021).
+- Allowlist casa por domínio, com `serviceDomains` editável; Grep e Glob passam pelo hook; `protectedPaths` no `permissions.yaml`.
+- Modo de commit assinado cobre também adoção e decisões de impasse; uso de break-glass é registrado.
+- O hook só carrega o validador de schemas para conteúdo ainda não validado (cerca de 300 ms em vez de 650 ms); `aifw claude enable` guarda backup de uma skill de projeto editada.
 - Registros de sessão com mais de 30 dias são apagados; `aifw claude check` detecta o `/aifw` global desatualizado; schemas são carregados uma vez por processo.
 
 ### Removido

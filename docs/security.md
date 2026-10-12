@@ -25,7 +25,7 @@ Dependências usam lockfile, revisão de provenance/licença proporcional ao ris
 
 ## Aprovação e break-glass
 
-Push, escrita externa, produção e destruição seguem permission policy. Break-glass só vale para incident ID e scope exatos, após aprovação humana, dentro da janela de validade. Uso gera audit trail e revisão pós-incidente; não remove proteção contra secrets.
+Push, escrita externa, produção e destruição seguem permission policy. Break-glass só vale para incident ID e scope exatos, após aprovação humana, dentro da janela de validade. Cada ação liberada é registrada em `.aifw/break-glass/<incidente>.log`, que serve de base para a revisão pós-incidente; break-glass não remove proteção contra secrets.
 
 ## Evidência segura
 
