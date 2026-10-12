@@ -16,7 +16,7 @@ A suíte `evals/routing/cases.yaml` contém 32 casos revisáveis cobrindo L0–L
 
 ## Decisão
 
-1. Distribuir `extensions/aifw.ts` como recurso oficial do pacote Pi do AIFW.
+1. Distribuir a extensão Pi do AIFW (removida no ADR-0014) como recurso oficial do pacote Pi do AIFW.
 2. Mapear FAST para `openai-codex/gpt-5.6-luna`, WORK para `gpt-5.6-terra` e BRAIN para `gpt-5.6-sol`.
 3. O agente chama `aifw_route_task` antes de trabalho não trivial; a ferramenta classifica por metadados estruturados e só troca o modelo se a policy persistida estiver em modo automático.
 4. Policy local do projeto vence a global. Projeto sem policy usa `~/.pi/agent/aifw-routing.yaml`.

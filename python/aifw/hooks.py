@@ -14,39 +14,11 @@ import sys
 from .common import now, read_yaml
 from .impasse import load_cases, mutation_allowed
 from .permissions import decide_action, load_permission_policy, validate_break_glass
+from .shell import VERIFY, analyze, service_of, verification_visible
 
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 SHELL_TOOLS = {"Bash", "PowerShell"}
 
-# shortcut: regex classification of shell text; misses obfuscated or scripted commands.
-# Upgrade to a real shell parser if bypasses matter more than prompts.
-APPROVAL = re.compile(r"\baifw\b[^|;&]*\b(approve|activate|decide|grant|waiver\s+add)\b")
-DESTRUCTIVE = re.compile(
-    r"\brm\s+-\w*[rf]|\bgit\s+(reset\s+--hard|clean\s+-\w*f|branch\s+-D|checkout\s+--\s)"
-    r"|\bgit\s+push\b[^|;&]*(--force|\s-f\b)|\bRemove-Item\b[^|;&]*-Recurse|\b(rmdir|rd)\s+/s"
-    r"|\bdel\s+/[sq]|\bdrop\s+(table|database)\b|\btruncate\s+table\b",
-    re.IGNORECASE,
-)
-REMOTE = re.compile(
-    r"\bgit\s+push\b|\bgh\s+(pr\s+(create|merge|close)|release\s+create|repo\s+(create|delete))\b"
-)
-DEPLOY = re.compile(
-    r"\b(vercel|netlify)\b[^|;&]*--prod\b|\b(firebase|fly|flyctl)\s+deploy\b"
-    r"|\b(terraform|tofu)\s+apply\b|\bkubectl\s+(apply|delete)\b|\bgcloud\b[^|;&]*\bdeploy\b"
-)
-LOCAL_GIT = re.compile(r"\bgit\s+(commit|add|merge|rebase|tag|stash|checkout|switch|cherry-pick|revert|am)\b")
-HTTP = re.compile(r"\b(curl|wget|Invoke-WebRequest|Invoke-RestMethod|iwr|irm)\b", re.IGNORECASE)
-HTTP_WRITE = re.compile(
-    r"-X\s*(POST|PUT|PATCH|DELETE)\b|--data\b|\s-d\s|-Method\s+(Post|Put|Patch|Delete)\b|--upload-file\b|\s-F\s",
-    re.IGNORECASE,
-)
-URL = re.compile(r"https?://([^/\s'\"]+)")
-READ_ONLY = re.compile(
-    r"^\s*(git\s+(status|diff|log|show|rev-parse|remote\s+-v)|cd|Set-Location|ls|dir|cat|type|head|tail|grep|rg|find|pwd|echo"
-    r"|wc|which|where|Get-ChildItem|Get-Content|Select-String|Get-Command|aifw|pytest|npm\s+test|flutter\s+test"
-    r"|dart\s+test|uv\s+run\s+(--no-sync\s+)?(python\s+-m\s+)?pytest)\b",
-    re.IGNORECASE,
-)
 # Files that govern AIFW itself: editing them could loosen the checks applied to the agent.
 CONTROL = (
     "aifw.yaml",
@@ -66,7 +38,6 @@ CONTROL = (
     ".claude/settings.local.json",
     ".claude/skills/aifw-workflow/",
 )
-HARMLESS_REDIRECT = re.compile(r"\d?>&\d|\d?>\s*(/dev/null|\$null|NUL)\b", re.IGNORECASE)
 
 
 def find_root(cwd):
@@ -74,21 +45,6 @@ def find_root(cwd):
         if (folder / "aifw.yaml").is_file():
             return folder
     return None
-
-
-def service_of(url, allowlist):
-    match = URL.search(url or "")
-    host = match.group(1).lower() if match else ""
-    # shortcut: an allowlisted name matches a host label (github -> api.github.com); map
-    # explicit hosts per service if names collide.
-    return next((name for name in allowlist if name in host.split(".")), host or "unknown")
-
-
-def read_only_shell(command):
-    command = HARMLESS_REDIRECT.sub("", command)
-    if ">" in command:
-        return False
-    return all(READ_ONLY.match(part) for part in re.split(r"&&|\|\||;|\|", command) if part.strip())
 
 
 def control_target(root, tool_name, tool_input, mutation):
@@ -124,24 +80,7 @@ def classify(tool_name, tool_input, allowlist):
         return dict(kind="external-read", service="web-search", mutation=False)
     if tool_name not in SHELL_TOOLS:
         return dict(kind="read-only", mutation=False)
-    command = tool_input.get("command", "")
-    request = dict(mutation=not read_only_shell(command), approval=bool(APPROVAL.search(command)))
-    if DESTRUCTIVE.search(command):
-        return dict(request, kind="filesystem-write", destructive=True)
-    if DEPLOY.search(command):
-        return dict(request, kind="deploy", environment="production")
-    if REMOTE.search(command):
-        return dict(request, kind="git-remote")
-    if LOCAL_GIT.search(command):
-        return dict(request, kind="git-local")
-    if HTTP.search(command):
-        write = bool(HTTP_WRITE.search(command))
-        return dict(
-            request,
-            kind="external-write" if write else "external-read",
-            service=service_of(command, allowlist),
-        )
-    return dict(request, kind="filesystem-write" if request["mutation"] else "read-only", destructive=False)
+    return analyze(tool_input.get("command", ""), allowlist)
 
 
 def project_settings(root):
@@ -168,6 +107,39 @@ def active_grants(root, policy):
     return kinds
 
 
+def item_findings(root, policy, item, allowlist, classification):
+    """Policy findings for one action of a tool call."""
+    kind, findings = item["kind"], []
+    if kind == "opaque":
+        findings.append(("ask", "runs code the hook cannot read (eval, encoded or piped into a shell)"))
+    elif kind == "mcp":
+        servers = policy.get("mcpServers", {})
+        if item["server"] in servers.get("deny", []):
+            findings.append(("deny", f"MCP server {item['server']} is denied by the policy"))
+        elif item["server"] in servers.get("ask", []):
+            findings.append(("ask", f"MCP server {item['server']} requires confirmation"))
+    elif kind == "delegation":
+        risky = active_levels(root) & {"L2", "L3"}
+        if item.get("model") == "haiku" and risky:
+            # The model table never runs L2/L3 work on haiku.
+            findings.append(("ask", f"delegates to haiku while an active {max(risky)} change exists"))
+    else:
+        decision = decide_action(item, policy, allowlist)
+        if decision["decision"] != "allow" and kind in active_grants(root, policy):
+            decision = dict(decision="allow", reason="break-glass")
+        outside = kind == "external-read" and decision["decision"] == "deny"
+        if outside and classification in {"confidential", "restricted"}:
+            findings.append(("deny", f"{decision['reason']} ({classification} data)"))
+        elif kind == "external-write" and classification == "restricted":
+            findings.append(("deny", "external writes are denied for restricted data"))
+        elif decision["decision"] == "deny":
+            # External reads outside the allowlist are confirmed by the human instead of silently blocked.
+            findings.append(("ask" if outside else "deny", decision["reason"]))
+        elif decision["decision"] == "require-approval":
+            findings.append(("ask", decision["reason"]))
+    return findings
+
+
 def evaluate(root, tool_name, tool_input):
     """Return ("deny"|"ask", reasons) or None when AIFW has no objection."""
     policy = load_permission_policy(root)
@@ -184,37 +156,18 @@ def evaluate(root, tool_name, tool_input):
                     f"impasse {case['id']} is {case['state']}; see `aifw impasse status`",
                 )
             )
-    kind = request["kind"]
-    if kind == "mcp":
-        servers = policy.get("mcpServers", {})
-        if request["server"] in servers.get("deny", []):
-            findings.append(("deny", f"MCP server {request['server']} is denied by the policy"))
-        elif request["server"] in servers.get("ask", []):
-            findings.append(("ask", f"MCP server {request['server']} requires confirmation"))
-    elif kind == "delegation":
-        risky = active_levels(root) & {"L2", "L3"}
-        if request.get("model") == "haiku" and risky:
-            # The model table never runs L2/L3 work on haiku.
-            findings.append(("ask", f"delegates to haiku while an active {max(risky)} change exists"))
-    else:
-        decision = decide_action(request, policy, allowlist)
-        if decision["decision"] != "allow" and kind in active_grants(root, policy):
-            decision = dict(decision="allow", reason="break-glass")
-        outside = kind == "external-read" and decision["decision"] == "deny"
-        if outside and classification in {"confidential", "restricted"}:
-            findings.append(("deny", f"{decision['reason']} ({classification} data)"))
-        elif kind == "external-write" and classification == "restricted":
-            findings.append(("deny", "external writes are denied for restricted data"))
-        elif decision["decision"] == "deny":
-            # External reads outside the allowlist are confirmed by the human instead of silently blocked.
-            findings.append(("ask" if outside else "deny", decision["reason"]))
-        elif decision["decision"] == "require-approval":
-            findings.append(("ask", decision["reason"]))
+    for item in request.get("requests", [request]):
+        findings += item_findings(root, policy, item, allowlist, classification)
     control = control_target(root, tool_name, tool_input, request["mutation"])
     if control:
         findings.append(("ask", f"changes the AIFW control file {control}"))
     if request.get("approval"):
-        findings.append(("ask", "AIFW approval commands require explicit human confirmation"))
+        findings.append(
+            (
+                "deny",
+                "approvals must be run by the person approving, in their own terminal (the CLI refuses the agent shell)",
+            )
+        )
     if not findings:
         return None
     level = "deny" if any(level == "deny" for level, _ in findings) else "ask"
@@ -236,12 +189,6 @@ def pre_tool_use(root, payload):
             permissionDecisionReason="AIFW: " + "; ".join(reasons),
         )
     )
-
-
-VERIFY = re.compile(
-    r"\b(pytest|npm\s+(run\s+)?test|pnpm\s+test|yarn\s+test|flutter\s+test|dart\s+test|go\s+test"
-    r"|cargo\s+test|dotnet\s+test|mvn\s+test|gradlew?\s+test|aifw\s+validate)\b"
-)
 
 
 def run_log(root, payload):
@@ -266,8 +213,11 @@ def record(root, payload):
     tool, tool_input = payload.get("tool_name", ""), payload.get("tool_input") or {}
     entry = dict(at=now(), tool=tool, ok=not failed(payload))
     if tool in SHELL_TOOLS:
-        command = redact(tool_input.get("command", ""))[:300]
-        entry.update(command=command, verification=bool(VERIFY.search(command)))
+        raw = tool_input.get("command", "")
+        command = redact(raw)[:300]
+        entry.update(command=command, verification=bool(VERIFY.search(raw)))
+        if entry["verification"] and entry["ok"] and not verification_visible(raw):
+            entry.update(ok=None, masked=True)
     elif tool in EDIT_TOOLS:
         path = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
         path = (path if path.is_absolute() else Path(root) / path).resolve()
@@ -303,10 +253,10 @@ def unverified_edits(entries):
 
 def post_tool_use(root, payload):
     entry = record(root, payload)
-    if entry["ok"] or not entry.get("verification"):
+    if entry["ok"] is not False or not entry.get("verification"):
         return None
     log = read_log(run_log(root, payload))
-    failures = [e for e in log if e.get("command") == entry["command"] and not e["ok"]]
+    failures = [e for e in log if e.get("command") == entry["command"] and e["ok"] is False]
     if len(failures) < 2 or any(c["state"] != "RESOLVED" for c in load_cases(root)):
         return None
     return dict(
@@ -324,15 +274,22 @@ def post_tool_use(root, payload):
 def stop(root, payload):
     if payload.get("stop_hook_active"):
         return None
-    pending = unverified_edits(read_log(run_log(root, payload)))
+    entries = read_log(run_log(root, payload))
+    pending = unverified_edits(entries)
     if not pending:
         return None
+    masked = any(e.get("masked") for e in entries)
     return dict(
         decision="block",
         reason=(
             "AIFW: code changed after the last successful verification ("
             + ", ".join(pending[:5])
             + "). Run the tests or `aifw validate` before concluding, or state explicitly why they do not apply."
+            + (
+                " A test command ending in | ; || or & hides its exit status; run it on its own or with && only."
+                if masked
+                else ""
+            )
         ),
     )
 
@@ -403,7 +360,7 @@ def summarize_runs(root, session=None):
         entries = read_log(file)
         failures = {}
         for e in entries:
-            if e.get("verification") and not e["ok"]:
+            if e.get("verification") and e["ok"] is False:
                 failures[e["command"]] = failures.get(e["command"], 0) + 1
         findings = []
         pending = unverified_edits(entries)

@@ -21,7 +21,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 - Resolva informações recuperáveis no repositório antes de perguntar. `ready` significa Charter pronto para aprovação; `complete` inclui as avaliações técnicas atuais, não significa por si só que o Charter foi aprovado. Confira seu estado e registro.
 - Para projeto existente sem baseline atual, `aifw adopt analyze --json` descobre fatos. Dentro da adoção autorizada, `adopt analyze --write` e `adopt apply` persistem candidatos para revisão.
 - Não deduza responsabilidade, owner ou relação de runtime apenas por nomes de arquivos. Solicite julgamento humano somente sobre decisões que ainda não estejam resolvidas.
-- `adopt approve`, `intake approve`, `decision approve`, `spec approve` e `route activate` exigem autorização humana efetiva para o escopo. Registre autorização já concedida sem pedir sua repetição; nunca use um identificador `human:` como forma de fabricar aprovação.
+- `adopt approve`, `intake approve`, `decision approve`, `spec approve`, `route activate`, `impasse decide`, `waiver add` e `break-glass grant` são aprovações humanas. O CLI só as aceita no terminal da pessoa que aprova, com o id do projeto digitado por ela; no shell do agente elas falham e o hook as nega. Mostre o comando exato e peça para a pessoa rodar. Nunca tente contornar essa exigência.
 - Conduza a entrevista do intake invocando a skill `grilling` pela ferramenta Skill, usando as perguntas de `aifw intake status` como fronteira inicial. Grave cada resposta com `aifw intake set --field <campo> --value <valor>`; editar um Charter aprovado o reabre. A skill não aprova nada.
 - Use catálogos de decisão apenas quando a tarefa exigir uma escolha arquitetural.
 
@@ -79,7 +79,7 @@ Depois de `change classify` e `route explain`, distribua o trabalho pela linha m
 
 Esta skill não é um servidor MCP e não troca o modelo da sessão. Se a rota recomendada divergir do modelo atual e o trabalho não puder ser delegado, informe o usuário.
 
-Com o hook `aifw-hook` instalado, cada ação passa por `.aifw/permissions.yaml` e pelos impasses abertos: o Claude Code nega a ação ou pede confirmação ao usuário. Quando o hook negar, não contorne por outro caminho; explique o motivo e o próximo passo. Comandos `aifw ... approve/decide/activate` e edições nos arquivos de controle do AIFW (política, gates, roteamento, impasses, aprovações, specs aceitas, `evidence/validation.json`, `.claude/settings.json`) sempre pedem confirmação humana. Para transferir o trabalho a outra sessão, use a skill `handoff`.
+Com o hook `aifw-hook` instalado, cada ação passa por `.aifw/permissions.yaml` e pelos impasses abertos: o Claude Code nega a ação ou pede confirmação ao usuário. Quando o hook negar, não contorne por outro caminho; explique o motivo e o próximo passo. Edições nos arquivos de controle do AIFW (política, gates, roteamento, impasses, aprovações, specs aceitas, `evidence/validation.json`, `.claude/settings.json`) e comandos que o hook não consegue ler (`eval`, comandos codificados, texto enviado para um shell) sempre pedem confirmação humana. Rode cada verificação sozinha ou ligada por `&&`: terminar com `| tail`, `; echo` ou `|| true` esconde a falha, e o hook não conta como verificada. Para transferir o trabalho a outra sessão, use a skill `handoff`.
 
 ## Impasse
 

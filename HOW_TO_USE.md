@@ -531,7 +531,7 @@ aifw impasse attempt --id login-radius --hypothesis "..." --intervention "..." -
 aifw impasse status --json
 ```
 
-`decide` exige identidade `human:` e um registro existente no projeto.
+`decide` exige identidade `human:` e um registro existente no projeto. Como todo comando de aprovação, só roda no seu próprio terminal e pede que você digite o id do projeto.
 
 ### `aifw doctor`
 

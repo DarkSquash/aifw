@@ -8,17 +8,25 @@ from . import __version__
 from .common import assets, project_path, read_json, require, write_json
 
 TOOLS = "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit"
-COMMAND = dict(type="command", command="aifw-hook", timeout=10)
-# PreToolUse blocks when the hook cannot run: a project that opted into AIFW must not fail open.
+MISSING = (
+    "AIFW is enabled in this project, but aifw-hook failed or is not installed on this machine. "
+    "Install it with `uv tool install <aifw folder>` and `aifw claude install` (see HOW_TO_USE); "
+    "until then, commands and edits in this project are blocked."
+)
+# Git Bash is required on Windows (Git is an AIFW dependency), so the fallbacks use bash syntax.
+COMMAND = dict(type="command", command="aifw-hook || true", shell="bash", timeout=10)
 HOOKS = {
+    # A project that opted into AIFW must not fail open: a missing hook blocks with instructions.
     "PreToolUse": dict(
-        matcher=TOOLS + "|WebFetch|WebSearch|Agent|Task|mcp__.*", hooks=[dict(COMMAND, onFailure="block")]
+        matcher=TOOLS + "|WebFetch|WebSearch|Agent|Task|mcp__.*",
+        hooks=[dict(COMMAND, command=f'aifw-hook || {{ echo "{MISSING}" >&2; exit 2; }}', onFailure="block")],
     ),
     # Logging runs in the background so successful calls pay no hook latency.
     "PostToolUse": dict(matcher=TOOLS, hooks=[{**COMMAND, "async": True}]),
     "PostToolUseFailure": dict(matcher=TOOLS, hooks=[COMMAND]),
     "Stop": dict(hooks=[COMMAND]),
-    "SessionStart": dict(hooks=[COMMAND]),
+    # Plain text on stdout becomes session context, so Claude can tell the person what is missing.
+    "SessionStart": dict(hooks=[dict(COMMAND, command=f'aifw-hook || echo "{MISSING}"')]),
 }
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
 STAMP = "<!-- aifw-version: {} -->"
@@ -33,7 +41,7 @@ def install_command(home=None):
 
 
 def ours(entry):
-    return any(h.get("command") == "aifw-hook" for h in entry.get("hooks", []))
+    return any("aifw-hook" in h.get("command", "") for h in entry.get("hooks", []))
 
 
 def enable_project(root):

@@ -13,7 +13,7 @@ O AIFW foi integrado primeiro ao Pi (extensão com troca de modelo Luna/Terra/So
 ## Decisão
 
 1. Publicar a skill `aifw` e o complemento de `CLAUDE.md` em `templates/claude/`, adaptados do template do Codex.
-2. Remover a integração Pi: `extensions/aifw.ts`, `aifw-pi-bridge`, o módulo de adapters (PiAdapter) e a documentação do Pi.
+2. Remover a integração Pi: a extensão do Pi, `aifw-pi-bridge`, o módulo de adapters (PiAdapter) e a documentação do Pi.
 3. Remover a integração Codex: o template e o guia do Codex.
 4. Trocar os aliases de roteamento para `haiku`/`sonnet`/`opus` e os alvos para modelos da Anthropic.
 5. A ativação automática registrada para os modelos do Pi não vale para os novos alvos: a policy deste repositório volta a `recommendation-only` até nova avaliação e aprovação.

@@ -45,7 +45,7 @@ def test_hook_applies_permission_policy(tmp_path):
     assert decision(tmp_path, "Bash", command="git status") is None
     assert decision(tmp_path, "Bash", command="git push") == "ask"
     assert decision(tmp_path, "Bash", command="rm -rf src") == "ask"
-    assert decision(tmp_path, "Bash", command="aifw intake approve --by human:me") == "ask"
+    assert decision(tmp_path, "Bash", command="aifw intake approve --by human:me") == "deny"
     assert decision(tmp_path, "WebFetch", url="https://unknown.example/x") == "ask"
     policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
     policy["remoteMutation"] = "denied"
@@ -59,7 +59,8 @@ def test_broken_policy_asks_instead_of_passing(tmp_path):
     assert decision(tmp_path, "Edit", file_path="a.py") == "ask"
 
 
-def test_impasse_lifecycle_freezes_and_releases_mutations(tmp_path):
+def test_impasse_lifecycle_freezes_and_releases_mutations(tmp_path, monkeypatch):
+    monkeypatch.setattr("aifw.cli.confirm_human", lambda *_: None)
     init(tmp_path)
     assert run(tmp_path, "impasse", "open", "--id", "login", "--impact", "L2")[0]["state"] == "NORMAL"
     for n in (1, 2):
@@ -126,7 +127,8 @@ def test_claude_enable_is_per_project_and_idempotent(tmp_path):
     assert enable_project(tmp_path)["hooksChanged"] == []
     data = json.loads(settings.read_text())
     assert data["model"] == "opus"
-    assert [h["hooks"][0]["command"] for h in data["hooks"]["PreToolUse"]] == ["aifw-hook"]
+    pre = [h["hooks"][0] for h in data["hooks"]["PreToolUse"]]
+    assert len(pre) == 1 and pre[0]["command"].startswith("aifw-hook ||") and pre[0]["onFailure"] == "block"
     assert "name: aifw-workflow" in (tmp_path / ".claude/skills/aifw-workflow/SKILL.md").read_text("utf-8")
     home = tmp_path / "home"
     install_command(home)

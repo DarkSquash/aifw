@@ -48,8 +48,8 @@ Como o PreToolUse bloqueia quando falha, quem clonar um projeto habilitado preci
 
 `aifw-hook` aplica `.aifw/permissions.yaml` e os impasses abertos a cada ação do Claude Code. Ele nunca aprova sozinho: quando o AIFW não tem objeção, as regras de permissão do próprio Claude Code continuam valendo. Ele retorna:
 
-- `deny` quando a política diz `denied`, quando o serviço externo de escrita não está na allowlist, ou quando um impasse congela edições e comandos destrutivos;
-- `ask` quando a política exige aprovação humana, para leitura de serviço fora da allowlist, para comandos `aifw ... approve/decide/activate`, para comandos de shell durante um impasse `OPEN` e para edições nos arquivos de controle do AIFW (`aifw.yaml`, permissões, gates, roteamento, impasses, decisões, aprovação da adoção, specs aceitas, `evidence/validation.json`, `policies/` e `.claude/settings.json`);
+- `deny` quando a política diz `denied`, quando o serviço externo de escrita não está na allowlist, quando um impasse congela edições e comandos destrutivos, ou para comandos de aprovação, que só rodam no terminal da pessoa (veja Aprovações);
+- `ask` quando a política exige aprovação humana, para leitura de serviço fora da allowlist, para comandos que o hook não consegue ler, para comandos de shell durante um impasse `OPEN` e para edições nos arquivos de controle do AIFW (`aifw.yaml`, permissões, gates, roteamento, impasses, decisões, aprovação da adoção, specs aceitas, `evidence/validation.json`, `policies/` e `.claude/settings.json`);
 - `ask` também quando a política não pode ser lida, para que a falha chegue ao humano em vez de liberar a ação.
 
 Controles adicionais:
@@ -59,7 +59,20 @@ Controles adicionais:
 - **Subagentes:** delegar para `haiku` pede confirmação enquanto houver mudança L2 ou L3 ativa.
 - **Break-glass:** `aifw break-glass grant --incident <id> --scope git-remote,deploy --reason ... --by human:<nome> --hours 4` libera esses tipos de ação até expirar, se `breakGlass.enabled` estiver ativo. Não libera arquivos de controle, impasses nem aprovações.
 
-A classificação de comandos de shell é heurística (expressões regulares) e não detecta comandos ofuscados ou executados dentro de scripts. Consulte o [ADR-0015](decisions/ADR-0015-claude-code-hooks.md).
+O hook lê o comando como um shell leria: respeita aspas, separa as partes ligadas por `&&`, `;` e `|`, ignora as opções globais do git (`git -C . push` é um push) e analisa o conteúdo de `bash -c "..."`. Texto entre aspas não conta como comando, então `grep "git push" notas.txt` é só uma leitura. Código que o hook não consegue ler (`eval`, `powershell -EncodedCommand`, texto enviado para um shell por pipe) pede confirmação. O que um script faz por dentro (`python publicar.py`) continua invisível para o hook. Consulte o [ADR-0019](decisions/ADR-0019-hook-hardening.md).
+
+### Aprovações
+
+Os comandos de aprovação (`intake approve`, `adopt approve`, `decision approve`, `spec approve`, `route activate`, `impasse decide`, `waiver add`, `break-glass grant`) só funcionam no terminal da pessoa que aprova:
+
+- o CLI recusa quando roda no shell do agente: sem janela de console no Windows, sem `/dev/tty` nos outros sistemas, ou com `CLAUDECODE=1`;
+- antes de gravar, pede que a pessoa digite o id do projeto.
+
+O agente mostra o comando, e você o roda no seu terminal; no app desktop, serve o painel Terminal.
+
+### Projeto clonado sem o AIFW
+
+Se o `aifw-hook` não estiver instalado, o hook de antes de cada ação bloqueia e explica como instalar. O de início de sessão avisa o Claude, que repassa a instrução. Os demais hooks ficam em silêncio. No Windows, os hooks rodam no Git Bash, que vem com o Git.
 
 ## Skills auxiliares
 

@@ -2,6 +2,7 @@
 
 import argparse
 from datetime import timedelta
+import os
 from pathlib import Path
 import sys
 
@@ -259,11 +260,51 @@ def comma_list(value):
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+APPROVALS = {
+    "intake approve",
+    "adopt approve",
+    "decision approve",
+    "spec approve",
+    "route activate",
+    "impasse decide",
+    "waiver add",
+    "break-glass grant",
+}
+
+
+def confirm_human(by, project):
+    """Approvals need the approving person at their own terminal; an agent shell has no console window."""
+    present = os.environ.get("CLAUDECODE") != "1" and sys.stdin.isatty()
+    if present and os.name == "nt":
+        import ctypes
+
+        present = bool(ctypes.windll.kernel32.GetConsoleWindow())
+    elif present:
+        try:
+            open("/dev/tty").close()
+        except OSError:
+            present = False
+    require(
+        present,
+        "Approvals must be run by the approving person in their own terminal, not by an agent.",
+        "APPROVAL_REQUIRED",
+    )
+    sys.stderr.write(f"Approve as {by}? Type the project id ({project}) to confirm: ")
+    sys.stderr.flush()
+    require(
+        sys.stdin.readline().strip() == project,
+        "Confirmation did not match; nothing was approved.",
+        "APPROVAL_REQUIRED",
+    )
+
+
 def execute(args, root):
     from . import brownfield, catalogs, conformance, gates, intake, policy, routing, specs, workspace
 
     action = args.action
     at = getattr(args, "at", None) or now()
+    if action in APPROVALS:
+        confirm_human(args.by, workspace.load_manifest(root)["metadata"]["id"])
     if action.startswith("context "):
         from . import context
 

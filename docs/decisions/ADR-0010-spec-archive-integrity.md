@@ -32,4 +32,4 @@ Sem migração destrutiva. Revisar deltas duplicados, títulos vazios e artefato
 
 ## Verificação
 
-Regressões reais em `tests/spec-integrity.test.ts`, incluindo injeção controlada de falha de filesystem em diretórios temporários. Executar check, build, análise da mudança, sincronização, archive e verificações de mapa/política/intake. Evidências finais pertencem à mudança `harden-spec-archive`.
+Regressões reais em `tests_python/test_spec_integrity.py` (originalmente na suíte TypeScript), incluindo injeção controlada de falha de filesystem em diretórios temporários. Executar check, build, análise da mudança, sincronização, archive e verificações de mapa/política/intake. Evidências finais pertencem à mudança `harden-spec-archive`.

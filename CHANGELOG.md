@@ -16,6 +16,7 @@ Claude Code passa a ser o host de referência, ativado por projeto, e a validaç
 - `aifw waiver add|list`, `aifw break-glass grant|list`, `aifw intake set`, `aifw template list|copy`, `aifw runs show`, `aifw change classify --diff`.
 - Receitas de gates aplicadas no `init` para os profiles Python, Web e Flutter (com detecção de FVM).
 - `aifw doctor` informa a integração com o Claude Code quando roda num projeto.
+- Leitura real de comandos de shell no hook (`aifw.shell`): aspas, separadores, wrappers, opções globais do git e `bash -c`; código ilegível pede confirmação (ADR-0019).
 
 ### Alterado
 
@@ -24,6 +25,9 @@ Claude Code passa a ser o host de referência, ativado por projeto, e a validaç
 - Roteamento usa haiku/sonnet/opus; a policy volta a `recommendation-only` até nova avaliação.
 - Gates com `python` ignoram o atalho da Microsoft Store e usam o interpretador do AIFW.
 - Git passa a ser dependência obrigatória.
+- Comandos de aprovação só rodam no terminal da pessoa que aprova, com o id do projeto digitado; o shell do agente é recusado (ADR-0019).
+- Teste com saída escondida por `|`, `;`, `||` ou `&` não conta como verificação.
+- Hooks de projeto rodam no bash e, sem o AIFW instalado, explicam como instalar em vez de falhar sem mensagem.
 
 ### Removido
 

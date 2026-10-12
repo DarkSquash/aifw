@@ -26,14 +26,14 @@ O AIFW é ativado por projeto, só quando o usuário pede. Trabalhe apenas na pa
 1. `aifw init --id <id> --name "<nome>"`. Acrescente `--flutter`, `--web` ou `--python` só se o usuário já tiver dito a stack; caso contrário ela sai do intake.
 2. `aifw claude enable`.
 3. Conduza a entrevista do intake com a skill `grilling`, usando as perguntas de `aifw intake status --json` como ponto de partida. Grave cada resposta com `aifw intake set --field <campo> --value <valor>`.
-4. Quando o intake estiver `ready`, mostre o Charter e peça aprovação. Rode `aifw intake approve --by human:<nome>` só depois do sim.
+4. Quando o intake estiver `ready`, mostre o Charter e peça aprovação. Aprovações só rodam no terminal da pessoa que aprova: o CLI recusa o shell do agente e pede que ela digite o id do projeto. Mostre o comando exato e peça para ela rodar `aifw intake approve --by human:<nome>`.
 
 ## `adopt` — projeto existente
 
 1. Detecte a stack: `pubspec.yaml` → `--flutter`; `package.json` → `--web`; `pyproject.toml` → `--python`. Confirme na mesma pergunta do passo 4 acima.
 2. `aifw init --id <id> --name "<nome>" --existing [stack]`.
 3. `aifw claude enable`.
-4. `aifw adopt analyze --write` e `aifw adopt apply`. Mostre o que foi descoberto: módulos, contratos, decisões e o que ainda é incerto. Rode `aifw adopt approve --by human:<nome>` só depois do sim.
+4. `aifw adopt analyze --write` e `aifw adopt apply`. Mostre o que foi descoberto: módulos, contratos, decisões e o que ainda é incerto. Aprovações só rodam no terminal da pessoa que aprova: o CLI recusa o shell do agente e pede que ela digite o id do projeto. Mostre o comando exato e peça para ela rodar `aifw adopt approve --by human:<nome>`.
 5. Siga com o intake como no passo 3 de `new`.
 
 ## Sem argumento ou argumento desconhecido
