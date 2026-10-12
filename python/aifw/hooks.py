@@ -270,9 +270,13 @@ def tree_state(root):
     paths = {item[3:] for item in listed.split("\0") if len(item) > 3 and item[2] == " "}
     state = {}
     for path in sorted(p for p in paths if not p.startswith(".aifw/")):
-        file = Path(root) / path
-        state[path] = sha256(file.read_bytes()).hexdigest() if file.is_file() else "absent"
+        state[path] = file_hash(root, path)
     return state
+
+
+def file_hash(root, path):
+    file = Path(root) / path
+    return sha256(file.read_bytes()).hexdigest() if file.is_file() else "absent"
 
 
 def read_log(file):
@@ -327,9 +331,13 @@ def stop(root, payload):
     current = tree_state(root) if baseline is not None else None
     if current is not None:
         # git sees edits made by any route: Edit, scripts, sed -i, generators.
+        # Compare content, not membership: a commit cleans files without changing them.
         pending = sorted(
-            p for p in set(baseline) | set(current) if baseline.get(p) != current.get(p) and code_path(p)
+            p
+            for p in set(baseline) | set(current)
+            if code_path(p) and (p not in baseline or baseline[p] != file_hash(root, p))
         )
+
     else:
         pending = unverified_edits(entries)
     if not pending:

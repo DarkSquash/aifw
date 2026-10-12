@@ -101,6 +101,8 @@ def test_stop_sees_edits_made_outside_the_edit_tool(tmp_path):
     assert event(tmp_path, "Stop") is None
     (tmp_path / "notes.md").write_text("docs only\n")
     assert event(tmp_path, "Stop") is None
+    subprocess.run(GIT + ["commit", "-qam", "verified work"], cwd=tmp_path, check=True)
+    assert event(tmp_path, "Stop") is None  # committing verified files is not a change
 
 
 def test_old_session_logs_are_pruned(tmp_path):
