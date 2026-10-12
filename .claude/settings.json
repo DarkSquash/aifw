@@ -2,11 +2,11 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit|WebFetch|WebSearch|Agent|Task|mcp__.*",
+        "matcher": "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit|Read|WebFetch|WebSearch|Agent|Task|mcp__.*",
         "hooks": [
           {
             "type": "command",
-            "command": "aifw-hook || { echo \"AIFW is enabled in this project, but aifw-hook failed or is not installed on this machine. Install it with `uv tool install <aifw folder>` and `aifw claude install` (see HOW_TO_USE); until then, commands and edits in this project are blocked.\" >&2; exit 2; }",
+            "command": "aifw-hook || { echo 'AIFW is enabled in this project, but aifw-hook failed or is not installed on this machine. Install it with: uv tool install <aifw folder>, then: aifw claude install (see HOW_TO_USE). Until then, commands and edits in this project are blocked.' >&2; exit 2; }",
             "shell": "bash",
             "timeout": 10,
             "onFailure": "block"
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "aifw-hook || echo \"AIFW is enabled in this project, but aifw-hook failed or is not installed on this machine. Install it with `uv tool install <aifw folder>` and `aifw claude install` (see HOW_TO_USE); until then, commands and edits in this project are blocked.\"",
+            "command": "aifw-hook || echo 'AIFW is enabled in this project, but aifw-hook failed or is not installed on this machine. Install it with: uv tool install <aifw folder>, then: aifw claude install (see HOW_TO_USE). Until then, commands and edits in this project are blocked.'",
             "shell": "bash",
             "timeout": 10
           }

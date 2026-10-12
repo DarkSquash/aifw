@@ -196,6 +196,7 @@ def create_parser():
     option(leaf, "--hours", default="4")
     approval(leaf)
     command("break-glass list", "list incident grants and whether they are active")
+    command("secrets scan", "find secrets in project files; reports locations, never values")
     command("template list", "list document templates")
     leaf = command("template copy", "copy a template into a spec change or a project path")
     option(leaf, "--name", required=True)
@@ -542,6 +543,11 @@ def execute(args, root):
         grant = dict(incidentId=args.incident, scope=scope, reason=args.reason, approvedBy=args.by)
         grant.update(approvedAt=at, expiresAt=expires)
         return permissions.grant_break_glass(root, grant), 0
+    if action == "secrets scan":
+        from .secrets import scan
+
+        value = scan(root)
+        return value, 0 if value["status"] == "pass" else 2
     if action.startswith("template "):
         if action == "template list":
             return specs.list_templates(), 0

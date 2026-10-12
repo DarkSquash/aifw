@@ -3,6 +3,7 @@
 from copy import deepcopy
 from pathlib import Path
 
+from . import signing
 from .brownfield import assess_adoption
 from .common import digest, human, read_yaml, require, timestamp, validate, write_yaml
 from .workspace import build_workspace_map, load_catalog, write_catalog
@@ -49,7 +50,7 @@ def assess_intake(root):
     agents = []
     if charter["projectType"] == "existing":
         agents.append(assess_adoption(root))
-    approved = charter_approved(charter)
+    approved = charter_approved(charter) and signing.approved(root, Path(root) / ".aifw/charter.yaml")
     result = dict(
         assessment,
         charterApproved=approved,

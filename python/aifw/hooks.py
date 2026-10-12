@@ -6,22 +6,31 @@ session log, Stop blocks unverified code changes and SessionStart injects projec
 Outside an AIFW project every event is a no-op.
 """
 
+from hashlib import sha256
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
+import time
 
+from . import signing
 from .common import now, read_yaml
 from .impasse import load_cases, mutation_allowed
 from .permissions import decide_action, load_permission_policy, validate_break_glass
-from .shell import VERIFY, analyze, service_of, verification_visible
+from .shell import SECRET_FILE, analyze, runs_tests, service_of, verification_visible
 
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+RUN_RETENTION_DAYS = 30
 SHELL_TOOLS = {"Bash", "PowerShell"}
 
 # Files that govern AIFW itself: editing them could loosen the checks applied to the agent.
 CONTROL = (
     "aifw.yaml",
+    ".aifw/charter.yaml",
+    ".aifw/waivers/",
+    ".aifw/break-glass/",
+    ".aifw/runs/",
     ".aifw/permissions.yaml",
     ".aifw/routing.yaml",
     ".aifw/gates.yaml",
@@ -53,12 +62,16 @@ def control_target(root, tool_name, tool_input, mutation):
         target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
         target = (target if target.is_absolute() else Path(root) / target).resolve()
         if not target.is_relative_to(Path(root).resolve()):
-            return None
+            # Claude Code settings anywhere (the global one too) can disable every hook.
+            settings = target.parent.name == ".claude" and target.name.startswith("settings")
+            return f"{target.parent.name}/{target.name}" if settings else None
         text = target.relative_to(Path(root).resolve()).as_posix()
         matches = [c for c in CONTROL if text == c or text.startswith(c) or text.endswith("/" + c)]
+        if text.startswith(".aifw/changes/") and text.endswith("/change.yaml"):
+            matches.append("change.yaml")  # holds the spec approval
     elif tool_name in SHELL_TOOLS and mutation:
         text = tool_input.get("command", "").replace("\\", "/")
-        matches = [c for c in CONTROL if c in text]
+        matches = [c for c in (*CONTROL, "change.yaml", ".claude/settings") if c in text]
     else:
         return None
     return matches[0] if matches else None
@@ -78,6 +91,8 @@ def classify(tool_name, tool_input, allowlist):
         return dict(kind="delegation", model=tool_input.get("model"), mutation=False)
     if tool_name == "WebSearch":
         return dict(kind="external-read", service="web-search", mutation=False)
+    if tool_name == "Read" and SECRET_FILE.search(tool_input.get("file_path") or ""):
+        return dict(kind="secret-read", mutation=False)
     if tool_name not in SHELL_TOOLS:
         return dict(kind="read-only", mutation=False)
     return analyze(tool_input.get("command", ""), allowlist)
@@ -103,7 +118,8 @@ def active_grants(root, policy):
     kinds = set()
     for file in (Path(root) / ".aifw/break-glass").glob("*.yaml"):
         grant = read_yaml(file)
-        kinds |= {s for s in grant.get("scope", []) if validate_break_glass(grant, s)["valid"]}
+        if signing.approved(root, file):
+            kinds |= {s for s in grant.get("scope", []) if validate_break_glass(grant, s)["valid"]}
     return kinds
 
 
@@ -111,7 +127,11 @@ def item_findings(root, policy, item, allowlist, classification):
     """Policy findings for one action of a tool call."""
     kind, findings = item["kind"], []
     if kind == "opaque":
-        findings.append(("ask", "runs code the hook cannot read (eval, encoded or piped into a shell)"))
+        findings.append(
+            ("ask", "runs code the hook cannot read (eval, inline code, aliases or piped into a shell)")
+        )
+    elif kind == "secret-read":
+        findings.append(("ask", "reads a file that usually holds secrets"))
     elif kind == "mcp":
         servers = policy.get("mcpServers", {})
         if item["server"] in servers.get("deny", []):
@@ -215,19 +235,44 @@ def record(root, payload):
     if tool in SHELL_TOOLS:
         raw = tool_input.get("command", "")
         command = redact(raw)[:300]
-        entry.update(command=command, verification=bool(VERIFY.search(raw)))
+        entry.update(command=command, verification=runs_tests(raw))
         if entry["verification"] and entry["ok"] and not verification_visible(raw):
             entry.update(ok=None, masked=True)
+        if entry["verification"] and entry["ok"]:
+            entry["tree"] = tree_state(root)
     elif tool in EDIT_TOOLS:
         path = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
         path = (path if path.is_absolute() else Path(root) / path).resolve()
         inside = path.is_relative_to(Path(root).resolve())
         entry["file"] = path.relative_to(Path(root).resolve()).as_posix() if inside else "<outside project>"
+    return append(root, payload, entry)
+
+
+def append(root, payload, entry):
     log = run_log(root, payload)
     log.parent.mkdir(parents=True, exist_ok=True)
     with log.open("a", encoding="utf-8", newline="\n") as stream:
         stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
     return entry
+
+
+def tree_state(root):
+    """Content hash of every changed or untracked file, from git; None without git."""
+    try:
+        listed = subprocess.run(
+            ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"],
+            cwd=root,
+            capture_output=True,
+            check=True,
+        ).stdout.decode("utf-8", "replace")
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    paths = {item[3:] for item in listed.split("\0") if len(item) > 3 and item[2] == " "}
+    state = {}
+    for path in sorted(p for p in paths if not p.startswith(".aifw/")):
+        file = Path(root) / path
+        state[path] = sha256(file.read_bytes()).hexdigest() if file.is_file() else "absent"
+    return state
 
 
 def read_log(file):
@@ -236,13 +281,16 @@ def read_log(file):
     return [json.loads(line) for line in file.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def code_edit(entry):
-    file = entry.get("file", "")
+def code_path(file):
     return (
         bool(file)
         and not file.startswith(("docs/", ".aifw/", "<"))
         and not file.endswith((".md", ".txt", ".rst"))
     )
+
+
+def code_edit(entry):
+    return code_path(entry.get("file", ""))
 
 
 def unverified_edits(entries):
@@ -275,7 +323,15 @@ def stop(root, payload):
     if payload.get("stop_hook_active"):
         return None
     entries = read_log(run_log(root, payload))
-    pending = unverified_edits(entries)
+    baseline = next((e["tree"] for e in reversed(entries) if e.get("tree") is not None), None)
+    current = tree_state(root) if baseline is not None else None
+    if current is not None:
+        # git sees edits made by any route: Edit, scripts, sed -i, generators.
+        pending = sorted(
+            p for p in set(baseline) | set(current) if baseline.get(p) != current.get(p) and code_path(p)
+        )
+    else:
+        pending = unverified_edits(entries)
     if not pending:
         return None
     masked = any(e.get("masked") for e in entries)
@@ -297,6 +353,11 @@ def stop(root, payload):
 def session_start(root, payload):
     from .intake import assess_intake
 
+    runs = Path(root) / ".aifw/runs"
+    for old in runs.glob("*.jsonl"):
+        if time.time() - old.stat().st_mtime > RUN_RETENTION_DAYS * 86400:
+            old.unlink()
+    append(root, payload, dict(at=now(), tool="SessionStart", tree=tree_state(root)))
     lines = ["AIFW is enabled in this project; follow the aifw-workflow skill."]
     if not assess_intake(root)["complete"]:
         lines.append("Intake is incomplete: run `aifw intake status`.")

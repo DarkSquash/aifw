@@ -34,7 +34,7 @@ No Windows, shims batch conhecidos da stack, como `flutter` e `dart`, são resol
 
 Um gate selecionado sem comando ou built-in retorna `not-run`. Hard/human `not-run` bloqueia. Audit `not-run` é warning visível.
 
-O `init` aplica a receita do profile escolhido (`profiles/python/gates.yaml`, `profiles/web-ts/gates.yaml`, `profiles/flutter-mobile/gates.windows*.yaml`). Sem profile, configure os comandos em `.aifw/gates.yaml`. Um gate reprovado pode passar como `waived` com `aifw waiver add` até o prazo expirar; `manifest`, `human-approval` e invariantes do core não aceitam waiver.
+O `init` aplica a receita do profile escolhido (`profiles/python/gates.yaml`, `profiles/web-ts/gates.yaml`, `profiles/flutter-mobile/gates.windows*.yaml`). Sem profile, configure os comandos em `.aifw/gates.yaml`. Os scaffolds incluem `secret-scan` (hard, L1+) e `session-conformance` (auditoria, L2+, que roda `aifw runs show` sobre a última sessão). Um gate reprovado pode passar como `waived` com `aifw waiver add` até o prazo expirar; `manifest`, `human-approval` e invariantes do core não aceitam waiver.
 
 ## TDD por risco
 

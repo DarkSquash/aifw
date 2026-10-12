@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from datetime import datetime, timezone
+from functools import lru_cache
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -173,14 +174,19 @@ def assets():
     return bundled if bundled.is_dir() else Path(__file__).resolve().parents[2]
 
 
-def validate(value, schema_name):
-    schema = read_json(assets() / "schemas" / schema_name)
+@lru_cache(maxsize=None)
+def schema_validator(schema_name):
     resources = []
     for file in (assets() / "schemas").glob("*.json"):
         content = read_json(file)
         if "$id" in content:
             resources.append((content["$id"], Resource.from_contents(content)))
-    validator = jsonschema.Draft202012Validator(schema, registry=Registry().with_resources(resources))
+    schema = read_json(assets() / "schemas" / schema_name)
+    return jsonschema.Draft202012Validator(schema, registry=Registry().with_resources(resources))
+
+
+def validate(value, schema_name):
+    validator = schema_validator(schema_name)
     errors = sorted(validator.iter_errors(value), key=lambda error: str(list(error.path)))
     require(
         not errors,

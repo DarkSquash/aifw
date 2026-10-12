@@ -63,4 +63,7 @@ Esta versão troca o host de referência para o Claude Code e endurece a valida�
 8. Antes de arquivar uma mudança ativa, rode `aifw validate --change <id> --write`. Em L2 e L3, crie os artefatos que o comando apontar como ausentes.
 9. Pare de usar `aifw handoff codex` e `aifw principle review`, que foram removidos. A extensão Pi e o pacote `aifw-pi-bridge` também saíram; remova a instalação no Pi, se existir.
 
+10. Acrescente os gates `secret-scan` e `session-conformance` ao `.aifw/gates.yaml` (veja as receitas em `profiles/`) e rode `aifw secrets scan`.
+11. Se o projeto instala pacotes, publica ou acessa servidores pelo agente, decida se inclui `package-registry` ou `remote-host` em `spec.externalAllowlist`.
+
 Nenhum arquivo é reescrito automaticamente, e os registros já arquivados continuam válidos.

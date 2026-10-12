@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from uuid import uuid4
 
+from . import signing
 from .common import (
     API,
     AifwError,
@@ -399,6 +400,8 @@ def assert_approval(root, change):
         human(approval.get("approvedBy"))
         timestamp(approval.get("approvedAt"))
         require(file_state(root, approval.get("record")) == "valid", "Missing approval record.")
+        change_file = change_dir(root, change["metadata"]["id"]) / "change.yaml"
+        require(signing.approved(root, change_file), "The approval is not in a signed commit.")
     except AifwError as error:
         raise AifwError(
             "APPROVAL_REQUIRED",

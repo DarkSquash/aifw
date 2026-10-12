@@ -2,18 +2,18 @@
 
 > Gerado por `python scripts/generate_cli_reference.py`. Guia: [HOW_TO_USE.md](../HOW_TO_USE.md).
 
-Esta referência contém 56 comandos finais e suas opções.
+Esta referência contém 57 comandos finais e suas opções.
 
 ## `aifw --help`
 
 ```text
 usage: aifw [-h] [--version]
-            {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,route,waiver,break-glass,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate} ...
+            {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate} ...
 
 AI Software Engineering Framework control plane (Python)
 
 positional arguments:
-  {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,route,waiver,break-glass,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate}
+  {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate}
     init                initialize a project control plane
     audit               inspect a project without changing it
     intake              Manage intake
@@ -27,6 +27,7 @@ positional arguments:
     route               Manage route
     waiver              Manage waiver
     break-glass         Manage break-glass
+    secrets             Manage secrets
     template            Manage template
     runs                Manage runs
     claude              Manage claude
@@ -604,6 +605,18 @@ options:
 usage: aifw break-glass list [-h] [--json]
 
 list incident grants and whether they are active
+
+options:
+  -h, --help  show this help message and exit
+  --json      emit stable machine-readable JSON
+```
+
+## `aifw secrets scan`
+
+```text
+usage: aifw secrets scan [-h] [--json]
+
+find secrets in project files; reports locations, never values
 
 options:
   -h, --help  show this help message and exit

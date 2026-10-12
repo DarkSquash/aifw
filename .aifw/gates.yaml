@@ -74,6 +74,31 @@ gates:
   - aifw
   - eval
   - --json
+- id: secret-scan
+  enforcement: hard
+  levels:
+  - L1
+  - L2
+  - L3
+  command:
+  - python
+  - -m
+  - aifw
+  - secrets
+  - scan
+- id: session-conformance
+  enforcement: audit
+  levels:
+  - L2
+  - L3
+  command:
+  - python
+  - -m
+  - aifw
+  - runs
+  - show
+  - --session
+  - latest
 - id: independent-review
   enforcement: audit
   levels:

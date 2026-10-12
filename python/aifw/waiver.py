@@ -61,11 +61,11 @@ def add_waiver(root, data):
 
 def load_waivers(root, at=None):
 
-    waivers = [
-        validate(read_yaml(f), "waiver.schema.json")
-        for f in sorted((Path(root) / ".aifw/waivers").glob("*.yaml"))
-    ]
-    return [dict(w, active=is_waiver_active(w, at)) for w in waivers]
+    from . import signing
+
+    files = sorted((Path(root) / ".aifw/waivers").glob("*.yaml"))
+    waivers = [(f, validate(read_yaml(f), "waiver.schema.json")) for f in files]
+    return [dict(w, active=is_waiver_active(w, at) and signing.approved(root, f)) for f, w in waivers]
 
 
 def apply_waivers(root, results, at=None):

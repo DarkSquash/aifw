@@ -501,6 +501,14 @@ aifw waiver list
 aifw break-glass grant --incident inc-42 --scope git-remote,deploy --reason "correção em produção" --hours 4 --by "human:proprietario"
 ```
 
+### `aifw secrets scan`
+
+Procura segredos nos arquivos do projeto: chaves privadas, tokens da AWS, do GitHub e do Slack, chaves de API e senhas atribuídas em código, além de arquivos como `.env` versionados. Mostra arquivo, linha e tipo, nunca o valor. Uma linha com o comentário `aifw:allow-secret` é ignorada (use em fixtures de teste). É o gate `secret-scan`, obrigatório a partir de L1.
+
+```powershell
+aifw secrets scan
+```
+
 ### `aifw template`
 
 ```powershell

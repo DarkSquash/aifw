@@ -25,7 +25,9 @@ O núcleo é independente do agente. O host de referência é o Claude Code, int
 - quality gates progressivos, distinguindo hard gate, auditoria e aprovação humana;
 - máquina de estados para prevenção de impasse e loops de correção;
 - política de permissões para Git local/remoto, deploy, serviços externos, delegação e break-glass;
-- skill `aifw` para o Claude Code, com roteamento recommendation-only por padrão;
+- integração com o Claude Code ativada por projeto (`/aifw new|adopt`), com skill de fluxo e roteamento recommendation-only por padrão;
+- hooks que aplicam permissões, impasses e arquivos de controle a cada ação, leem os comandos de shell como um shell, exigem aprovação no terminal humano e impedem concluir com código não verificado;
+- validação por mudança (`validate --change`) exigida pelo archive, waivers e break-glass com prazo, secret scan e resumo das sessões (`runs show`);
 - testes de conformidade comportamental do agente;
 - profile oficial `flutter-mobile`, com descoberta de `pubspec.yaml`, targets Android/iOS e receitas de gates para Windows e macOS;
 - seleção direta de stack no `init` por `--flutter`, `--web` ou `--python`, validada antes de qualquer arquivo ser criado;

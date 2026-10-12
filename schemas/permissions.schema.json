@@ -135,6 +135,15 @@
           }
         }
       }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requireSignedCommit": {
+          "type": "boolean"
+        }
+      }
     }
   }
 }

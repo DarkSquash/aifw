@@ -158,7 +158,7 @@ def test_claude_enable_refuses_malformed_settings(tmp_path):
         ("Bash", dict(command=r"echo enabled > .aifw\routing.yaml"), "ask"),
         ("Bash", dict(command="cat .aifw/permissions.yaml"), None),
         ("Edit", dict(file_path=".aifw/changes/active/x/proposal.md"), None),
-        ("Edit", dict(file_path=".aifw/charter.yaml"), None),
+        ("Edit", dict(file_path=".aifw/charter.yaml"), "ask"),
     ],
 )
 def test_hook_guards_aifw_control_files(tmp_path, tool, tool_input, expected):

@@ -28,6 +28,12 @@ Claude Code passa a ser o host de referência, ativado por projeto, e a validaç
 - Comandos de aprovação só rodam no terminal da pessoa que aprova, com o id do projeto digitado; o shell do agente é recusado (ADR-0019).
 - Teste com saída escondida por `|`, `;`, `||` ou `&` não conta como verificação.
 - Hooks de projeto rodam no bash e, sem o AIFW instalado, explicam como instalar em vez de falhar sem mensagem.
+- Waivers, break-glass, Charter, `change.yaml`, registros de sessão e qualquer `.claude/settings*.json` passam a ser protegidos pelo hook (ADR-0020).
+- O Stop compara o estado do git e só aceita o executor de testes de fato como verificação.
+- O leitor de shell cobre `cmd /c`, `powershell -Command`, `Start-Process`, `xargs`, `python -c`, aliases do git, publicação, acesso remoto e instalação de pacotes.
+- `aifw secrets scan` e gates `secret-scan` e `session-conformance` nos scaffolds; leitura de arquivos de segredo pede confirmação.
+- Modo opcional `approvals.requireSignedCommit`: aprovações só valem em commit assinado.
+- Registros de sessão com mais de 30 dias são apagados; `aifw claude check` detecta o `/aifw` global desatualizado; schemas são carregados uma vez por processo.
 
 ### Removido
 

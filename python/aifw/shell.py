@@ -12,16 +12,39 @@ SEPARATORS = {"&&", "||", ";", "|", "&", "|&", ";;"}
 HARMLESS_REDIRECT = re.compile(r"\d?>&\d|\d?>\s*(/dev/null|\$null|NUL)\b", re.IGNORECASE)
 ASSIGNMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 URL = re.compile(r"https?://([^/\s'\"]+)")
-VERIFY = re.compile(
-    r"\b(pytest|npm\s+(run\s+)?test|pnpm\s+test|yarn\s+test|flutter\s+test|dart\s+test|go\s+test"
-    r"|cargo\s+test|dotnet\s+test|mvn\s+test|gradlew?\s+test|aifw\s+validate)\b"
+# Test runners by program name; the first argument that makes the call a test run, if one is needed.
+TEST_RUNNERS = {
+    "pytest": None, "npm": "test", "pnpm": "test", "yarn": "test", "flutter": "test", "dart": "test",
+    "go": "test", "cargo": "test", "dotnet": "test", "mvn": "test", "gradle": "test", "gradlew": "test",
+}  # fmt: skip
+SECRET_FILE = re.compile(
+    r"(^|[\\/])(\.env(\.[\w.-]+)?|id_(rsa|dsa|ecdsa|ed25519)|[^\\/]+\.(pem|key|p12|pfx|keystore|jks))$", re.I
 )
 DESTRUCTIVE_SQL = re.compile(r"\b(drop\s+(table|database|schema)|truncate\s+table)\b", re.IGNORECASE)
 
 SHELLS = {"bash", "sh", "zsh", "dash", "pwsh", "powershell", "cmd"}
+# cmd /c and powershell -Command run the rest of the line; sh -c runs only the next argument.
 INLINE = {"-c", "-command", "/c", "/k"}
+REST_OF_LINE = {"cmd", "pwsh", "powershell"}
 ENCODED = {"-encodedcommand", "-enc", "-ec", "-e"}
-OPAQUE = {"eval", "iex", "invoke-expression"}
+# Programs that run code or other programs the hook cannot see.
+OPAQUE = {"eval", "iex", "invoke-expression", "start-process", "saps", "start", "xargs"}
+INTERPRETERS = {"python", "python3", "py", "node", "perl", "ruby", "deno", "bun"}
+PUBLISH = {
+    "npm": "publish", "pnpm": "publish", "yarn": "publish", "twine": "upload", "docker": "push",
+    "podman": "push", "cargo": "publish", "gem": "push", "dart": "publish", "flutter": "publish",
+}  # fmt: skip
+REMOTE_SHELL = {"ssh", "scp", "sftp", "rsync"}
+INSTALL = {
+    "npm": {"install", "i", "ci", "add"}, "pnpm": {"install", "i", "add"}, "yarn": {"install", "add"},
+    "pip": {"install"}, "pip3": {"install"}, "uv": {"add", "sync", "pip"}, "poetry": {"add", "install"},
+    "cargo": {"add", "install"}, "go": {"get", "install"}, "gem": {"install"},
+}  # fmt: skip
+GIT_LOCAL = {
+    "add", "commit", "merge", "rebase", "tag", "stash", "checkout", "switch", "cherry-pick", "revert", "am",
+    "fetch", "pull", "clone", "init", "mv", "rm", "restore", "reset", "clean", "branch", "remote", "config",
+    "worktree", "submodule", "apply", "notes", "bisect", "gc", "maintenance", "sparse-checkout", "lfs",
+}  # fmt: skip
 WRAPPERS = {"sudo", "env", "time", "nohup", "command", "exec", "nice", "npx", "pnpx", "bunx"}
 PYTHONS = {"python", "python3", "py"}
 READ_ONLY = {
@@ -38,13 +61,13 @@ GIT_READ = {
 GIT_LISTING = {"branch", "tag", "remote", "stash", "config", "worktree", "submodule"}
 LIST_ARGS = {"-a", "-r", "-v", "-vv", "-l", "--list", "list", "show", "--show-current", "--get", "--get-all"}
 SEVERITY = [
-    "opaque", "destructive", "deploy", "git-remote", "external-write",
+    "opaque", "destructive", "deploy", "git-remote", "external-write", "secret-read",
     "git-local", "filesystem-write", "external-read", "read-only",
 ]  # fmt: skip
 
 
 def request(kind, **extra):
-    return dict(kind=kind, mutation=kind not in {"read-only", "external-read"}, **extra)
+    return dict(kind=kind, mutation=kind not in {"read-only", "external-read", "secret-read"}, **extra)
 
 
 def service_of(text, allowlist):
@@ -149,7 +172,8 @@ def git_requests(args):
         return [request("filesystem-write", destructive=True)]
     if sub in GIT_READ or (sub in GIT_LISTING and (not rest or rest[0] in LIST_ARGS)):
         return [request("read-only")]
-    return [request("git-local")]
+    # Unknown subcommands include aliases, which can expand to anything (git p -> git push).
+    return [request("git-local" if sub in GIT_LOCAL else "opaque")]
 
 
 def http_request(name, args, allowlist):
@@ -198,13 +222,38 @@ def deploy(name, args):
     return None
 
 
+def is_test(words):
+    """The command itself runs a test runner or `aifw validate`; an argument that merely names one does not."""
+    name, args = program(words)
+    lowered = [a.lower() for a in args]
+    if name == "aifw":
+        return lowered[:1] == ["validate"]
+    if name not in TEST_RUNNERS:
+        return False
+    first = TEST_RUNNERS[name]
+    return first is None or lowered[:1] == [first] or lowered[:2] in (["run", "test"], ["run", first])
+
+
+def inline_code(name, args, lowered):
+    index = next((i for i, a in enumerate(lowered[:-1]) if a in INLINE), None)
+    if index is None:
+        return None
+    return " ".join(args[index + 1 :]) if name in REST_OF_LINE else args[index + 1]
+
+
 def segment_requests(words, piped, allowlist, depth):
     name, args = program(words)
     lowered = [a.lower() for a in args]
     text = " ".join(words)
     found = []
-    inline = next((args[i + 1] for i, a in enumerate(lowered[:-1]) if a in INLINE), None)
-    if depth > 3 or name in OPAQUE or (name in SHELLS and (set(lowered) & ENCODED or (piped and not args))):
+    inline = inline_code(name, args, lowered) if name in SHELLS else None
+    interpreted = name in INTERPRETERS and bool({"-c", "-e", "--eval"} & set(lowered))
+    if (
+        depth > 3
+        or name in OPAQUE
+        or interpreted
+        or (name in SHELLS and (set(lowered) & ENCODED or (piped and not args)))
+    ):
         found.append(request("opaque"))
     elif name in SHELLS and inline is not None:
         found += analyze(inline, allowlist, depth + 1)["requests"]
@@ -220,13 +269,20 @@ def segment_requests(words, piped, allowlist, depth):
             found.append(request("read-only"))
     elif name in {"curl", "wget", "invoke-webrequest", "invoke-restmethod", "iwr", "irm"}:
         found.append(http_request(name, args, allowlist))
+    elif name in PUBLISH and PUBLISH[name] in lowered[:2]:
+        found.append(request("external-write", service="package-registry"))
+    elif name in REMOTE_SHELL:
+        found.append(request("external-write", service="remote-host"))
+    elif name in INSTALL and lowered[:1] and lowered[0] in INSTALL[name]:
+        # Dependencies run third-party code; allowlist "package-registry" in aifw.yaml to stop asking.
+        found.append(request("external-read", service="package-registry"))
     elif deletion(name, args):
         found.append(request("filesystem-write", destructive=True))
     elif environment := deploy(name, args):
         found.append(request("deploy", environment=environment))
     elif name == "find" and "-delete" in lowered:
         found.append(request("filesystem-write", destructive=True))
-    elif VERIFY.search(text) or (
+    elif is_test(words) or (
         name in READ_ONLY and not (name == "find" and {"-exec", "-execdir"} & set(lowered))
     ):
         found.append(request("read-only"))
@@ -236,6 +292,8 @@ def segment_requests(words, piped, allowlist, depth):
         found.append(request("filesystem-write", destructive=True))
     if any(">" in w and set(w) <= set(">&|") for w in words):
         found.append(request("filesystem-write", destructive=False))
+    if any(SECRET_FILE.search(w) for w in args):
+        found.append(request("secret-read"))
     if name == "aifw" and (
         set(lowered) & {"approve", "activate", "decide", "grant"} or lowered[:2] == ["waiver", "add"]
     ):
@@ -267,12 +325,17 @@ def analyze(command, allowlist=(), depth=0):
     )
 
 
+def runs_tests(command):
+    parts = segments(command) or []
+    return any(is_test(words) for words, _ in parts)
+
+
 def verification_visible(command):
     """False when the exit status of the last test command is hidden by a later | ; || or &."""
     parts = segments(command)
     if not parts:
         return False
-    tests = [i for i, (words, _) in enumerate(parts) if VERIFY.search(" ".join(words))]
+    tests = [i for i, (words, _) in enumerate(parts) if is_test(words)]
     if not tests:
         return True
     pipefail = "pipefail" in command

@@ -10,23 +10,25 @@ from .common import assets, project_path, read_json, require, write_json
 TOOLS = "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit"
 MISSING = (
     "AIFW is enabled in this project, but aifw-hook failed or is not installed on this machine. "
-    "Install it with `uv tool install <aifw folder>` and `aifw claude install` (see HOW_TO_USE); "
-    "until then, commands and edits in this project are blocked."
+    "Install it with: uv tool install <aifw folder>, then: aifw claude install (see HOW_TO_USE). "
+    "Until then, commands and edits in this project are blocked."
 )
+# Single quotes: bash must print the message, never expand or run anything inside it.
+assert not set(MISSING) & set("'`$\\"), "MISSING is embedded in single-quoted shell text"
 # Git Bash is required on Windows (Git is an AIFW dependency), so the fallbacks use bash syntax.
 COMMAND = dict(type="command", command="aifw-hook || true", shell="bash", timeout=10)
 HOOKS = {
     # A project that opted into AIFW must not fail open: a missing hook blocks with instructions.
     "PreToolUse": dict(
-        matcher=TOOLS + "|WebFetch|WebSearch|Agent|Task|mcp__.*",
-        hooks=[dict(COMMAND, command=f'aifw-hook || {{ echo "{MISSING}" >&2; exit 2; }}', onFailure="block")],
+        matcher=TOOLS + "|Read|WebFetch|WebSearch|Agent|Task|mcp__.*",
+        hooks=[dict(COMMAND, command=f"aifw-hook || {{ echo '{MISSING}' >&2; exit 2; }}", onFailure="block")],
     ),
     # Logging runs in the background so successful calls pay no hook latency.
     "PostToolUse": dict(matcher=TOOLS, hooks=[{**COMMAND, "async": True}]),
     "PostToolUseFailure": dict(matcher=TOOLS, hooks=[COMMAND]),
     "Stop": dict(hooks=[COMMAND]),
     # Plain text on stdout becomes session context, so Claude can tell the person what is missing.
-    "SessionStart": dict(hooks=[dict(COMMAND, command=f'aifw-hook || echo "{MISSING}"')]),
+    "SessionStart": dict(hooks=[dict(COMMAND, command=f"aifw-hook || echo '{MISSING}'")]),
 }
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
 STAMP = "<!-- aifw-version: {} -->"
@@ -94,8 +96,11 @@ def check_project(root, home=None):
         )
     if not shutil.which("aifw-hook"):
         findings.append("aifw-hook is not on PATH: reinstall with `uv tool install <aifw folder>`")
-    if not (home / ".claude/skills/aifw/SKILL.md").is_file():
+    command = home / ".claude/skills/aifw/SKILL.md"
+    if not command.is_file():
         findings.append("global /aifw command missing: run `aifw claude install`")
+    elif command.read_bytes() != (assets() / "templates/claude/skills/aifw/SKILL.md").read_bytes():
+        findings.append("global /aifw command is outdated: run `aifw claude install`")
     findings += [
         f"required skill {name} is not installed (see HOW_TO_USE, Skills, plugins e MCPs)"
         for name in REQUIRED_SKILLS

@@ -32,7 +32,7 @@ Se uma decisão existe apenas em chat, ela ainda não existe para o projeto.
 
 O core nunca depende semanticamente de Pi, Claude, Codex ou nomes de modelos. Adapters traduzem tarefas, papéis, permissões, evidências e rotas; não redefinem governança.
 
-Aliases como Luna, Terra e Sol são configuração substituível. As classes normativas são FAST, WORK e BRAIN.
+Aliases como haiku, sonnet e opus são configuração substituível. As classes normativas são FAST, WORK e BRAIN.
 
 ## 5. Hierarquia e conflitos
 
@@ -99,7 +99,7 @@ Sem aprovação, o impasse permanece aberto.
 
 ## 11. Roteamento de modelos
 
-Roteamento automático nasce desativado. Recomendações FAST/WORK/BRAIN podem ser exibidas, mas execução por Luna/Terra/Sol ou equivalentes só é ativada quando:
+Roteamento automático nasce desativado. Recomendações FAST/WORK/BRAIN podem ser exibidas, mas execução por haiku/sonnet/opus ou equivalentes só é ativada quando:
 
 - pelo menos 30 casos representativos foram avaliados;
 - taxa de aprovação é igual ou superior a 95%;

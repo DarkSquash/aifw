@@ -99,6 +99,35 @@
         ]
       },
       {
+        "id": "secret-scan",
+        "enforcement": "hard",
+        "levels": [
+          "L1",
+          "L2",
+          "L3"
+        ],
+        "command": [
+          "aifw",
+          "secrets",
+          "scan"
+        ]
+      },
+      {
+        "id": "session-conformance",
+        "enforcement": "audit",
+        "levels": [
+          "L2",
+          "L3"
+        ],
+        "command": [
+          "aifw",
+          "runs",
+          "show",
+          "--session",
+          "latest"
+        ]
+      },
+      {
         "id": "tests",
         "enforcement": "hard",
         "levels": [
