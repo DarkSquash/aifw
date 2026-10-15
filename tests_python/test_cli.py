@@ -34,7 +34,7 @@ def result(root, *args):
 def test_python_entrypoint_without_node(tmp_path):
     process = cli(tmp_path, "--version")
     assert process.returncode == 0, process.stderr
-    assert process.stdout.strip() == "0.4.0"
+    assert process.stdout.strip() == "0.4.1"
 
 
 @pytest.mark.parametrize("command", COMMANDS)
@@ -47,7 +47,7 @@ def test_all_existing_commands_have_help(tmp_path, command):
 def test_init_map_resolution_and_pending_intake(tmp_path):
     initialized = result(tmp_path, "init", "--id", "northstar", "--name", "Northstar", "--python")
     assert initialized["manifest"]["spec"]["profiles"] == ["python"]
-    assert initialized["manifest"]["spec"]["frameworkVersion"] == "0.4.0"
+    assert initialized["manifest"]["spec"]["frameworkVersion"] == "0.4.1"
     assert (tmp_path / "PROJECT_MAP.md").is_file()
     assert result(tmp_path, "map", "check")["current"] is True
     assert result(tmp_path, "resolve", "build")["current"] is True

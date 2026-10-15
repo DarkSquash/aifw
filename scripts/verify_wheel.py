@@ -37,7 +37,7 @@ def verify():
             assert result.returncode == expected, result.stderr or result.stdout
             return result.stdout
 
-        assert run("--version").strip() == "0.4.0"
+        assert run("--version").strip() == "0.4.1"
         run("init", "--id", "installed", "--name", "Installed", "--python", "--json")
         run("map", "check", "--json")
         run("resolve", "build", "--json")
@@ -69,7 +69,7 @@ def verify():
             json.dumps(
                 dict(
                     status="pass",
-                    version="0.4.0",
+                    version="0.4.1",
                     nodeOnPath=False,
                     isolatedPackage=str(aifw.__file__),
                     commands=command_count,

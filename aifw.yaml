@@ -4,7 +4,7 @@ metadata:
   id: aifw
   name: AI Software Engineering Framework
 spec:
-  frameworkVersion: 0.4.0
+  frameworkVersion: 0.4.1
   projectType: existing
   locale: pt-BR
   primaryEnvironment: windows

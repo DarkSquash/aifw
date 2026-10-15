@@ -1,4 +1,4 @@
-<!-- aifw:project-map digest=a16b86a9c523e6ba7f5998701fd8e22b8dfdc07bac848750cbbe31e4d56c8d00 -->
+<!-- aifw:project-map digest=a387a7241e589f57c32d778e29f74942f9f5d30698904112b27030cf65289219 -->
 # PROJECT_MAP — AI Software Engineering Framework
 
 > Compiled entrypoint. Edit authoritative sources, then regenerate this file.
@@ -8,7 +8,7 @@
 | Field | Value |
 | --- | --- |
 | Project ID | aifw |
-| Framework | 0.4.0 |
+| Framework | 0.4.1 |
 | Verified revision | discovery:84eda1c386f6 |
 
 ## Purpose

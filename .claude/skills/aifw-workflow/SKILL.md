@@ -89,4 +89,4 @@ Com o hook `aifw-hook` instalado, cada ação passa por `.aifw/permissions.yaml`
 - `aifw impasse decide` registra a decisão humana e só roda com a confirmação do usuário. Depois da mudança aprovada, use `aifw impasse revalidate`.
 - Alterações no framework precisam estar dentro da autorização real do usuário, não ser uma saída improvisada para seus bloqueios.
 
-<!-- aifw-version: 0.4.0 -->
+<!-- aifw-version: 0.4.1 -->

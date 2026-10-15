@@ -4,7 +4,7 @@ O AIFW é um plano de controle versionado para desenvolvimento de software com a
 
 O núcleo é independente do agente. O host de referência é o Claude Code, integrado por skill; outro executor pode entrar da mesma forma, e nenhum fornecedor define a Constitution, o lifecycle L0–L3 ou as fontes de verdade do projeto.
 
-> Estado: `v0.4.0`, control plane funcional. Projetos novos continuam com roteamento FAST/WORK/BRAIN (haiku/sonnet/opus) em `recommendation-only`; uma instalação só pode habilitar troca automática depois de evals persistidos e aprovação humana.
+> Estado: `v0.4.1`, control plane funcional. Projetos novos continuam com roteamento FAST/WORK/BRAIN (haiku/sonnet/opus) em `recommendation-only`; uma instalação só pode habilitar troca automática depois de evals persistidos e aprovação humana.
 
 ## O que já funciona
 

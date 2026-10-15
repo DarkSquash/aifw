@@ -31,5 +31,5 @@ jobs:
         run: uv run --no-sync python scripts/generate_cli_reference.py --check
       - run: uv run --no-sync python -m pytest -q
       - run: uv run --no-sync python -m build --no-isolation
-      - run: uv pip install --python .venv --reinstall dist/aifw_cli-0.4.0-py3-none-any.whl
+      - run: uv pip install --python .venv --reinstall dist/aifw_cli-0.4.1-py3-none-any.whl
       - run: uv run --no-sync python scripts/verify_wheel.py

@@ -2,7 +2,7 @@
   "apiVersion": "aifw.dev/v1alpha1",
   "kind": "EffectivePolicy",
   "projectId": "aifw",
-  "frameworkVersion": "0.4.0",
+  "frameworkVersion": "0.4.1",
   "rules": [
     {
       "id": "authority.core-invariants",

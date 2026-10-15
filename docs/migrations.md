@@ -49,6 +49,16 @@ Antes de promover mudanças ativas, consolide arquivos duplicados da mesma capab
 
 O archive pode retornar `cleanupPending` após commit bem-sucedido: preserve current e archive, confira o caminho da transação e remova somente o resíduo verificado. Não restaure backups parcialmente removidos nem repita o archive. Veja ADR-0010.
 
+## v0.4.0 → v0.4.1
+
+Fecha os itens em aberto das auditorias (ADR-0022). Consulte o [CHANGELOG](../CHANGELOG.md).
+
+1. Reinstale o CLI (`uv tool install --force <pasta-do-aifw>`) e, no projeto, rode `aifw claude enable`.
+2. Fixe `frameworkVersion: 0.4.1` em `aifw.yaml` e rode `aifw resolve build` e `aifw map build`.
+3. Para reprovar sessões que ignoram o Stop ou repetem falhas sem impasse, mude `session-conformance` para `enforcement: hard` em `.aifw/gates.yaml`.
+4. Rode `aifw secrets scan --history` uma vez para conferir o histórico do git.
+5. Scripts que chamam outros programas (`subprocess`) passam a pedir confirmação quando o agente os roda.
+
 ## v0.3.0 → v0.4.0
 
 Esta versão troca o host de referência para o Claude Code e endurece a validação. Consulte o [CHANGELOG](../CHANGELOG.md).

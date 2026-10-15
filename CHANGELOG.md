@@ -1,6 +1,6 @@
 # Changelog
 
-## Não lançado
+## 0.4.1 — 2026-10-15
 
 Fecha os itens em aberto das auditorias (ADR-0022).
 

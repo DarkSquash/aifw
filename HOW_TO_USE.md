@@ -2,7 +2,7 @@
 
 Documentação existente e instruções para agentes: [contexto por tarefa](docs/context-intelligence.md).
 
-Guia do AIFW v0.4.0. O núcleo e a CLI usam Python 3.11+, sem Node.js. O agente executa os comandos; o humano fornece contexto, revisa propostas e aprova decisões.
+Guia do AIFW v0.4.1. O núcleo e a CLI usam Python 3.11+, sem Node.js. O agente executa os comandos; o humano fornece contexto, revisa propostas e aprova decisões.
 
 ## Preparar o ambiente
 
