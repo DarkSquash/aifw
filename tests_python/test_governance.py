@@ -24,13 +24,6 @@ def test_permissions(action, expected):
     assert permissions.authorize_action(action, policy)["decision"] == expected
 
 
-def test_no_delegation_escalation():
-    assert permissions.validate_delegation(["read"], ["write", "read", "write"]) == {
-        "valid": False,
-        "excessCapabilities": ["write"],
-    }
-
-
 def test_break_glass_window():
     grant = dict(
         incidentId="INC-1",

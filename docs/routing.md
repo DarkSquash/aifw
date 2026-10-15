@@ -25,6 +25,6 @@ Revisão não substitui testes e gates, que rodam em toda classe. Trabalho trivi
 
 ## Ativação
 
-Projetos nascem com `enabled: false` e `mode: recommendation-only`. `aifw route activate` aceita relatório de conformidade e exige identidade + ADR/registro. O core recusa ativação com menos de 30 casos, pass rate abaixo de 95%, falha crítica ou aprovação ausente. Ativação escreve evidência na routing policy; não fica em conversa.
+Projetos nascem com `enabled: false` e `mode: recommendation-only`. `aifw route activate` aceita relatório de conformidade e exige identidade + ADR/registro. O core recusa ativação com menos de 30 casos, pass rate abaixo de 95%, falha crítica ou aprovação ausente. Ativação escreve evidência na routing policy; não fica em conversa. `route explain` usa os aliases e o estado gravados na policy; com `approvals.requireSignedCommit`, a ativação só vale num commit assinado.
 
 `aifw route eval --output <report.json>` executa a suíte determinística revisável em `evals/routing/cases.yaml`. Troca de modelo-alvo exige nova avaliação e nova aprovação (ADR-0003).

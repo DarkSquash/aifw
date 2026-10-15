@@ -117,6 +117,17 @@ def load_routing(root):
     return validate(read_yaml(Path(root) / ".aifw/routing.yaml"), "routing.schema.json")
 
 
+def routing_state(root):
+    """Persisted aliases and whether automatic routing is on; with signing required, only a signed activation counts."""
+    from . import signing
+
+    file = Path(root) / ".aifw/routing.yaml"
+    if not file.is_file():
+        return ALIASES, False
+    policy = load_routing(root)
+    return policy["aliases"], bool(policy["enabled"]) and signing.approved(root, file)
+
+
 def activate_routing(root, report, by, record):
     human(by)
     require(

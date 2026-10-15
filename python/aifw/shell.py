@@ -5,6 +5,7 @@ for patterns, so `git -C . push` is a push and `grep "git push" notes.txt` is a 
 the hook cannot read (eval, encoded commands, text piped into a shell) is reported as opaque.
 """
 
+from pathlib import Path
 import re
 import shlex
 
@@ -62,6 +63,7 @@ WRITES = re.compile(
 )
 DELETES = re.compile(r"rmtree|os\.(remove|unlink)|\.unlink\(|fs\.(rm|unlink)")
 INTERPRETERS = {"python", "python3", "py", "node", "perl", "ruby", "deno", "bun"}
+SCRIPT_SUFFIXES = (".py", ".js", ".mjs", ".cjs", ".ts")
 PUBLISH = {
     "npm": "publish", "pnpm": "publish", "yarn": "publish", "twine": "upload", "docker": "push",
     "podman": "push", "cargo": "publish", "gem": "push", "dart": "publish", "flutter": "publish",
@@ -398,7 +400,23 @@ def inline_script(name, code):
     return found
 
 
-def segment_requests(words, piped, allowlist, depth):
+def script_source(cwd, args):
+    """Text of the script file an interpreter runs, read like inline code.
+
+    shortcut: only the file named on the command line, relative to the session folder; modules it
+    imports and scripts run after a `cd` stay unread, upgrade by following imports if that matters.
+    """
+    target = next((a for a in args if not a.startswith("-")), None)
+    if cwd is None or not target or not target.lower().endswith(SCRIPT_SUFFIXES):
+        return None
+    try:
+        file = Path(cwd) / target
+        return file.read_text(encoding="utf-8", errors="replace")[:1_000_000] if file.is_file() else None
+    except OSError:
+        return None
+
+
+def segment_requests(words, piped, allowlist, depth, cwd=None):
     name, args = program(words)
     lowered = [a.lower() for a in args]
     text = " ".join(words)
@@ -410,8 +428,10 @@ def segment_requests(words, piped, allowlist, depth):
         found.append(request("read-only"))
     elif name in READABLE_INLINE and code is not None and depth <= 3:
         found += inline_script(name, code)
+    elif name in READABLE_INLINE and not interpreted and (source := script_source(cwd, args)) is not None:
+        found += inline_script(name, source)
     elif name == "script" and script_command(args) is not None and depth <= 3:
-        found += analyze(script_command(args), allowlist, depth + 1)["requests"]
+        found += analyze(script_command(args), allowlist, depth + 1, cwd)["requests"]
     elif name in {"invoke-command", "icm", "enter-pssession", "new-pssession"}:
         remote = name != "invoke-command" and name != "icm" or bool(REMOTE_SESSION & set(lowered))
         found.append(request("external-write", service="remote-host") if remote else request("read-only"))
@@ -426,7 +446,7 @@ def segment_requests(words, piped, allowlist, depth):
     ):
         found.append(request("opaque"))
     elif name in SHELLS and inline is not None:
-        found += analyze(inline, allowlist, depth + 1)["requests"]
+        found += analyze(inline, allowlist, depth + 1, cwd)["requests"]
     elif name == "git":
         found += git_requests(args)
     elif name == "gh":
@@ -477,7 +497,7 @@ def rank(item):
     return SEVERITY.index("destructive" if item.get("destructive") else item["kind"])
 
 
-def analyze(command, allowlist=(), depth=0):
+def analyze(command, allowlist=(), depth=0, cwd=None):
     """The most severe request in the command, with every request under "requests"."""
     try:
         command, bodies = split_embedded(command)
@@ -489,9 +509,9 @@ def analyze(command, allowlist=(), depth=0):
     else:
         found, previous = [], ""
         for body in bodies:
-            found += analyze(body, allowlist, depth + 1)["requests"]
+            found += analyze(body, allowlist, depth + 1, cwd)["requests"]
         for words, operator in parts:
-            found += segment_requests(words, previous in {"|", "|&"}, allowlist, depth)
+            found += segment_requests(words, previous in {"|", "|&"}, allowlist, depth, cwd)
             previous = operator
     found = found or [request("read-only")]
     dominant = min(found, key=rank)

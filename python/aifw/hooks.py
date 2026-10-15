@@ -79,7 +79,7 @@ def control_target(root, tool_name, tool_input, mutation, protected=()):
     return matches[0] if matches else None
 
 
-def classify(tool_name, tool_input, allowlist):
+def classify(tool_name, tool_input, allowlist, cwd=None):
     """Translate a Claude Code tool call into an AIFW action request."""
     if tool_name in EDIT_TOOLS:
         return dict(kind="filesystem-write", destructive=False, mutation=True)
@@ -90,7 +90,13 @@ def classify(tool_name, tool_input, allowlist):
     if tool_name.startswith("mcp__"):
         return dict(kind="mcp", server=tool_name.split("__")[1], mutation=False)
     if tool_name in {"Agent", "Task"}:
-        return dict(kind="delegation", model=tool_input.get("model"), mutation=False)
+        return dict(
+            kind="delegation",
+            model=tool_input.get("model"),
+            agent=tool_input.get("subagent_type"),
+            remote=tool_input.get("isolation") == "remote",
+            mutation=False,
+        )
     if tool_name == "WebSearch":
         return dict(kind="external-read", service="web-search", mutation=False)
     if tool_name in {"Read", "Grep", "Glob"}:
@@ -103,7 +109,7 @@ def classify(tool_name, tool_input, allowlist):
         return dict(kind="read-only", mutation=False)
     if tool_name not in SHELL_TOOLS:
         return dict(kind="read-only", mutation=False)
-    return analyze(tool_input.get("command", ""), allowlist)
+    return analyze(tool_input.get("command", ""), allowlist, cwd=cwd)
 
 
 def project_settings(root):
@@ -146,6 +152,18 @@ def log_break_glass(file, kind, tool_name, tool_input):
         stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+def agent_model(root, name):
+    """The model a custom subagent definition names, from the project's or the user's .claude/agents."""
+    if not name or not re.fullmatch(r"[\w.-]+", name):
+        return None
+    for folder in (Path(root) / ".claude/agents", Path.home() / ".claude/agents"):
+        file = folder / f"{name}.md"
+        if file.is_file():
+            match = re.search(r"^model:\s*['\"]?([\w.-]+)", file.read_text(encoding="utf-8")[:4000], re.M)
+            return match and match.group(1)
+    return None
+
+
 def item_findings(root, policy, item, allowlist, classification, tool_name="", tool_input=None):
     """Policy findings for one action of a tool call."""
     kind, findings = item["kind"], []
@@ -165,9 +183,13 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
             findings.append(("ask", f"MCP server {item['server']} requires confirmation"))
     elif kind == "delegation":
         risky = active_levels(root) & {"L2", "L3"}
-        if item.get("model") == "haiku" and risky:
+        model = item.get("model") or agent_model(root, item.get("agent")) or ""
+        if "haiku" in model and risky:
             # The model table never runs L2/L3 work on haiku.
             findings.append(("ask", f"delegates to haiku while an active {max(risky)} change exists"))
+        if item.get("remote"):
+            # Subagents on this machine inherit these hooks; a cloud session runs outside them.
+            findings.append(("ask", "delegates to a cloud session, outside this machine's AIFW hooks"))
     else:
         decision = decide_action(item, policy, allowlist)
         grants = active_grants(root, policy) if decision["decision"] != "allow" else {}
@@ -188,11 +210,11 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
     return findings
 
 
-def evaluate(root, tool_name, tool_input):
+def evaluate(root, tool_name, tool_input, cwd=None):
     """Return ("deny"|"ask", reasons) or None when AIFW has no objection."""
     policy = load_permission_policy(root)
     allowlist, classification = project_settings(root)
-    request = classify(tool_name, tool_input, service_domains(policy, allowlist))
+    request = classify(tool_name, tool_input, service_domains(policy, allowlist), cwd or root)
     findings = []
     for case in load_cases(root):
         if case.get("humanDecision") and not signing.approved(root, case_file(root, case["id"])):
@@ -228,7 +250,9 @@ def evaluate(root, tool_name, tool_input):
 
 def pre_tool_use(root, payload):
     try:
-        result = evaluate(root, payload.get("tool_name", ""), payload.get("tool_input") or {})
+        result = evaluate(
+            root, payload.get("tool_name", ""), payload.get("tool_input") or {}, payload.get("cwd")
+        )
     except Exception as error:  # noqa: BLE001 - a broken policy must reach the human, not pass silently
         result = "ask", [f"AIFW hook could not evaluate the policy: {error}"]
     if result is None:
@@ -356,8 +380,6 @@ def post_tool_use(root, payload):
 
 
 def stop(root, payload):
-    if payload.get("stop_hook_active"):
-        return None
     entries = read_log(run_log(root, payload))
     baseline = next((e["tree"] for e in reversed(entries) if e.get("tree") is not None), None)
     current = tree_state(root) if baseline is not None else None
@@ -373,6 +395,10 @@ def stop(root, payload):
     else:
         pending = unverified_edits(entries)
     if not pending:
+        return None
+    if payload.get("stop_hook_active"):
+        # Claude Code lets a second stop through; the record makes `aifw runs show` report it.
+        append(root, payload, dict(at=now(), tool="Stop", unverified=pending[:20]))
         return None
     masked = any(e.get("masked") for e in entries)
     return dict(
@@ -463,18 +489,27 @@ def summarize_runs(root, session=None):
         for e in entries:
             if e.get("verification") and e["ok"] is False:
                 failures[e["command"]] = failures.get(e["command"], 0) + 1
-        findings = []
-        pending = unverified_edits(entries)
-        if pending:
-            findings.append("code changed after the last successful verification: " + ", ".join(pending[:5]))
+        # Findings break the workflow rules; notes are for review (control edits were confirmed by a person).
+        findings, notes = [], []
+        last_ok = max((i for i, e in enumerate(entries) if e.get("verification") and e.get("ok")), default=-1)
+        ignored = sorted(
+            {f for e in entries[last_ok + 1 :] if e.get("tool") == "Stop" for f in e["unverified"]}
+        )
+        if ignored:
+            findings.append(
+                "a turn ended with unverified code despite the Stop warning: " + ", ".join(ignored[:5])
+            )
         repeated = sorted(c for c, n in failures.items() if n >= 2)
         if repeated and not has_cases:
             findings.append("repeated failures without an impasse case: " + "; ".join(repeated[:3]))
+        pending = unverified_edits(entries)
+        if pending:
+            notes.append("code changed after the last successful verification: " + ", ".join(pending[:5]))
         control = sorted(
             {e["file"] for e in entries if e.get("file") and any(c in e["file"] for c in CONTROL)}
         )
         if control:
-            findings.append("AIFW control files edited: " + ", ".join(control))
+            notes.append("AIFW control files edited: " + ", ".join(control))
         summaries.append(
             dict(
                 session=file.stem,
@@ -483,6 +518,7 @@ def summarize_runs(root, session=None):
                 verifications=sum(1 for e in entries if e.get("verification")),
                 failedVerifications=sum(failures.values()),
                 findings=findings,
+                notes=notes,
                 status="warning" if findings else "pass",
             )
         )

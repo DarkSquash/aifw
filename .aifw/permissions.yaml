@@ -10,6 +10,9 @@ externalServices:
 # The editable aifw install runs this source as the hook itself.
 protectedPaths:
   - python/aifw/
+# Approvals count only in a signed, unchanged commit: an agent cannot sign with the person's key.
+approvals:
+  requireSignedCommit: true
 childAgents:
   capabilityCeiling: parent
 breakGlass:

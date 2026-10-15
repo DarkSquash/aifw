@@ -202,11 +202,10 @@ def read_valid_yaml(file, schema_name):
 
     The cache only records that some content passed a schema; values always come from the file itself.
     """
-    import tempfile
-
     data = Path(file).read_bytes()
     key = f"{schema_name}:{sha256(data).hexdigest()}"
-    cache = Path(tempfile.gettempdir()) / "aifw-validated.txt"
+    # Per user: in a shared temp folder another account could plant entries or a symlink.
+    cache = Path.home() / ".cache/aifw/validated.txt"
     try:
         known = key in cache.read_text(encoding="utf-8").split()
     except OSError:
@@ -215,6 +214,7 @@ def read_valid_yaml(file, schema_name):
     if not known:
         validate(value, schema_name)
         try:
+            cache.parent.mkdir(parents=True, exist_ok=True)
             with cache.open("a", encoding="utf-8") as stream:
                 stream.write(key + "\n")
         except OSError:

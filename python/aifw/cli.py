@@ -196,7 +196,8 @@ def create_parser():
     option(leaf, "--hours", default="4")
     approval(leaf)
     command("break-glass list", "list incident grants and whether they are active")
-    command("secrets scan", "find secrets in project files; reports locations, never values")
+    leaf = command("secrets scan", "find secrets in project files; reports locations, never values")
+    option(leaf, "--history", action="store_true")
     command("template list", "list document templates")
     leaf = command("template copy", "copy a template into a spec change or a project path")
     option(leaf, "--name", required=True)
@@ -494,6 +495,7 @@ def execute(args, root):
         except ValueError as error:
             raise AifwError("MANIFEST_INVALID", "failed-attempts must be an integer.") from error
         require(failures >= 0, "failed-attempts must not be negative.")
+        aliases, enabled = routing.routing_state(root)
         return routing.route_task(
             dict(
                 impact=args.impact,
@@ -501,7 +503,9 @@ def execute(args, root):
                 uncertainty=args.uncertainty,
                 failedAttempts=failures,
                 crossDomain=args.cross_domain,
-            )
+            ),
+            aliases,
+            enabled,
         ), 0
     if action == "route status":
         return routing.load_routing(root), 0
@@ -546,7 +550,7 @@ def execute(args, root):
     if action == "secrets scan":
         from .secrets import scan
 
-        value = scan(root)
+        value = scan(root, args.history)
         return value, 0 if value["status"] == "pass" else 2
     if action.startswith("template "):
         if action == "template list":

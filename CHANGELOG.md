@@ -1,5 +1,26 @@
 # Changelog
 
+## Não lançado
+
+Fecha os itens em aberto das auditorias (ADR-0022).
+
+### Adicionado
+
+- `aifw secrets scan --history`, que lê as linhas adicionadas em todos os commits.
+- O hook lê o arquivo de um script Python ou JavaScript chamado diretamente (`python publicar.py`).
+- Delegação: o hook lê o modelo da definição do subagente e pede confirmação para sessões na nuvem.
+
+### Alterado
+
+- O Stop ignorado fica registrado. `runs show` separa achados de notas, e `session-conformance` passa a ser hard nas receitas.
+- `route explain` usa a policy gravada; com assinatura exigida, a ativação de roteamento só vale assinada.
+- O `init` ajusta a receita de gates ao gerenciador de pacotes e às ferramentas declaradas no projeto.
+- O cache de validação fica em `~/.cache/aifw/`. Valores desconhecidos na política de permissões pedem confirmação.
+
+### Removido
+
+- `permissions.validate_delegation`, substituída pelos hooks, que valem dentro dos subagentes.
+
 ## 0.4.0 — 2026-10-11
 
 Claude Code passa a ser o host de referência, ativado por projeto, e a validação deixa de poder parecer verde sem evidência.

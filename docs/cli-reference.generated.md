@@ -614,13 +614,14 @@ options:
 ## `aifw secrets scan`
 
 ```text
-usage: aifw secrets scan [-h] [--json]
+usage: aifw secrets scan [-h] [--json] [--history]
 
 find secrets in project files; reports locations, never values
 
 options:
   -h, --help  show this help message and exit
   --json      emit stable machine-readable JSON
+  --history   history
 ```
 
 ## `aifw template list`

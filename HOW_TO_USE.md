@@ -503,10 +503,11 @@ aifw break-glass grant --incident inc-42 --scope git-remote,deploy --reason "cor
 
 ### `aifw secrets scan`
 
-Procura segredos nos arquivos do projeto: chaves privadas, tokens da AWS, do GitHub e do Slack, chaves de API e senhas atribuídas em código, além de arquivos como `.env` versionados. Mostra arquivo, linha e tipo, nunca o valor. Uma linha com o comentário `aifw:allow-secret` é ignorada (use em fixtures de teste). É o gate `secret-scan`, obrigatório a partir de L1.
+Procura segredos nos arquivos do projeto: chaves privadas, tokens da AWS, do GitHub e do Slack, chaves de API e senhas atribuídas em código, além de arquivos como `.env` versionados. Mostra arquivo, linha e tipo, nunca o valor. Uma linha com o comentário `aifw:allow-secret` é ignorada (use em fixtures de teste). É o gate `secret-scan`, obrigatório a partir de L1. Com `--history`, também lê as linhas adicionadas em todos os commits de todas as branches, porque um segredo apagado depois continua no histórico; cada achado traz o commit.
 
 ```powershell
 aifw secrets scan
+aifw secrets scan --history
 ```
 
 ### `aifw template`
@@ -519,7 +520,7 @@ aifw template copy --name runbook.md --output docs/runbooks/pagamentos.md
 
 ### `aifw runs show`
 
-Resume as sessões gravadas pelo hook em `.aifw/runs/`: edições, verificações, falhas e o que violou as regras do fluxo. Retorna código 2 se houver achados.
+Resume as sessões gravadas pelo hook em `.aifw/runs/`: edições, verificações, falhas e o que violou as regras do fluxo. Falhas repetidas sem impasse e respostas encerradas ignorando o aviso do Stop são achados e retornam código 2; código não verificado e edições em arquivos de controle aparecem em `notes`.
 
 ```powershell
 aifw runs show --session latest

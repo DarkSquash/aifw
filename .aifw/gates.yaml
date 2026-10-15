@@ -15,6 +15,12 @@ gates:
   - L1
   - L2
   - L3
+- id: context-integrity
+  enforcement: hard
+  levels:
+  - L1
+  - L2
+  - L3
 - id: typecheck
   enforcement: hard
   levels:
@@ -87,7 +93,7 @@ gates:
   - secrets
   - scan
 - id: session-conformance
-  enforcement: audit
+  enforcement: hard
   levels:
   - L2
   - L3

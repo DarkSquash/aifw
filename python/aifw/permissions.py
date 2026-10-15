@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from .common import AifwError, now, read_valid_yaml, read_yaml, require, sort_key, timestamp
+from .common import AifwError, now, read_valid_yaml, read_yaml, require, timestamp
 
 DEFAULT_PERMISSION_POLICY = dict(
     externalAllowlist=[],
@@ -52,11 +52,6 @@ def authorize_action(request, policy):
     else:
         require(False, f"Unknown action kind: {kind}")
     return dict(decision=decision, reason=reason)
-
-
-def validate_delegation(parent_capabilities, requested_capabilities):
-    excess = sorted(set(requested_capabilities) - set(parent_capabilities), key=sort_key)
-    return dict(valid=not excess, excessCapabilities=excess)
 
 
 def validate_break_glass(grant, requested_scope, at=None):
@@ -111,7 +106,8 @@ def decide_action(request, data, allowlist=None):
     }.get(kind)
     if setting == "denied" and decision["decision"] != "deny":
         return dict(decision="deny", reason=f"policy-denies-{kind}")
-    if setting == "human-approval" and decision["decision"] == "allow":
+    # Any value but the known ones (say, a file that skipped validation) asks the person.
+    if setting not in {None, "autonomous", "denied"} and decision["decision"] == "allow":
         return dict(decision="require-approval", reason=f"policy-requires-approval-{kind}")
     return decision
 

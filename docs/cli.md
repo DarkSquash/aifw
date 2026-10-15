@@ -28,7 +28,7 @@ A CLI é o **plano de controle** do framework: uma camada pequena que lê fontes
 | `waiver add/list` | exceções humanas com prazo para gates e regras sobrescrevíveis |
 | `break-glass grant/list` | permissões temporárias de incidente respeitadas pelo hook |
 | `template list/copy` | cria documentos a partir dos templates |
-| `secrets scan` | procura segredos nos arquivos do projeto, sem mostrar os valores |
+| `secrets scan` | procura segredos nos arquivos do projeto (e no histórico do git com `--history`), sem mostrar os valores |
 | `runs show` | resume as sessões gravadas contra as regras do fluxo |
 | `claude install/enable/check` | comando `/aifw`, ativação por projeto e diagnóstico da integração |
 | `eval` | executa conformance cases contra traces |

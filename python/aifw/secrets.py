@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import re
+import subprocess
 
 from .shell import SECRET_FILE
 
@@ -20,10 +21,36 @@ ALLOW = "aifw:allow-secret"  # put on a line holding a deliberate fake, such as 
 MAX_BYTES = 1_000_000
 
 
-def scan(root):
+def matches(path, number, line):
+    if ALLOW in line:
+        return []
+    return [dict(path=path, line=number, rule=rule) for rule, rx in PATTERNS.items() if rx.search(line)]
+
+
+def scan_history(root):
+    """Lines added in any commit of any branch; a secret removed later is still in the history."""
+    log = subprocess.run(
+        ["git", "log", "--all", "-p", "-U0", "--no-color", "--no-ext-diff", "--format=commit %H"],
+        cwd=root,
+        capture_output=True,
+    )
+    findings, commit, path = [], None, None
+    for line in log.stdout.decode("utf-8", "replace").splitlines():
+        if line.startswith("commit "):
+            commit = line[7:19]
+        elif line.startswith("+++ "):
+            path = line[6:] if line.startswith("+++ b/") else None
+            if path and SECRET_FILE.search(path) and not path.endswith(".example"):
+                findings.append(dict(path=path, line=0, rule="secret-file", commit=commit))
+        elif line.startswith("+") and path:
+            findings += [dict(f, commit=commit) for f in matches(path, 0, line[1:])]
+    return findings
+
+
+def scan(root, history=False):
     from .specs import project_files
 
-    findings = []
+    findings = scan_history(root) if history else []
     for path in project_files(root):
         if SECRET_FILE.search(path) and not path.endswith(".example"):
             findings.append(dict(path=path, line=0, rule="secret-file"))
@@ -33,9 +60,5 @@ def scan(root):
         if b"\0" in data:
             continue
         for number, line in enumerate(data.decode("utf-8", "replace").splitlines(), 1):
-            if ALLOW in line:
-                continue
-            findings += [
-                dict(path=path, line=number, rule=rule) for rule, rx in PATTERNS.items() if rx.search(line)
-            ]
+            findings += matches(path, number, line)
     return dict(status="pass" if not findings else "blocked", findings=findings)

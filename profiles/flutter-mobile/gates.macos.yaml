@@ -29,7 +29,7 @@ gates:
     levels: [L1, L2, L3]
     command: [aifw, secrets, scan]
   - id: session-conformance
-    enforcement: audit
+    enforcement: hard
     levels: [L2, L3]
     command: [aifw, runs, show, --session, latest]
   - id: independent-review

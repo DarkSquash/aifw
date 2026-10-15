@@ -4,6 +4,7 @@ from copy import deepcopy
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 
 from . import __version__
 from .common import assets, normalize, read_json, read_yaml, require, sort_key, validate, write_yaml
@@ -130,6 +131,37 @@ def gate_recipe(root, profiles):
     return None
 
 
+LOCKFILES = (("pnpm-lock.yaml", "pnpm"), ("yarn.lock", "yarn"), ("bun.lock", "bun"), ("bun.lockb", "bun"))
+
+
+def adapt_gates(root, gates):
+    """Fit a profile recipe to the project: its package manager, `uv run` and the tools it declares.
+
+    A gate whose script or tool the project does not declare loses its command, so validation says
+    "set one" instead of failing on a missing program. Without package.json or pyproject.toml yet
+    (a new project), the recipe stays as shipped.
+    """
+    root = Path(root)
+    package = read_json(root / "package.json") if (root / "package.json").is_file() else None
+    manager = next((m for lock, m in LOCKFILES if (root / lock).is_file()), "npm")
+    manifests = [root / "pyproject.toml", *sorted(root.glob("requirements*.txt"))]
+    declared = " ".join(f.read_text(encoding="utf-8", errors="replace") for f in manifests if f.is_file())
+    for gate in gates["gates"]:
+        command = gate.get("command", [])
+        if command[:1] == ["npm"]:
+            script = command[2] if command[1:2] == ["run"] else command[1]
+            if package is not None and script not in package.get("scripts", {}):
+                del gate["command"]
+            else:
+                gate["command"] = [manager, "run", script]
+        elif command[:2] == ["python", "-m"] and command[2] != "aifw":
+            if declared and not re.search(rf"\b{command[2]}\b", declared):
+                del gate["command"]
+            elif (root / "uv.lock").is_file():
+                gate["command"] = ["uv", "run", *command]
+    return gates
+
+
 def initialize_project(root, options):
     root = Path(root)
     template = json.dumps(read_json(assets() / "templates/project-scaffold.json"), ensure_ascii=False)
@@ -159,7 +191,9 @@ def initialize_project(root, options):
     files[".aifw/charter.yaml"]["projectType"] = manifest["spec"]["projectType"]
     recipe = gate_recipe(root, manifest["spec"]["profiles"])
     if recipe:
-        files[".aifw/gates.yaml"] = validate(read_yaml(recipe), "quality-gates.schema.json")
+        files[".aifw/gates.yaml"] = adapt_gates(
+            root, validate(read_yaml(recipe), "quality-gates.schema.json")
+        )
     files[".aifw/framework.lock.yaml"].update(frameworkVersion=__version__, generatedBy=f"aifw/{__version__}")
     validate(manifest, "project-manifest.schema.json")
     conflicts = [name for name in [*files, "PROJECT_MAP.md"] if (root / name).exists()]
