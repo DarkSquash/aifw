@@ -45,7 +45,7 @@ def policy(root, **values):
         ("Get-ChildItem env:", "secret-read"),
         ("git commit -S -m x", "signing"),
         ("git -c commit.gpgsign=true commit -m x", "signing"),
-        ("git commit -m x", "git-local"),
+        ("git commit -m x", "commit"),
     ],
 )
 def test_embedded_code_variables_and_signing(command, kind):

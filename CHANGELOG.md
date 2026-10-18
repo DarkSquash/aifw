@@ -2,6 +2,17 @@
 
 ## Não lançado
 
+### Alterado
+
+- Escopo das aprovações (ADR-0025):
+  - instalar pacote, programa ou projeto novo (inclusive `npx`, `uvx`, `winget` e `git clone`) e criar ou reescrever commits sempre pedem confirmação;
+  - a allowlist não libera mais instalações;
+  - neste repositório, `python/aifw/` deixou de ser caminho protegido.
+- Opções `opaqueCode` (padrão `ask`) e `trustedPackages` em `permissions.yaml`. Neste repositório, `npx ctx7` roda sem perguntar.
+- Uma aprovação do AIFW escondida em código que também roda programas passa a ser detectada.
+- O cache de validação dos arquivos YAML inclui o hash do schema, então uma mudança de schema sempre valida de novo.
+- O hook trata o conteúdo de um heredoc como dado. Ele só é analisado como código quando alimenta um interpretador ou um shell, ou quando, sem aspas, expande `$(...)`.
+
 ### Adicionado
 
 - Avaliador de tarefas em modo sombra (ADR-0023):

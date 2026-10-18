@@ -169,6 +169,8 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
     """Policy findings for one action of a tool call."""
     kind, findings = item["kind"], []
     if kind == "opaque":
+        if policy.get("opaqueCode", "ask") == "allow":
+            return findings  # the project accepts code the hook cannot read (ADR-0025)
         findings.append(
             ("ask", "runs code the hook cannot read (eval, inline code, aliases or piped into a shell)")
         )
@@ -176,6 +178,14 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         findings.append(("ask", "reads files or variables that usually hold secrets"))
     elif kind == "signing":
         findings.append(("ask", "signs a commit; signed commits are the proof of human approval"))
+    elif kind == "install" and item.get("package") in policy.get("trustedPackages", []):
+        pass  # a package the project chose to run without asking, such as ctx7
+    elif kind == "install":
+        findings.append(
+            ("ask", "installs a package, program or new project; installs need the person's approval")
+        )
+    elif kind == "commit":
+        findings.append(("ask", "creates or rewrites a commit; the person reviews every commit"))
     elif kind == "mcp":
         servers = policy.get("mcpServers", {})
         if item["server"] in servers.get("deny", []):

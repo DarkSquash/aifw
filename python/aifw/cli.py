@@ -175,7 +175,9 @@ def create_parser():
     option(leaf, "--task", required=True)
     option(leaf, "--diff", action="store_true")
     option(leaf, "--base")
-    leaf = command("assess report", "report shadow assessments and your verdicts against the activation criteria")
+    leaf = command(
+        "assess report", "report shadow assessments and your verdicts against the activation criteria"
+    )
     option(leaf, "--feature", default="tasks", choices=["tasks", "impasse"])
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
     option(leaf, "--feature", default="tasks", choices=["tasks", "impasse"])

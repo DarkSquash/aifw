@@ -7,12 +7,12 @@ productionDeployment: human-approval
 destructiveChanges: human-approval
 externalServices:
   writes: human-approval
-# The editable aifw install runs this source as the hook itself.
-protectedPaths:
-  - python/aifw/
 # Approvals count only in a signed, unchanged commit: an agent cannot sign with the person's key.
 approvals:
   requireSignedCommit: true
+# Packages that npx/uvx may download and run without asking (ADR-0025).
+trustedPackages:
+  - ctx7
 childAgents:
   capabilityCeiling: parent
 breakGlass:

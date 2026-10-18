@@ -14,6 +14,13 @@ Use o núcleo Python como ferramenta de governança. O Claude executa o trabalho
 3. Leia `PROJECT_MAP.md`, `.aifw/charter.yaml` e apenas os contratos, specs em `.aifw/specs/current/`, ADRs e regras pertinentes à tarefa. Considere `.aifw/effective-policy.json` somente após conferir sua atualidade.
 4. Para trabalho de implementação, confira `aifw intake status --json`, `aifw map check --json` e `aifw resolve check --json`. Não transforme uma consulta simples em um ciclo completo de implementação.
 
+O que exige a aprovação do usuário:
+- instalar pacote, biblioteca, programa ou projeto novo;
+- fazer ou reescrever commits;
+- começar uma mudança L3: apresente o plano e espere o "sim" antes de editar.
+
+O hook pede confirmação nos dois primeiros casos. O resto pode seguir sem perguntar, porque fica registrado nos commits que o usuário revisa.
+
 Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 indica avaliação com bloqueio ou pendência. Inspecione o resultado antes de agir. Um comando que falhou não é evidência de aprovação.
 
 ## Intake e adoção

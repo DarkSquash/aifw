@@ -15,7 +15,7 @@ from test_workflows import init
         ("git -C . push", "git-remote", False),
         ("git --git-dir=.git push origin main", "git-remote", False),
         ('grep "git push" notas.txt', "read-only", False),
-        ('git commit -m "push it"', "git-local", False),
+        ('git commit -m "push it"', "commit", False),
         ('bash -c "git push origin main"', "git-remote", False),
         ("echo Z2l0IHB1c2g= | base64 -d | sh", "opaque", False),
         ('eval "$CMD"', "opaque", False),
@@ -105,3 +105,19 @@ def test_approvals_require_typing_the_project_id(monkeypatch):
     monkeypatch.setattr(cli.sys.stdin, "isatty", lambda: True, raising=False)
     with pytest.raises(AifwError, match="did not match"):
         cli.confirm_human("human:me", "demo")
+
+
+@pytest.mark.parametrize(
+    ("command", "kind"),
+    [
+        ("cat >> notes.md <<'EOF'\ngit push origin main\npip install x\nEOF", "filesystem-write"),
+        ("python - <<'EOF'\nimport subprocess\nsubprocess.run(['x'])\nEOF", "opaque"),
+        ("bash <<EOF\ngit push\nEOF", "git-remote"),
+        ("cat > a.txt <<EOF\n$(git push)\nEOF", "git-remote"),
+        ("cat > a.txt <<'EOF'\n$(git push)\nEOF", "filesystem-write"),
+        ("cat > a.txt <<'EOF'\nhello\nEOF\ngit push", "git-remote"),
+        ("cat <<-EOF\n\tgit push\n\tEOF", "read-only"),
+    ],
+)
+def test_heredoc_bodies_are_data_unless_they_feed_code(command, kind):
+    assert analyze(command)["kind"] == kind

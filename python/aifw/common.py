@@ -203,7 +203,9 @@ def read_valid_yaml(file, schema_name):
     The cache only records that some content passed a schema; values always come from the file itself.
     """
     data = Path(file).read_bytes()
-    key = f"{schema_name}:{sha256(data).hexdigest()}"
+    # The schema's own hash is in the key, so a schema change never reuses an old verdict.
+    schema = sha256((assets() / "schemas" / schema_name).read_bytes()).hexdigest()[:16]
+    key = f"{schema_name}:{schema}:{sha256(data).hexdigest()}"
     # Per user: in a shared temp folder another account could plant entries or a symlink.
     cache = Path.home() / ".cache/aifw/validated.txt"
     try:

@@ -69,17 +69,27 @@ PUBLISH = {
     "podman": "push", "cargo": "publish", "gem": "push", "dart": "publish", "flutter": "publish",
 }  # fmt: skip
 REMOTE_SHELL = {"ssh", "scp", "sftp", "rsync"}
+# Installs of packages, programs or new projects always need the person (ADR-0025); `uv sync` only
+# restores what uv.lock already pins.
 INSTALL = {
-    "npm": {"install", "i", "ci", "add"}, "pnpm": {"install", "i", "add"}, "yarn": {"install", "add"},
-    "pip": {"install"}, "pip3": {"install"}, "uv": {"add", "pip"}, "poetry": {"add", "install"},
-    "cargo": {"add", "install"}, "go": {"get", "install"}, "gem": {"install"},
+    "npm": {"install", "i", "ci", "add", "create", "exec"}, "pnpm": {"install", "i", "add", "create", "dlx"},
+    "yarn": {"install", "add", "create", "dlx"}, "bun": {"install", "i", "add", "create", "x"},
+    "pip": {"install"}, "pip3": {"install"}, "uv": {"add", "pip", "tool"}, "pipx": {"install", "run"},
+    "poetry": {"add", "install"}, "conda": {"install", "create"}, "cargo": {"add", "install"},
+    "go": {"get", "install"}, "gem": {"install"}, "composer": {"require", "install", "create-project"},
+    "flutter": {"pub"}, "dart": {"pub"}, "winget": {"install", "upgrade"}, "choco": {"install", "upgrade"},
+    "scoop": {"install", "update"}, "apt": {"install"}, "apt-get": {"install"}, "brew": {"install", "upgrade"},
+    "snap": {"install"}, "dnf": {"install"}, "yum": {"install"}, "pacman": {"-s", "-sy", "-syu"},
 }  # fmt: skip
+FETCH_AND_RUN = {"npx", "pnpx", "bunx", "uvx"}  # download a package and run it
+# Commands that create or rewrite commits; the person reviews every commit (ADR-0025).
+COMMITS = {"commit", "merge", "rebase", "cherry-pick", "revert", "am"}
 GIT_LOCAL = {
     "add", "commit", "merge", "rebase", "tag", "stash", "checkout", "switch", "cherry-pick", "revert", "am",
     "fetch", "pull", "clone", "init", "mv", "rm", "restore", "reset", "clean", "branch", "remote", "config",
     "worktree", "submodule", "apply", "notes", "bisect", "gc", "maintenance", "sparse-checkout", "lfs",
 }  # fmt: skip
-WRAPPERS = {"sudo", "env", "time", "nohup", "command", "exec", "nice", "npx", "pnpx", "bunx"}
+WRAPPERS = {"sudo", "env", "time", "nohup", "command", "exec", "nice"}
 PYTHONS = {"python", "python3", "py"}
 READ_ONLY = {
     "cd", "set-location", "pushd", "popd", "ls", "dir", "cat", "type", "head", "tail", "grep", "rg",
@@ -95,8 +105,8 @@ GIT_READ = {
 GIT_LISTING = {"branch", "tag", "remote", "stash", "config", "worktree", "submodule"}
 LIST_ARGS = {"-a", "-r", "-v", "-vv", "-l", "--list", "list", "show", "--show-current", "--get", "--get-all"}
 SEVERITY = [
-    "opaque", "destructive", "deploy", "git-remote", "external-write", "secret-read", "signing",
-    "git-local", "filesystem-write", "external-read", "read-only",
+    "opaque", "destructive", "deploy", "git-remote", "external-write", "install", "secret-read", "signing",
+    "commit", "git-local", "filesystem-write", "external-read", "read-only",
 ]  # fmt: skip
 
 
@@ -154,6 +164,44 @@ def lex(line):
     lexer.whitespace_split = True
     lexer.escape = ""  # keep Windows paths such as C:\Users intact
     return list(lexer)
+
+
+HEREDOC = re.compile(r"(?<!<)<<(-?)\s*(['\"]?)([A-Za-z_][\w-]*)\2")
+
+
+def split_heredocs(command):
+    """The command without heredoc bodies, and each body in order as (text, quoted).
+
+    A body is input for its command, not shell code: `cat > notes.md <<'EOF'` writes text that
+    may mention `git push` without pushing anything.
+    """
+    lines, kept, bodies, i = command.splitlines(), [], [], 0
+    while i < len(lines):
+        line = lines[i]
+        kept.append(line)
+        i += 1
+        for strip_tabs, quote, delimiter in HEREDOC.findall(line):
+            body = []
+            while i < len(lines) and (lines[i].lstrip("\t") if strip_tabs else lines[i]) != delimiter:
+                body.append(lines[i])
+                i += 1
+            i += 1  # the delimiter line
+            bodies.append(("\n".join(body), bool(quote)))
+    return "\n".join(kept), bodies
+
+
+def heredoc_requests(words, body, quoted, allowlist, depth, cwd):
+    """A heredoc runs as code only when it feeds an interpreter or a shell; otherwise it is data."""
+    name, _ = program([w for w in words if not w.startswith("<<")])
+    if name in READABLE_INLINE:
+        return inline_script(name, body)
+    if name in SHELLS or name in INTERPRETERS:
+        return analyze(body, allowlist, depth + 1, cwd)["requests"]
+    if quoted:
+        return []
+    # Unquoted bodies still expand $(...) and backticks before the command reads them.
+    _, embedded = split_embedded(body)
+    return [r for code in embedded for r in analyze(code, allowlist, depth + 1, cwd)["requests"]]
 
 
 def logical_lines(command):
@@ -301,6 +349,10 @@ def git_requests(args):
             for a in rest
         )
         return [request("git-remote")] + ([request("filesystem-write", destructive=True)] if force else [])
+    if sub == "clone":
+        return [request("install")] + signing
+    if sub in COMMITS:
+        return [request("commit")] + signing
     if destructive:
         return [request("filesystem-write", destructive=True)] + signing
     if sub in GIT_READ or (sub in GIT_LISTING and (not rest or rest[0] in LIST_ARGS)):
@@ -388,14 +440,15 @@ def script_command(args):
 
 def inline_script(name, code):
     """What inline Python or JavaScript can do, read from its text."""
-    if RUNS_PROGRAMS.search(code):
-        return [request("opaque")]
     found = []
+    if RUNS_PROGRAMS.search(code):
+        found.append(request("opaque"))
     if NETWORK.search(code):
         found.append(request("external-write", service="unknown"))  # can send data anywhere
     if WRITES.search(code):
         found.append(request("filesystem-write", destructive=bool(DELETES.search(code))))
     found = found or [request("read-only")]
+    # Approvals belong to the person, so they are flagged even inside code that also runs programs.
     if re.search(r"\baifw\b", code) and re.search(r"approve|activate|decide|grant|add_waiver|verdict", code):
         found = [dict(r, approval=True) for r in found]
     return found
@@ -415,6 +468,16 @@ def script_source(cwd, args):
         return file.read_text(encoding="utf-8", errors="replace")[:1_000_000] if file.is_file() else None
     except OSError:
         return None
+
+
+def package_name(args):
+    """The package npx and friends would run: `ctx7@latest` is ctx7, `@scope/tool@1` is @scope/tool."""
+    if any(
+        a in {"-p", "--package", "--from", "--with"} or a.startswith(("--package=", "--from=")) for a in args
+    ):
+        return None  # the command name no longer says which package gets installed
+    target = next((a for a in args if not a.startswith("-")), "")
+    return target.rsplit("@", 1)[0] if target.rfind("@") > 0 else target
 
 
 def segment_requests(words, piped, allowlist, depth, cwd=None):
@@ -450,6 +513,10 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
         found += analyze(inline, allowlist, depth + 1, cwd)["requests"]
     elif name == "git":
         found += git_requests(args)
+    elif name in FETCH_AND_RUN:
+        found.append(request("install", package=package_name(args)))
+    elif name == "gh" and lowered[:2] == ["repo", "clone"]:
+        found.append(request("install"))
     elif name == "gh":
         if lowered[:1] == ["api"]:
             found.append(dict(http_request(name, args, allowlist), service="github"))
@@ -467,8 +534,7 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
     elif name in REMOTE_SHELL:
         found.append(request("external-write", service="remote-host"))
     elif name in INSTALL and lowered[:1] and lowered[0] in INSTALL[name]:
-        # Dependencies run third-party code; allowlist "package-registry" in aifw.yaml to stop asking.
-        found.append(request("external-read", service="package-registry"))
+        found.append(request("install"))
     elif deletion(name, args):
         found.append(request("filesystem-write", destructive=True))
     elif environment := deploy(name, args):
@@ -501,6 +567,7 @@ def rank(item):
 
 def analyze(command, allowlist=(), depth=0, cwd=None):
     """The most severe request in the command, with every request under "requests"."""
+    command, heredocs = split_heredocs(command)
     try:
         command, bodies = split_embedded(command)
     except ValueError:
@@ -513,6 +580,9 @@ def analyze(command, allowlist=(), depth=0, cwd=None):
         for body in bodies:
             found += analyze(body, allowlist, depth + 1, cwd)["requests"]
         for words, operator in parts:
+            for _ in [w for w in words if w.startswith("<<") and not w.startswith("<<<")]:
+                text, quoted = heredocs.pop(0) if heredocs else ("", True)
+                found += heredoc_requests(words, text, quoted, allowlist, depth, cwd)
             found += segment_requests(words, previous in {"|", "|&"}, allowlist, depth, cwd)
             previous = operator
     found = found or [request("read-only")]

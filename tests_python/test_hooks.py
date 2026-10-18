@@ -24,7 +24,7 @@ def decision(root, tool, **tool_input):
     [
         ("git status && git diff", "read-only"),
         ("git push origin main", "git-remote"),
-        ('git commit -m "x"', "git-local"),
+        ('git commit -m "x"', "commit"),
         ("rm -rf build", "filesystem-write"),
         ("vercel deploy --prod", "deploy"),
         ("curl -X POST https://api.github.com/repos", "external-write"),
@@ -164,3 +164,76 @@ def test_claude_enable_refuses_malformed_settings(tmp_path):
 def test_hook_guards_aifw_control_files(tmp_path, tool, tool_input, expected):
     init(tmp_path)
     assert decision(tmp_path, tool, **tool_input) == expected
+
+
+@pytest.mark.parametrize(
+    ("command", "expected"),
+    [
+        ("pip install requests", "ask"),
+        ("npx create-next-app demo", "ask"),
+        ("winget install Git.Git", "ask"),
+        ("git clone https://github.com/a/b", "ask"),
+        ('git commit -m "x"', "ask"),
+        ("git rebase main", "ask"),
+        ("git add -A", None),
+        ("uv sync", None),
+        ("python -m pytest -q", None),
+    ],
+)
+def test_installs_and_commits_need_the_person(tmp_path, command, expected):
+    init(tmp_path)
+    set_allowlist = read_yaml(tmp_path / "aifw.yaml")
+    set_allowlist["spec"]["externalAllowlist"] = ["github", "package-registry"]
+    write_yaml(tmp_path / "aifw.yaml", set_allowlist)  # allowlisting a registry no longer skips the question
+    assert decision(tmp_path, "Bash", command=command) == expected
+
+
+def test_opaque_code_asks_unless_the_project_allows_it(tmp_path):
+    init(tmp_path)
+    command = "python -c \"import subprocess; subprocess.run(['x'])\""
+    assert decision(tmp_path, "Bash", command=command) == "ask"
+    policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
+    write_yaml(tmp_path / ".aifw/permissions.yaml", dict(policy, opaqueCode="allow"))
+    assert decision(tmp_path, "Bash", command=command) is None
+    assert decision(tmp_path, "Bash", command="pip install x") == "ask"
+    hidden = "python -c \"import os; os.system('aifw intake approve --by human:me')\""
+    assert decision(tmp_path, "Bash", command=hidden) == "deny"
+
+
+@pytest.mark.parametrize(
+    ("command", "expected"),
+    [
+        ("npx ctx7@latest library react", None),
+        ("npx -y ctx7 docs /vercel/next.js routing", None),
+        ("npx create-next-app demo", "ask"),
+        ("npx --package=evil ctx7 library x", "ask"),
+        ("npx -p evil ctx7", "ask"),
+        ("pip install ctx7", "ask"),
+    ],
+)
+def test_trusted_packages_run_without_asking(tmp_path, command, expected):
+    init(tmp_path)
+    policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
+    write_yaml(tmp_path / ".aifw/permissions.yaml", dict(policy, trustedPackages=["ctx7"]))
+    assert decision(tmp_path, "Bash", command=command) == expected
+
+
+def test_validation_cache_follows_the_schema(tmp_path, monkeypatch):
+    from aifw import common
+
+    monkeypatch.setattr(common.Path, "home", lambda: tmp_path / "home")
+    (tmp_path / "schemas").mkdir()
+    schema = tmp_path / "schemas" / "x.schema.json"
+    schema.write_text('{"type": "object"}')
+    monkeypatch.setattr(common, "assets", lambda: tmp_path)
+    monkeypatch.setattr(common, "validate", lambda value, name: value)
+    file = tmp_path / "doc.yaml"
+    file.write_text("a: 1\n")
+    common.read_valid_yaml(file, "x.schema.json")
+    calls = []
+    monkeypatch.setattr(common, "validate", lambda value, name: calls.append(name) or value)
+    common.read_valid_yaml(file, "x.schema.json")
+    assert calls == []  # same schema, same content: cached
+    schema.write_text('{"type": "object", "required": ["b"]}')
+    common.read_valid_yaml(file, "x.schema.json")
+    assert calls == ["x.schema.json"]  # a changed schema validates again

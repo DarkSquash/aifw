@@ -145,6 +145,20 @@
         }
       }
     },
+    "opaqueCode": {
+      "enum": [
+        "ask",
+        "allow"
+      ]
+    },
+    "trustedPackages": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "protectedPaths": {
       "type": "array",
       "uniqueItems": true,

@@ -74,6 +74,6 @@ Esta versão troca o host de referência para o Claude Code e endurece a valida�
 9. Pare de usar `aifw handoff codex` e `aifw principle review`, que foram removidos. A extensão Pi e o pacote `aifw-pi-bridge` também saíram; remova a instalação no Pi, se existir.
 
 10. Acrescente os gates `secret-scan` e `session-conformance` ao `.aifw/gates.yaml` (veja as receitas em `profiles/`) e rode `aifw secrets scan`.
-11. Se o projeto instala pacotes, publica ou acessa servidores pelo agente, decida se inclui `package-registry` ou `remote-host` em `spec.externalAllowlist`.
+11. Se o projeto instala pacotes, publica ou acessa servidores pelo agente, decida se inclui `remote-host` em `spec.externalAllowlist`. A partir da ADR-0025, instalações sempre pedem confirmação, e `package-registry` na allowlist não muda isso.
 
 Nenhum arquivo é reescrito automaticamente, e os registros já arquivados continuam válidos.
