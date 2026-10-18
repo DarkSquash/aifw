@@ -111,6 +111,12 @@ Sem essas skills o AIFW funciona, mas a entrevista e a revisão ficam manuais.
 
 O navegador e o controle do computador já vêm no app desktop do Claude. Context7 e Firecrawl são usados por CLI, não por MCP.
 
+### Serviços opcionais
+
+| Serviço | Para quê | Configuração |
+| --- | --- | --- |
+| OpenRouter | avaliador de tarefas em modo sombra (`aifw change assess`), com o modelo `perplexity/pplx-decider-v1.2`; custa cerca de US$ 0,00001 por pedido | crie uma chave de API comum (não de gerenciamento) e grave-a na variável de usuário `OPENROUTER_API_KEY`; inclua `openrouter` em `spec.externalAllowlist` e `assessment: {mode: shadow}` em `spec` no `aifw.yaml` |
+
 ## Atualizar o ambiente local
 
 ```powershell
@@ -516,6 +522,17 @@ aifw secrets scan --history
 aifw template list
 aifw template copy --name threat-model.md --change minha-mudanca
 aifw template copy --name runbook.md --output docs/runbooks/pagamentos.md
+```
+
+### `aifw change assess` e `aifw assess`
+
+Avaliador de tarefas em modo sombra (veja [Roteamento](docs/routing.md)). Para funcionar, o `aifw.yaml` precisa de `spec.assessment.mode: shadow` e de `openrouter` em `spec.externalAllowlist`, e a chave de API do OpenRouter precisa estar na variável `OPENROUTER_API_KEY`. Os vereditos são aprovações humanas, rodadas no seu terminal.
+
+```powershell
+aifw change assess --task "Adicionar validação de CEP no formulário" --diff
+aifw assess report
+aifw assess verdict --id 1,2,3 --agree --by "human:proprietario"
+aifw assess verdict --id 4 --path PLANNED --note "mexe em pagamento" --by "human:proprietario"
 ```
 
 ### `aifw runs show`

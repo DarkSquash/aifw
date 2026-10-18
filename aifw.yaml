@@ -17,3 +17,6 @@ spec:
   externalAllowlist:
   - context7
   - github
+  - openrouter
+  assessment:
+    mode: shadow

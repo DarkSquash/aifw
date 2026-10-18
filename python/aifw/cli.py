@@ -171,6 +171,17 @@ def create_parser():
     option(leaf, "--complexity", choices=["fast", "work", "brain"])
     option(leaf, "--diff", action="store_true")
     option(leaf, "--base")
+    leaf = command("change assess", "shadow-assess a task with the decision model; it records, never decides")
+    option(leaf, "--task", required=True)
+    option(leaf, "--diff", action="store_true")
+    option(leaf, "--base")
+    command("assess report", "report shadow assessments and your verdicts against the activation criteria")
+    leaf = command("assess verdict", "record whether you agree with shadow assessments")
+    option(leaf, "--id", required=True)
+    option(leaf, "--agree", action="store_true")
+    option(leaf, "--path", choices=["FAST", "WORK", "PLANNED", "CRITICAL"])
+    option(leaf, "--note")
+    option(leaf, "--by", required=True)
     leaf = command("route explain", "explain deterministic cognitive routing")
     option(leaf, "--impact", required=True, choices=LEVELS)
     option(leaf, "--operation", required=True, choices=OPERATIONS)
@@ -271,6 +282,7 @@ APPROVALS = {
     "impasse decide",
     "waiver add",
     "break-glass grant",
+    "assess verdict",
 }
 
 
@@ -477,6 +489,24 @@ def execute(args, root):
         if action.endswith("build"):
             result["outputs"] = [".aifw/effective-policy.json", ".aifw/framework.lock.yaml"]
         return result, 0 if value["current"] else 2
+    if action == "change assess":
+        from .assessment import assess
+
+        return assess(root, args.task, args.diff, args.base), 0
+    if action == "assess report":
+        from .assessment import render_report, report
+
+        value = report(root)
+        return (value if args.json else render_report(value)), 0
+    if action == "assess verdict":
+        from .assessment import record_verdicts
+
+        require(args.agree != bool(args.path), "Use either --agree or --path.")
+        try:
+            ids = [int(item) for item in comma_list(args.id)]
+        except ValueError as error:
+            raise AifwError("MANIFEST_INVALID", "--id takes assessment numbers, such as 1,2,3.") from error
+        return record_verdicts(root, ids, args.by, args.path, args.note or ""), 0
     if action == "change classify":
         signals = {}
         for flag in SIGNALS:

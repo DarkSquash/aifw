@@ -21,7 +21,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 - Resolva informações recuperáveis no repositório antes de perguntar. `ready` significa Charter pronto para aprovação; `complete` inclui as avaliações técnicas atuais, não significa por si só que o Charter foi aprovado. Confira seu estado e registro.
 - Para projeto existente sem baseline atual, `aifw adopt analyze --json` descobre fatos. Dentro da adoção autorizada, `adopt analyze --write` e `adopt apply` persistem candidatos para revisão.
 - Não deduza responsabilidade, owner ou relação de runtime apenas por nomes de arquivos. Solicite julgamento humano somente sobre decisões que ainda não estejam resolvidas.
-- `adopt approve`, `intake approve`, `decision approve`, `spec approve`, `route activate`, `impasse decide`, `waiver add` e `break-glass grant` são aprovações humanas. O CLI só as aceita no terminal da pessoa que aprova, com o id do projeto digitado por ela; no shell do agente elas falham e o hook as nega. Mostre o comando exato e peça para a pessoa rodar. Nunca tente contornar essa exigência.
+- `adopt approve`, `intake approve`, `decision approve`, `spec approve`, `route activate`, `impasse decide`, `waiver add`, `break-glass grant` e `assess verdict` são aprovações humanas. O CLI só as aceita no terminal da pessoa que aprova, com o id do projeto digitado por ela; no shell do agente elas falham e o hook as nega. Mostre o comando exato e peça para a pessoa rodar. Nunca tente contornar essa exigência.
 - Conduza a entrevista do intake invocando a skill `grilling` pela ferramenta Skill, usando as perguntas de `aifw intake status` como fronteira inicial. Grave cada resposta com `aifw intake set --field <campo> --value <valor>`; editar um Charter aprovado o reabre. A skill não aprova nada.
 - Use catálogos de decisão apenas quando a tarefa exigir uma escolha arquitetural.
 
@@ -36,6 +36,8 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 ## Mudanças e evidências
 
 1. Classifique a alteração com `aifw change classify --diff` (sinais derivados dos arquivos alterados) mais os sinais reais que você observou e consulte os requisitos de L0–L3. Verifique se já existe uma mudança ativa adequada antes de criar outra.
+   - Se `aifw.yaml` tiver `spec.assessment.mode: shadow`, rode também `aifw change assess --task "<pedido do usuário>"`, com `--diff` se já houver alterações desta tarefa. É modo sombra: o resultado só é registrado, e você segue a classificação e a tabela de modelos de sempre. Se vier `unavailable` ou erro, continue sem ele.
+   - Quando o início de sessão avisar que o relatório do avaliador está pronto, rode `aifw assess report` e mostre o relatório ao usuário. Os vereditos são aprovações dele: mostre os comandos `aifw assess verdict` para ele rodar no terminal.
 2. Para L2/L3, use `aifw spec new <id> --title ... --summary ... --level ...`. Preencha proposta, design, deltas, tarefas e traceabilidade em `.aifw/changes/active/<id>/`. L0/L1 mantêm registros e verificações proporcionais ao risco.
 3. Preserve IDs. Use um delta por capability; `modified` e `removed` devem referenciar requisitos aceitos. Uma capability nova precisa de propósito. Consulte os schemas/templates da instalação ou do repositório do framework quando necessário; não invente campos.
 4. Implemente dentro do escopo, revise referências e dependentes e execute verificações relevantes, incluindo regressões. Atualize os outros pontos afetados, inclusive documentação e artefatos derivados quando necessário.

@@ -56,6 +56,15 @@
           "type": "array",
           "uniqueItems": true,
           "items": { "type": "string", "minLength": 1 }
+        },
+        "assessment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode"],
+          "properties": {
+            "mode": { "enum": ["off", "shadow"] },
+            "model": { "type": "string", "minLength": 1 }
+          }
         }
       }
     }

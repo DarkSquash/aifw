@@ -1,5 +1,16 @@
 # Changelog
 
+## Não lançado
+
+### Adicionado
+
+- Avaliador de tarefas em modo sombra (ADR-0023):
+  - `aifw change assess` avalia risco, importância e complexidade com o `perplexity/pplx-decider-v1.2`, pelo OpenRouter, com piso de risco vindo do diff;
+  - `aifw assess report` mostra as avaliações e os vereditos;
+  - `aifw assess verdict` é a aprovação humana que registra se você concorda;
+  - o início de sessão avisa quando há 50 avaliações.
+- `openrouter` na tabela de domínios da allowlist e `spec.assessment` no manifesto.
+
 ## 0.4.1 — 2026-10-15
 
 Fecha os itens em aberto das auditorias (ADR-0022).

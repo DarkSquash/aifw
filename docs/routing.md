@@ -28,3 +28,26 @@ Revisão não substitui testes e gates, que rodam em toda classe. Trabalho trivi
 Projetos nascem com `enabled: false` e `mode: recommendation-only`. `aifw route activate` aceita relatório de conformidade e exige identidade + ADR/registro. O core recusa ativação com menos de 30 casos, pass rate abaixo de 95%, falha crítica ou aprovação ausente. Ativação escreve evidência na routing policy; não fica em conversa. `route explain` usa os aliases e o estado gravados na policy; com `approvals.requireSignedCommit`, a ativação só vale num commit assinado.
 
 `aifw route eval --output <report.json>` executa a suíte determinística revisável em `evals/routing/cases.yaml`. Troca de modelo-alvo exige nova avaliação e nova aprovação (ADR-0003).
+
+## Avaliador de tarefas (modo sombra)
+
+Com `spec.assessment.mode: shadow` em `aifw.yaml`, `aifw change assess --task "<pedido>"` manda três perguntas independentes ao `perplexity/pplx-decider-v1.2`, pelo OpenRouter: risco (L0–L3), importância e complexidade. Uma regra fixa transforma as respostas no caminho:
+
+| Caminho | Quando | Planeja | Executa | Revisa |
+| --- | --- | --- | --- | --- |
+| FAST | risco L0, complexidade trivial ou simples, importância baixa ou média | — | haiku | testes e gates |
+| WORK | risco L1; ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica | — | sonnet | testes e gates |
+| PLANNED | risco L2; ou L1 com complexidade alta | opus | sonnet | opus |
+| CRITICAL | risco L3 | opus | opus | revisor independente e humano |
+
+- Com `--diff`, os fatos verificáveis do diff (autenticação, deploy, contratos, arquivos de controle) formam um piso: o risco final nunca fica abaixo dele.
+- Em modo sombra nada muda no fluxo: cada avaliação é gravada em `.aifw/assessments/shadow.jsonl`.
+- Só o texto do pedido sai da máquina, nunca código ou diff. O comando exige:
+  - `openrouter` em `spec.externalAllowlist`;
+  - a chave em `OPENROUTER_API_KEY`;
+  - dados que não sejam `confidential` ou `restricted`.
+
+  Sem isso, responde `unavailable` e não chama a API. Custo aproximado: US$ 0,00001 por pedido.
+- `aifw assess report` mostra as perguntas, as respostas de cada pedido e os seus vereditos.
+- `aifw assess verdict --id 1,2 --agree --by human:<nome>`, ou `--path <caminho>`, registra se você concorda. É uma aprovação humana, rodada só no seu terminal.
+- O critério para um futuro modo ativo é 50 pedidos com veredito, 90% de concordância e nenhum caso CRITICAL rebaixado. Ao atingir 50 avaliações, o início de sessão avisa que o relatório está pronto. Consulte o [ADR-0023](decisions/ADR-0023-task-assessor-shadow.md).

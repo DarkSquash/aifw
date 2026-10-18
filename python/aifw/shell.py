@@ -125,6 +125,7 @@ SERVICE_DOMAINS = {
     "context7": ["context7.com"],
     "npm": ["npmjs.org", "npmjs.com"],
     "pypi": ["pypi.org", "pythonhosted.org"],
+    "openrouter": ["openrouter.ai"],
 }
 
 
@@ -395,7 +396,7 @@ def inline_script(name, code):
     if WRITES.search(code):
         found.append(request("filesystem-write", destructive=bool(DELETES.search(code))))
     found = found or [request("read-only")]
-    if re.search(r"\baifw\b", code) and re.search(r"approve|activate|decide|grant|add_waiver", code):
+    if re.search(r"\baifw\b", code) and re.search(r"approve|activate|decide|grant|add_waiver|verdict", code):
         found = [dict(r, approval=True) for r in found]
     return found
 
@@ -487,7 +488,8 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
     if any(SECRET_FILE.search(w) for w in args):
         found.append(request("secret-read"))
     if name == "aifw" and (
-        set(lowered) & {"approve", "activate", "decide", "grant"} or lowered[:2] == ["waiver", "add"]
+        set(lowered) & {"approve", "activate", "decide", "grant", "verdict"}
+        or lowered[:2] == ["waiver", "add"]
     ):
         found = [dict(r, approval=True) for r in found]
     return found

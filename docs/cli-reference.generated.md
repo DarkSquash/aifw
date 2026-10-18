@@ -2,18 +2,18 @@
 
 > Gerado por `python scripts/generate_cli_reference.py`. Guia: [HOW_TO_USE.md](../HOW_TO_USE.md).
 
-Esta referência contém 57 comandos finais e suas opções.
+Esta referência contém 60 comandos finais e suas opções.
 
 ## `aifw --help`
 
 ```text
 usage: aifw [-h] [--version]
-            {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate} ...
+            {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,assess,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate} ...
 
 AI Software Engineering Framework control plane (Python)
 
 positional arguments:
-  {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate}
+  {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,assess,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate}
     init                initialize a project control plane
     audit               inspect a project without changing it
     intake              Manage intake
@@ -24,6 +24,7 @@ positional arguments:
     principle           Manage principle
     resolve             Manage resolve
     change              Manage change
+    assess              Manage assess
     route               Manage route
     waiver              Manage waiver
     break-glass         Manage break-glass
@@ -477,6 +478,53 @@ options:
                         complexity
   --diff                diff
   --base BASE           base
+```
+
+## `aifw change assess`
+
+```text
+usage: aifw change assess [-h] [--json] --task TASK [--diff] [--base BASE]
+
+shadow-assess a task with the decision model; it records, never decides
+
+options:
+  -h, --help   show this help message and exit
+  --json       emit stable machine-readable JSON
+  --task TASK  task
+  --diff       diff
+  --base BASE  base
+```
+
+## `aifw assess report`
+
+```text
+usage: aifw assess report [-h] [--json]
+
+report shadow assessments and your verdicts against the activation criteria
+
+options:
+  -h, --help  show this help message and exit
+  --json      emit stable machine-readable JSON
+```
+
+## `aifw assess verdict`
+
+```text
+usage: aifw assess verdict [-h] [--json] --id ID [--agree]
+                           [--path {FAST,WORK,PLANNED,CRITICAL}] [--note NOTE]
+                           --by BY
+
+record whether you agree with shadow assessments
+
+options:
+  -h, --help            show this help message and exit
+  --json                emit stable machine-readable JSON
+  --id ID               id
+  --agree               agree
+  --path {FAST,WORK,PLANNED,CRITICAL}
+                        path
+  --note NOTE           note
+  --by BY               by
 ```
 
 ## `aifw route explain`
