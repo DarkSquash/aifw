@@ -11,6 +11,8 @@
 - Opções `opaqueCode` (padrão `ask`) e `trustedPackages` em `permissions.yaml`. Neste repositório, `npx ctx7` roda sem perguntar.
 - Uma aprovação do AIFW escondida em código que também roda programas passa a ser detectada.
 - O cache de validação dos arquivos YAML inclui o hash do schema, então uma mudança de schema sempre valida de novo.
+- Falhas repetidas contam só em sequência: um comando de teste que volta a passar zera a contagem. Isso vale para a sugestão de abrir impasse e para o gate `session-conformance`, que antes reprovava sessões longas por falhas de causas diferentes, já corrigidas.
+- Os recursos de avaliação `context` e `intake` só acrescentam o campo `assessment` à saída quando estão ligados.
 - Falhas aleatórias no Windows (WinError 6, "identificador inválido") corrigidas:
   - os subprocessos do AIFW recebem a própria entrada padrão. Antes, uma entrada herdada inválida fazia o `git` parecer ausente e zerava o piso de risco do diff;
   - os gates com `python` chamam o interpretador real por trás de atalhos como o `bin\python.exe` do instalador do Python. O atalho, rodando sem console, repassava entradas inválidas aos testes.
@@ -31,6 +33,9 @@
 - Seleção de contexto em modo sombra (ADR-0026):
   - com `context`, o `context select` informa os documentos que o Decider considera relevantes e as palavras não acharam, e os escolhidos só por uma palavra em comum;
   - na suíte de 20 tarefas, a cobertura foi de 42% para 82%.
+- Respostas do intake em modo sombra (ADR-0027):
+  - com `intake`, o `intake status` aponta as respostas do Charter vagas ou parciais, que viram perguntas da entrevista, sem bloquear a aprovação;
+  - na suíte de 20 respostas, acertou fraca ou não fraca em todas.
 
 ## 0.4.1 — 2026-10-15
 

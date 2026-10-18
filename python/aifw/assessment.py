@@ -18,15 +18,16 @@ import time
 import urllib.error
 import urllib.request
 
-from .common import AifwError, now, read_yaml, require
+from .common import AifwError, digest, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-FEATURES = ("tasks", "impasse", "context")
+FEATURES = ("tasks", "impasse", "context", "intake")
 LOGS = {
     "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
     "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),
     "context": (".aifw/assessments/context.jsonl", ".aifw/assessments/context-verdicts.jsonl"),
+    "intake": (".aifw/assessments/intake.jsonl", ".aifw/assessments/intake-verdicts.jsonl"),
 }
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
@@ -37,7 +38,14 @@ LEVELS = ["L0", "L1", "L2", "L3"]
 IMPORTANCE = ["baixa", "média", "alta", "crítica"]
 COMPLEXITY = ["trivial", "simples", "moderada", "alta"]
 PATHS = ["FAST", "WORK", "PLANNED", "CRITICAL"]
-VALUES = {"tasks": PATHS, "impasse": ["repeat", "distinct"], "context": ["model", "keyword"]}
+VALUES = {
+    "tasks": PATHS,
+    "impasse": ["repeat", "distinct"],
+    "context": ["model", "keyword"],
+    "intake": ["right", "wrong"],
+}
+SPECIFICITY = ["vaga", "parcial", "específica"]
+INTAKE_FIELDS = ("problem", "audiences", "outcomes", "scope.in", "scope.out")
 QUESTIONS = {
     "risk": dict(
         type="choice",
@@ -86,6 +94,15 @@ RELEVANT_DOC = dict(
         "false": "o documento trata de outro assunto",
     },
 )
+SPECIFIC_ANSWER = dict(
+    type="score",
+    instructions="A resposta é específica o bastante para guiar decisões de produto?",
+    criteria=[
+        "vaga: genérica, adiada ou sem conteúdo verificável (por exemplo, a definir, todos, melhorar o sistema)",
+        "parcial: dá uma direção, mas falta quem, quanto ou o limite",
+        "específica: concreta e verificável, dá para decidir com ela",
+    ],
+)
 PATH_RULE = {
     "FAST": "risco L0, complexidade trivial ou simples, importância baixa ou média: Haiku executa",
     "WORK": "risco L1, ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica: Sonnet executa",
@@ -104,6 +121,14 @@ def settings(root):
         allowlist=spec.get("externalAllowlist", []),
         classification=spec.get("dataClassification", "internal"),
     )
+
+
+def enabled(root, feature):
+    """The project turned this shadow assessment on; outputs stay unchanged otherwise."""
+    if not (Path(root) / "aifw.yaml").is_file():
+        return False
+    config = settings(root)
+    return config["mode"] == "shadow" and feature in config["features"]
 
 
 def blocker(config, feature="tasks"):
@@ -286,6 +311,56 @@ def review_context(root, task, selection, call=None):
     return dict(status="recorded", mode="shadow", recorded=True, **store(root, "context", record))
 
 
+def charter_answer(charter, field):
+    value = charter
+    for key in field.split("."):
+        value = value.get(key) if isinstance(value, dict) else None
+    if isinstance(value, list):
+        return "; ".join(str(v) for v in value)
+    return str(value or "").strip()
+
+
+def review_intake(root, charter, call=None):
+    """Shadow check of `intake status`: Charter answers too vague to guide decisions. Never blocks.
+
+    The result is cached by the Charter's content, so the model runs only when the Charter changes.
+    """
+    from .intake import PROMPTS
+
+    call = call or decide
+    config = settings(root)
+    reason = blocker(config, "intake")
+    if reason:
+        return dict(status="unavailable", reason=reason, recorded=False)
+    content = digest({k: v for k, v in charter.items() if k not in {"approval", "state"}})
+    previous = next(
+        (e for e in reversed(read_lines(Path(root) / LOGS["intake"][0])) if e["charter"] == content), None
+    )
+    if previous:
+        return dict(status="cached", mode="shadow", recorded=False, **previous)
+    fields = [f for f in INTAKE_FIELDS if charter_answer(charter, f)]
+
+    def judge(field):
+        state = f"Pergunta: {PROMPTS[field]}\nResposta: {charter_answer(charter, field)}"
+        answers, cost = call(config["model"], state, {"specific": SPECIFIC_ANSWER})
+        return most_likely(answers["specific"], SPECIFICITY), cost
+
+    with ThreadPoolExecutor(5) as pool:
+        results = list(pool.map(judge, fields))
+    levels = {field: level for field, (level, _) in zip(fields, results)}
+    record = dict(
+        at=now(),
+        model=config["model"],
+        charter=content,
+        levels=levels,
+        weakAnswers=[
+            dict(field=f, level=v, prompt=PROMPTS[f]) for f, v in levels.items() if v != "específica"
+        ],
+        cost=round(sum(cost for _, cost in results), 8),
+    )
+    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "intake", record))
+
+
 def store(root, feature, record):
     log = Path(root) / LOGS[feature][0]
     record["id"] = len(read_lines(log)) + 1
@@ -311,6 +386,8 @@ def suggestion(feature, entry):
         return entry["path"]
     if feature == "context":
         return "model"
+    if feature == "intake":
+        return "right"
     return "repeat" if entry["wouldRepeat"] else "distinct"
 
 
@@ -491,6 +568,23 @@ SHAPES = {
             short(r["doubtful"]),
         ],
         example="--value keyword",
+    ),
+    "intake": dict(
+        title="Intake: respostas do Charter",
+        questions={"specific": SPECIFIC_ANSWER},
+        rule={
+            "fraca": "resposta avaliada como vaga ou parcial; vira pergunta da entrevista, sem bloquear a aprovação",
+            "right": "seu veredito quando as respostas marcadas como fracas (e só elas) estão certas",
+            "wrong": "seu veredito quando o modelo marcou uma resposta boa como fraca, ou deixou passar uma fraca",
+        },
+        columns=["#", "Charter", "Avaliação por campo", "Respostas fracas", "Seu veredito"],
+        row=lambda r: [
+            str(r["id"]),
+            r["charter"][:12],
+            ", ".join(f"{f}: {v}" for f, v in r["levels"].items()) or "—",
+            ", ".join(w["field"] for w in r["weakAnswers"]) or "nenhuma",
+        ],
+        example="--value wrong",
     ),
 }
 

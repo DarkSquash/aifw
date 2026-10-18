@@ -371,19 +371,27 @@ def unverified_edits(entries):
     return sorted({e["file"] for e in entries[last_ok + 1 :] if code_edit(e)})
 
 
+def streak(entries, command):
+    """Failures of this command since it last passed: a fix that works resets the count."""
+    count = 0
+    for e in entries:
+        if e.get("command") == command and e.get("ok") is not None:
+            count = 0 if e["ok"] else count + 1
+    return count
+
+
 def post_tool_use(root, payload):
     entry = record(root, payload)
     if entry["ok"] is not False or not entry.get("verification"):
         return None
-    log = read_log(run_log(root, payload))
-    failures = [e for e in log if e.get("command") == entry["command"] and e["ok"] is False]
-    if len(failures) < 2 or any(c["state"] != "RESOLVED" for c in load_cases(root)):
+    failures = streak(read_log(run_log(root, payload)), entry["command"])
+    if failures < 2 or any(c["state"] != "RESOLVED" for c in load_cases(root)):
         return None
     return dict(
         hookSpecificOutput=dict(
             hookEventName=payload.get("hook_event_name", "PostToolUse"),
             additionalContext=(
-                f"AIFW: `{entry['command']}` failed {len(failures)} times in this session. "
+                f"AIFW: `{entry['command']}` failed {failures} times in a row. "
                 "Before another fix, open an impasse case with `aifw impasse open --id <slug> --impact <level>` "
                 "and record each distinct attempt with `aifw impasse attempt`."
             ),
@@ -504,6 +512,7 @@ def summarize_runs(root, session=None):
         for e in entries:
             if e.get("verification") and e["ok"] is False:
                 failures[e["command"]] = failures.get(e["command"], 0) + 1
+        streaks = {command: streak(entries, command) for command in failures}
         # Findings break the workflow rules; notes are for review (control edits were confirmed by a person).
         findings, notes = [], []
         last_ok = max((i for i, e in enumerate(entries) if e.get("verification") and e.get("ok")), default=-1)
@@ -514,7 +523,7 @@ def summarize_runs(root, session=None):
             findings.append(
                 "a turn ended with unverified code despite the Stop warning: " + ", ".join(ignored[:5])
             )
-        repeated = sorted(c for c, n in failures.items() if n >= 2)
+        repeated = sorted(c for c, n in streaks.items() if n >= 2)
         if repeated and not has_cases:
             findings.append("repeated failures without an impasse case: " + "; ".join(repeated[:3]))
         pending = unverified_edits(entries)

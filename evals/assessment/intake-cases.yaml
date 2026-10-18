@@ -1,0 +1,26 @@
+# Suíte do intake: a resposta do Charter é específica o bastante para guiar decisões de produto?
+# expected: vaga, parcial ou específica. Gabarito escrito pelo agente em 2026-10-18; revisar caso a caso.
+apiVersion: aifw.dev/v1alpha1
+kind: AssessmentEvaluationSuite
+feature: intake
+cases:
+  - { id: problem-tbd, field: problem, answer: "a definir", expected: vaga }
+  - { id: problem-generic, field: problem, answer: "Melhorar o sistema da empresa", expected: vaga }
+  - { id: problem-direction, field: problem, answer: "Os clientes reclamam da demora no atendimento", expected: parcial }
+  - { id: problem-specific, field: problem, answer: "Pedidos feitos pelo WhatsApp levam em média 3 dias para serem respondidos; precisamos responder em até 1 hora útil", expected: específica }
+  - { id: audiences-everyone, field: audiences, answer: "todos", expected: vaga }
+  - { id: audiences-users, field: audiences, answer: "usuários do app", expected: parcial }
+  - { id: audiences-specific, field: audiences, answer: "atendentes do suporte (6 pessoas); clientes que compram pelo site, maioria pelo celular", expected: específica }
+  - { id: audiences-roles, field: audiences, answer: "gerente da loja que aprova descontos; vendedor que registra o pedido no balcão", expected: específica }
+  - { id: outcomes-better, field: outcomes, answer: "sistema melhor e mais rápido", expected: vaga }
+  - { id: outcomes-happy, field: outcomes, answer: "clientes mais satisfeitos", expected: parcial }
+  - { id: outcomes-metric, field: outcomes, answer: "tempo médio de resposta abaixo de 1 hora em 90% dos pedidos; zero pedidos perdidos por mês", expected: específica }
+  - { id: outcomes-launch, field: outcomes, answer: "publicar o app na loja até março com login e catálogo funcionando", expected: específica }
+  - { id: scope-in-all, field: scope.in, answer: "tudo que for necessário", expected: vaga }
+  - { id: scope-in-modules, field: scope.in, answer: "parte de pedidos e pagamentos", expected: parcial }
+  - { id: scope-in-specific, field: scope.in, answer: "cadastro de cliente; carrinho; pagamento por Pix; acompanhamento do pedido por e-mail", expected: específica }
+  - { id: scope-out-none, field: scope.out, answer: "nada", expected: vaga }
+  - { id: scope-out-later, field: scope.out, answer: "coisas que ficam para depois", expected: vaga }
+  - { id: scope-out-partial, field: scope.out, answer: "integrações", expected: parcial }
+  - { id: scope-out-specific, field: scope.out, answer: "app nativo para iOS; pagamento com cartão; programa de pontos", expected: específica }
+  - { id: problem-aifw, field: problem, answer: "Tornar desenvolvimento com agentes reproduzível, seguro e independente de fornecedor por meio de decisões e evidências versionadas.", expected: específica }

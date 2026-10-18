@@ -96,7 +96,8 @@ def test_session_log_drives_stop_and_impasse_hint(tmp_path):
     event(tmp_path, "PostToolUse", tool_name="Edit", tool_input=dict(file_path="docs/guide.md"))
     assert event(tmp_path, "Stop") is None
     summary = summarize_runs(tmp_path, "latest")[0]
-    assert summary["failedVerifications"] == 2 and summary["status"] == "warning"
+    # The command passed after failing twice, so the streak is over: no impasse finding.
+    assert summary["failedVerifications"] == 2 and summary["status"] == "pass"
 
 
 def test_session_start_reports_state(tmp_path):

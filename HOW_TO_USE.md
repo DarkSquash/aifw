@@ -540,7 +540,8 @@ aifw assess verdict --feature impasse --id 2 --value distinct --by "human:propri
 `spec.assessment.features` escolhe o que é avaliado:
 - `tasks` (padrão);
 - `impasse`, que compara cada tentativa nova com as anteriores (veja [Prevenção de impasse](docs/impasse-prevention.md));
-- `context`, que aponta documentos relevantes que o `context select` não achou (veja [Contexto por tarefa](docs/context-intelligence.md)).
+- `context`, que aponta documentos relevantes que o `context select` não achou (veja [Contexto por tarefa](docs/context-intelligence.md));
+- `intake`, que aponta respostas vagas ou parciais do Charter (veja [Project Intake](docs/project-intake.md)).
 
 ### `aifw runs show`
 

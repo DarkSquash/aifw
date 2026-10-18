@@ -35,6 +35,11 @@ Em projeto novo, ele pesquisa opções compatíveis com as decisões humanas e a
 
 A entrevista é conduzida pela skill `grilling` (ou `grill-me`, que a invoca). As perguntas retornadas por `aifw intake status` formam a fronteira inicial: o agente pergunta em rodadas, recomenda uma resposta para cada pergunta, descobre sozinho os fatos que estão no repositório e só leva ao usuário as decisões. Cada resposta é gravada com `aifw intake set --field <campo> --value <valor>`, que valida o schema; a skill não substitui o Charter nem a aprovação humana. Em um host sem essa skill, siga o mesmo método manualmente.
 
+`intake status` só confere se cada campo está preenchido: "a definir" passa. Com `intake` em `spec.assessment.features` (modo sombra, ADR-0027), o resultado ganha `assessment.weakAnswers`. São as respostas de problema, públicos, resultados e escopo que o Decider avaliou como vagas ou parciais, e elas viram as próximas perguntas da entrevista.
+- **Não bloqueia:** o aviso não muda `ready`, `complete` nem a aprovação.
+- **Cache:** a avaliação fica guardada pelo conteúdo do Charter e só roda de novo quando ele muda.
+- **Revisão:** o relatório sai com `aifw assess report --feature intake`.
+
 ## Avaliações técnicas do agente
 
 O intake também acompanha tarefas que pertencem ao agente, sem transformá-las em perguntas para o usuário. Em `projectType: existing`, `brownfield-mapping` é obrigatório: discovery factual, aplicação como candidatos e confirmação humana entram no mesmo `intake status`. A revisão de princípios não faz parte do intake; ela acontece sobre o código, pela skill `code-review` (consulte [Princípios de engenharia](engineering-principles.md)).

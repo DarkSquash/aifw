@@ -498,23 +498,25 @@ options:
 ## `aifw assess report`
 
 ```text
-usage: aifw assess report [-h] [--json] [--feature {tasks,impasse,context}]
+usage: aifw assess report [-h] [--json]
+                          [--feature {tasks,impasse,context,intake}]
 
 report shadow assessments and your verdicts against the activation criteria
 
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context}
+  --feature {tasks,impasse,context,intake}
                         feature
 ```
 
 ## `aifw assess verdict`
 
 ```text
-usage: aifw assess verdict [-h] [--json] [--feature {tasks,impasse,context}]
-                           --id ID [--agree]
-                           [--value {FAST,WORK,PLANNED,CRITICAL,repeat,distinct,model,keyword}]
+usage: aifw assess verdict [-h] [--json]
+                           [--feature {tasks,impasse,context,intake}] --id ID
+                           [--agree]
+                           [--value {FAST,WORK,PLANNED,CRITICAL,repeat,distinct,model,keyword,right,wrong}]
                            [--path {FAST,WORK,PLANNED,CRITICAL}] [--note NOTE]
                            --by BY
 
@@ -523,11 +525,11 @@ record whether you agree with shadow assessments
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context}
+  --feature {tasks,impasse,context,intake}
                         feature
   --id ID               id
   --agree               agree
-  --value {FAST,WORK,PLANNED,CRITICAL,repeat,distinct,model,keyword}
+  --value {FAST,WORK,PLANNED,CRITICAL,repeat,distinct,model,keyword,right,wrong}
                         value
   --path {FAST,WORK,PLANNED,CRITICAL}
                         path

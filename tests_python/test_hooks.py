@@ -246,3 +246,16 @@ def test_every_subprocess_gets_its_own_stdin():
     for file in (Path(__file__).parents[1] / "python/aifw").glob("*.py"):
         text = file.read_text(encoding="utf-8")
         assert text.count("subprocess.run(") == text.count("stdin=subprocess.DEVNULL"), file.name
+
+
+def test_repeated_failures_reset_after_a_pass():
+    from aifw.hooks import streak
+
+    run = [
+        dict(command="pytest", ok=False),
+        dict(command="pytest", ok=True),
+        dict(command="pytest", ok=False),
+    ]
+    assert streak(run, "pytest") == 1
+    assert streak([*run, dict(command="pytest", ok=False)], "pytest") == 2
+    assert streak([*run, dict(command="other", ok=False), dict(command="pytest", ok=None)], "pytest") == 1
