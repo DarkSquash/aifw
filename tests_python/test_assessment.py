@@ -87,7 +87,7 @@ def test_verdicts_feed_the_report_and_the_activation_criteria(project):
     for risk in ("L0", "L1", "L1"):
         assess(project, f"tarefa {risk}", call=fake(risk))
     record_verdicts(project, [1, 2], "human:me")
-    record_verdicts(project, [3], "human:me", path="CRITICAL", note="mexe em produção")
+    record_verdicts(project, [3], "human:me", value="CRITICAL", note="mexe em produção")
     summary = report(project)["summary"]
     assert summary["judged"] == 3 and summary["agreement"] == pytest.approx(0.667, abs=0.001)
     assert summary["criticalDemoted"] == [3] and not summary["criteriaMet"]

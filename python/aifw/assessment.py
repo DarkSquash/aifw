@@ -1,11 +1,16 @@
-"""Task assessment by a decision model, in shadow mode: it records a suggested path and never decides.
+"""Assessments by a decision model, in shadow mode: they record what the model suggests and never decide.
 
-Three independent questions (risk, importance, complexity) go to the Decider through OpenRouter.
-A fixed rule turns the answers into an execution path; facts from the git diff set a floor for risk
-that the model cannot lower. A person later records whether they agree, which feeds activation.
+Each feature asks the Decider through OpenRouter and writes its suggestion to a local log:
+
+- tasks: risk, importance and complexity of a request, turned into an execution path by a fixed rule;
+  facts from the git diff set a floor for risk that the model cannot lower.
+- impasse: whether a new correction attempt repeats an earlier one in other words.
+
+A person later records whether they agree, which feeds a future activation decision.
 """
 
 from concurrent.futures import ThreadPoolExecutor
+from hashlib import sha256
 import json
 import os
 from pathlib import Path
@@ -17,13 +22,19 @@ from .common import AifwError, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-SHADOW_LOG = ".aifw/assessments/shadow.jsonl"
-VERDICTS = ".aifw/assessments/verdicts.jsonl"
+FEATURES = ("tasks", "impasse")
+LOGS = {
+    "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
+    "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),
+}
+SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
+REPEAT_THRESHOLD = 0.7
 LEVELS = ["L0", "L1", "L2", "L3"]
 IMPORTANCE = ["baixa", "média", "alta", "crítica"]
 COMPLEXITY = ["trivial", "simples", "moderada", "alta"]
 PATHS = ["FAST", "WORK", "PLANNED", "CRITICAL"]
+VALUES = {"tasks": PATHS, "impasse": ["repeat", "distinct"]}
 QUESTIONS = {
     "risk": dict(
         type="choice",
@@ -56,6 +67,14 @@ QUESTIONS = {
         ],
     ),
 }
+SAME_ATTEMPT = dict(
+    type="noul",
+    instructions="A nova tentativa repete, na prática, a estratégia da tentativa anterior?",
+    criteria={
+        "true": "mesma hipótese e mesma intervenção, ainda que escritas com outras palavras",
+        "false": "a hipótese ou a intervenção é realmente diferente",
+    },
+)
 PATH_RULE = {
     "FAST": "risco L0, complexidade trivial ou simples, importância baixa ou média: Haiku executa",
     "WORK": "risco L1, ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica: Sonnet executa",
@@ -70,27 +89,30 @@ def settings(root):
     return dict(
         mode=config.get("mode", "off"),
         model=config.get("model", DEFAULT_MODEL),
+        features=config.get("features", ["tasks"]),
         allowlist=spec.get("externalAllowlist", []),
         classification=spec.get("dataClassification", "internal"),
     )
 
 
-def blocker(config):
-    """Why the assessor must not call the API, or None."""
+def blocker(config, feature="tasks"):
+    """Why this feature must not call the API, or None."""
     if config["mode"] != "shadow":
         return "assessment is off: set spec.assessment.mode to shadow in aifw.yaml"
+    if feature not in config["features"]:
+        return f"the {feature} assessment is not in spec.assessment.features"
     if "openrouter" not in config["allowlist"]:
-        return "openrouter is not in spec.externalAllowlist; the task text would leave the machine"
+        return "openrouter is not in spec.externalAllowlist; the text would leave the machine"
     if config["classification"] in {"confidential", "restricted"}:
-        return f"{config['classification']} projects never send task text to an external model"
+        return f"{config['classification']} projects never send text to an external model"
     if not os.environ.get("OPENROUTER_API_KEY"):
         return "OPENROUTER_API_KEY is not set"
     return None
 
 
-def ask(model, state, key):
-    """One question to the decision model; raises AifwError when the service fails."""
-    body = json.dumps(dict(model=model, state=state, questions={key: QUESTIONS[key]})).encode()
+def decide(model, state, questions):
+    """Questions about one state; returns the answers and the cost. Raises AifwError when the service fails."""
+    body = json.dumps(dict(model=model, state=state, questions=questions)).encode()
     request = urllib.request.Request(
         URL,
         data=body,
@@ -103,11 +125,17 @@ def ask(model, state, key):
         try:
             with urllib.request.urlopen(request, timeout=15) as response:
                 data = json.load(response)
-            return data["answers"][key], data.get("usage", {}).get("cost", 0)
+            return data["answers"], data.get("usage", {}).get("cost", 0)
         except (urllib.error.URLError, OSError, ValueError, KeyError) as error:
             if attempt == 2:
                 raise AifwError("NOT_READY", f"Decision model unavailable: {error}") from error
             time.sleep(1 + attempt)
+
+
+def ask(model, state, key):
+    """One task question; separate requests keep the questions from influencing each other."""
+    answers, cost = decide(model, state, {key: QUESTIONS[key]})
+    return answers[key], cost
 
 
 def most_likely(answer, names):
@@ -163,10 +191,57 @@ def assess(root, task, use_diff=False, base=None, call=ask):
         cost=round(sum(cost for _, cost in results.values()), 8),
     )
     record["path"] = path_for(final_risk, record["importance"]["value"], record["complexity"]["value"])
-    entries = read_lines(Path(root) / SHADOW_LOG)
-    record["id"] = len(entries) + 1
-    append(Path(root) / SHADOW_LOG, record)
-    return dict(status="recorded", mode="shadow", recorded=True, **record)
+    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "tasks", record))
+
+
+def fingerprint(attempt):
+    """Same normalization as impasse.record_attempt, kept here so this module never changes the hook's imports."""
+    text = "\n".join(" ".join(attempt[k].lower().split()) for k in ("hypothesis", "intervention"))
+    return sha256(text.encode()).hexdigest()
+
+
+def attempt_text(attempt):
+    return f"Hipótese: {attempt['hypothesis']}\nIntervenção: {attempt['intervention']}"
+
+
+def compare_attempt(root, case, attempt, call=decide):
+    """Shadow check: how likely the new attempt repeats each earlier one. Never changes the case."""
+    config = settings(root)
+    reason = blocker(config, "impasse")
+    previous = case["attempts"]
+    if reason or not previous:
+        return dict(status="unavailable" if reason else "nothing-to-compare", reason=reason, recorded=False)
+
+    def same(earlier):
+        state = f"Tentativa anterior:\n{attempt_text(earlier)}\n\nNova tentativa:\n{attempt_text(attempt)}"
+        answers, cost = call(config["model"], state, {"same": SAME_ATTEMPT})
+        return answers["same"]["noul"], cost
+
+    with ThreadPoolExecutor(4) as pool:
+        results = list(pool.map(same, previous))
+    comparisons = [
+        dict(attempt=earlier["id"], probability=round(p, 3)) for earlier, (p, _) in zip(previous, results)
+    ]
+    top = max(c["probability"] for c in comparisons)
+    record = dict(
+        at=now(),
+        model=config["model"],
+        case=case["id"],
+        attempt=dict(hypothesis=attempt["hypothesis"], intervention=attempt["intervention"]),
+        comparisons=comparisons,
+        maxProbability=top,
+        wouldRepeat=top >= REPEAT_THRESHOLD,
+        exactRepeat=fingerprint(attempt) in case["attemptFingerprints"],
+        cost=round(sum(cost for _, cost in results), 8),
+    )
+    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "impasse", record))
+
+
+def store(root, feature, record):
+    log = Path(root) / LOGS[feature][0]
+    record["id"] = len(read_lines(log)) + 1
+    append(log, record)
+    return record
 
 
 def read_lines(file):
@@ -181,39 +256,53 @@ def append(file, entry):
         stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def record_verdicts(root, ids, by, path=None, note=""):
-    """The person's view on recorded assessments: agree with the suggested path, or name the right one."""
-    entries = {e["id"]: e for e in read_lines(Path(root) / SHADOW_LOG)}
+def suggestion(feature, entry):
+    """What the model suggested for this entry, in the vocabulary of its verdicts."""
+    if feature == "tasks":
+        return entry["path"]
+    return "repeat" if entry["wouldRepeat"] else "distinct"
+
+
+def record_verdicts(root, ids, by, value=None, note="", feature="tasks"):
+    """The person's view on recorded assessments: agree with the suggestion, or name the right answer."""
+    require(feature in FEATURES, f"--feature must be one of {', '.join(FEATURES)}.")
+    log, verdicts = LOGS[feature]
+    entries = {e["id"]: e for e in read_lines(Path(root) / log)}
     missing = sorted(set(ids) - set(entries))
-    require(not missing, f"No recorded assessment with id {missing}.", "NOT_READY")
-    require(path is None or path in PATHS, f"--path must be one of {', '.join(PATHS)}.")
+    require(not missing, f"No recorded {feature} assessment with id {missing}.", "NOT_READY")
+    choices = VALUES[feature]
+    require(value is None or value in choices, f"The answer must be one of {', '.join(choices)}.")
     written = []
     for assessment_id in ids:
         verdict = dict(
             id=assessment_id,
-            path=path or entries[assessment_id]["path"],
+            value=value or suggestion(feature, entries[assessment_id]),
             by=by,
             at=now(),
             note=note,
         )
-        append(Path(root) / VERDICTS, verdict)
+        append(Path(root) / verdicts, verdict)
         written.append(verdict)
-    return dict(status="recorded", verdicts=written)
+    return dict(status="recorded", feature=feature, verdicts=written)
 
 
-def report(root):
+def report(root, feature="tasks"):
     """Every assessment with the person's latest verdict, and whether the activation criteria hold."""
-    entries = read_lines(Path(root) / SHADOW_LOG)
-    verdicts = {v["id"]: v for v in read_lines(Path(root) / VERDICTS)}
-    rows = [dict(e, verdict=verdicts.get(e["id"])) for e in entries]
+    require(feature in FEATURES, f"--feature must be one of {', '.join(FEATURES)}.")
+    log, verdict_log = LOGS[feature]
+    entries = read_lines(Path(root) / log)
+    verdicts = {v["id"]: v for v in read_lines(Path(root) / verdict_log)}
+    rows = [dict(e, suggestion=suggestion(feature, e), verdict=verdicts.get(e["id"])) for e in entries]
     judged = [r for r in rows if r["verdict"]]
-    agreed = [r for r in judged if r["verdict"]["path"] == r["path"]]
-    demoted = [r for r in judged if r["verdict"]["path"] == "CRITICAL" and r["path"] != "CRITICAL"]
+    agreed = [r for r in judged if r["verdict"]["value"] == r["suggestion"]]
+    demoted = [r for r in judged if r["verdict"]["value"] == "CRITICAL" and r["suggestion"] != "CRITICAL"]
     agreement = len(agreed) / len(judged) if judged else 0
     ready = len(judged) >= ACTIVATION["requests"] and agreement >= ACTIVATION["agreement"] and not demoted
+    questions = QUESTIONS if feature == "tasks" else {"same": SAME_ATTEMPT}
     return dict(
-        questions=QUESTIONS,
-        pathRule=PATH_RULE,
+        feature=feature,
+        questions=questions,
+        rule=PATH_RULE if feature == "tasks" else {"repeat": f"probabilidade de {REPEAT_THRESHOLD} ou mais"},
         rows=rows,
         summary=dict(
             assessments=len(rows),
@@ -227,56 +316,92 @@ def report(root):
     )
 
 
+def cell(text, size=90):
+    return text.replace("|", "/").replace("\n", " ")[:size]
+
+
 def render_report(value):
     """The report as Markdown, in the same shape as the manual review."""
-    s = value["summary"]
+    s, feature = value["summary"], value["feature"]
+    title = "Avaliador de tarefas" if feature == "tasks" else "Impasse: tentativa repetida"
     lines = [
-        "# Avaliador de tarefas: relatório da sombra",
+        f"# {title}: relatório da sombra",
         "",
-        f"- Pedidos avaliados: {s['assessments']} (meta: {s['criteria']['requests']})",
+        f"- Avaliações: {s['assessments']} (meta: {s['criteria']['requests']})",
         f"- Com seu veredito: {s['judged']}",
         f"- Concordância: {s['agreement']:.0%} (meta: {s['criteria']['agreement']:.0%})",
-        f"- CRITICAL rebaixados: {len(s['criticalDemoted'])} {s['criticalDemoted'] or ''}".rstrip(),
+    ]
+    if feature == "tasks":
+        lines.append(
+            f"- CRITICAL rebaixados: {len(s['criticalDemoted'])} {s['criticalDemoted'] or ''}".rstrip()
+        )
+    lines += [
         f"- Critério de ativação atingido: {'sim' if s['criteriaMet'] else 'não'}",
         f"- Custo total: US$ {s['cost']:.6f}",
         "",
         "## Perguntas",
         "",
     ]
-    for key, question in value["questions"].items():
+    for question in value["questions"].values():
         options = question["criteria"]
         items = options.items() if isinstance(options, dict) else (o.split(": ", 1) for o in options)
         lines.append(f"**{question['instructions']}**")
         lines += [f"- {name}: {text}" for name, text in items]
         lines.append("")
-    lines += ["## Regra do caminho", ""]
-    lines += [f"- {name}: {text}" for name, text in value["pathRule"].items()]
-    lines += [
-        "",
-        "## Avaliações",
-        "",
-        "| # | Pedido | Risco (confiança) | Piso do diff | Importância | Complexidade | Caminho | Seu veredito |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
+    lines += ["## Regra", ""]
+    lines += [f"- {name}: {text}" for name, text in value["rule"].items()]
+    lines += ["", "## Avaliações", ""]
+    if feature == "tasks":
+        lines += [
+            "| # | Pedido | Risco (confiança) | Piso do diff | Importância | Complexidade | Caminho | Seu veredito |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    else:
+        lines += [
+            "| # | Caso | Nova tentativa | Mais parecida | Probabilidade | Sugestão | Texto idêntico | Seu veredito |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
     for r in value["rows"]:
         verdict = r["verdict"]
-        mark = "" if not verdict else ("concorda" if verdict["path"] == r["path"] else verdict["path"])
-        task = r["task"].replace("|", "/").replace("\n", " ")
-        lines.append(
-            f"| {r['id']} | {task[:90]} | {r['risk']['value']} ({r['risk']['confidence']:.0%}) | "
-            f"{r['floor']['level'] or '—'} | {r['importance']['value']} | {r['complexity']['value']} | "
-            f"{r['path']} | {mark or 'pendente'} |"
+        mark = (
+            "" if not verdict else ("concorda" if verdict["value"] == r["suggestion"] else verdict["value"])
         )
+        if feature == "tasks":
+            lines.append(
+                f"| {r['id']} | {cell(r['task'])} | {r['risk']['value']} ({r['risk']['confidence']:.0%}) | "
+                f"{r['floor']['level'] or '—'} | {r['importance']['value']} | {r['complexity']['value']} | "
+                f"{r['path']} | {mark or 'pendente'} |"
+            )
+        else:
+            closest = max(r["comparisons"], key=lambda c: c["probability"])
+            lines.append(
+                f"| {r['id']} | {r['case']} | {cell(attempt_text(r['attempt']), 120)} | {closest['attempt']} | "
+                f"{r['maxProbability']:.0%} | {r['suggestion']} | {'sim' if r['exactRepeat'] else 'não'} | "
+                f"{mark or 'pendente'} |"
+            )
+    example = "--value WORK" if feature == "tasks" else "--value distinct"
     lines += [
         "",
-        "Para registrar: `aifw assess verdict --id 1,2,3 --agree --by human:<nome>` "
-        "ou `aifw assess verdict --id 4 --path WORK --by human:<nome>`, no seu terminal.",
+        f"Para registrar: `aifw assess verdict --feature {feature} --id 1,2,3 --agree --by human:<nome>` "
+        f"ou `aifw assess verdict --feature {feature} --id 4 {example} --by human:<nome>`, no seu terminal.",
     ]
     return "\n".join(lines) + "\n"
 
 
-def shadow_count(root):
-    file = Path(root) / SHADOW_LOG
-    if not file.is_file():
-        return 0
-    return sum(1 for line in file.read_text(encoding="utf-8").splitlines() if line.strip())
+def pending_notices(root):
+    """Session-start reminders for features that reached the shadow goal with verdicts still missing."""
+    try:
+        config = settings(root)
+    except (OSError, KeyError, TypeError):
+        return []
+    if config["mode"] != "shadow":
+        return []
+    notices = []
+    for feature in (f for f in FEATURES if f in config["features"]):
+        summary = report(root, feature)["summary"]
+        if summary["assessments"] >= ACTIVATION["requests"] and summary["judged"] < summary["assessments"]:
+            notices.append(
+                f"{feature} assessor: {summary['assessments']} shadow assessments recorded. Run "
+                f"`aifw assess report --feature {feature}` and show it to the person so they can record verdicts."
+            )
+    return notices

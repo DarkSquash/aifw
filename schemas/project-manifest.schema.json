@@ -63,7 +63,12 @@
           "required": ["mode"],
           "properties": {
             "mode": { "enum": ["off", "shadow"] },
-            "model": { "type": "string", "minLength": 1 }
+            "model": { "type": "string", "minLength": 1 },
+            "features": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "enum": ["tasks", "impasse"] }
+            }
           }
         }
       }

@@ -1,0 +1,130 @@
+# Suíte do impasse em sombra: a nova tentativa repete a anterior com outras palavras?
+# expected: repeat (mesma estratégia) ou distinct (estratégia realmente diferente).
+# Gabarito escrito pelo agente em 2026-10-18; aguardando revisão humana antes da primeira rodada.
+apiVersion: aifw.dev/v1alpha1
+kind: AssessmentEvaluationSuite
+feature: impasse
+threshold: 0.7
+cases:
+  # Paráfrases da mesma estratégia
+  - id: cache-reword
+    previous: { hypothesis: "O cache do navegador guarda a versão antiga do script", intervention: "Limpar o cache do navegador" }
+    new: { hypothesis: "O navegador está servindo o JavaScript antigo que ficou guardado", intervention: "Apagar os dados em cache do navegador" }
+    expected: repeat
+  - id: timeout-reword
+    previous: { hypothesis: "A requisição estoura o tempo limite de 5 segundos", intervention: "Aumentar o timeout para 30 segundos" }
+    new: { hypothesis: "O limite de tempo da chamada é curto demais", intervention: "Subir o tempo máximo de espera da requisição" }
+    expected: repeat
+  - id: env-var-reword
+    previous: { hypothesis: "A variável DATABASE_URL não está definida no CI", intervention: "Adicionar DATABASE_URL aos segredos do CI" }
+    new: { hypothesis: "O pipeline não recebe a URL do banco", intervention: "Cadastrar a URL do banco como segredo no pipeline" }
+    expected: repeat
+  - id: dependency-reword
+    previous: { hypothesis: "A versão 3 da biblioteca de datas quebrou a API", intervention: "Fixar a biblioteca de datas na versão 2" }
+    new: { hypothesis: "A atualização major do pacote de datas mudou as funções", intervention: "Voltar o pacote de datas para a major anterior" }
+    expected: repeat
+  - id: race-reword
+    previous: { hypothesis: "Duas threads gravam o mesmo arquivo ao mesmo tempo", intervention: "Colocar um lock em volta da gravação" }
+    new: { hypothesis: "Há condição de corrida na escrita do arquivo", intervention: "Proteger a escrita com exclusão mútua" }
+    expected: repeat
+  - id: index-reword
+    previous: { hypothesis: "A consulta está lenta por falta de índice na coluna email", intervention: "Criar índice em users.email" }
+    new: { hypothesis: "O banco faz varredura completa ao buscar por email", intervention: "Adicionar um índice na coluna de email da tabela de usuários" }
+    expected: repeat
+  - id: retry-reword
+    previous: { hypothesis: "A API externa falha de vez em quando", intervention: "Repetir a chamada até 3 vezes" }
+    new: { hypothesis: "O serviço de terceiros tem falhas intermitentes", intervention: "Adicionar novas tentativas automáticas na chamada" }
+    expected: repeat
+  - id: permission-reword
+    previous: { hypothesis: "O usuário do serviço não tem permissão na pasta de logs", intervention: "Dar permissão de escrita na pasta de logs" }
+    new: { hypothesis: "Falta acesso de escrita ao diretório de logs", intervention: "Ajustar as permissões do diretório de logs para o serviço" }
+    expected: repeat
+  - id: encoding-reword
+    previous: { hypothesis: "O arquivo CSV está em Latin-1 e é lido como UTF-8", intervention: "Abrir o CSV com encoding latin-1" }
+    new: { hypothesis: "A codificação do CSV não é UTF-8", intervention: "Ler o arquivo informando a codificação ISO-8859-1" }
+    expected: repeat
+  - id: flaky-sleep-reword
+    previous: { hypothesis: "O teste roda antes de o servidor subir", intervention: "Esperar 2 segundos antes do teste" }
+    new: { hypothesis: "O servidor ainda não está pronto quando o teste começa", intervention: "Colocar uma pausa no início do teste" }
+    expected: repeat
+  - id: same-plus-detail
+    previous: { hypothesis: "O token JWT expirou", intervention: "Renovar o token antes da chamada" }
+    new: { hypothesis: "O JWT está vencido no momento da requisição", intervention: "Renovar o token antes da chamada e registrar no log quando isso acontece" }
+    expected: repeat
+  - id: config-reword
+    previous: { hypothesis: "O CORS não permite a origem do app", intervention: "Adicionar a origem do app à lista do CORS" }
+    new: { hypothesis: "O servidor bloqueia o domínio do front por política de origem", intervention: "Liberar o domínio do front na configuração de CORS" }
+    expected: repeat
+  - id: memory-reword
+    previous: { hypothesis: "O processo fica sem memória ao carregar o arquivo inteiro", intervention: "Ler o arquivo em partes" }
+    new: { hypothesis: "Carregar tudo de uma vez estoura a RAM", intervention: "Processar o arquivo em blocos" }
+    expected: repeat
+  - id: version-pin-reword
+    previous: { hypothesis: "O Node 22 mudou o comportamento do fetch", intervention: "Usar Node 20 no CI" }
+    new: { hypothesis: "A versão nova do Node alterou o fetch nativo", intervention: "Fixar o runtime do pipeline na versão 20 do Node" }
+    expected: repeat
+  - id: migration-reword
+    previous: { hypothesis: "A migração não rodou no ambiente de teste", intervention: "Rodar as migrações antes dos testes" }
+    new: { hypothesis: "O esquema do banco de teste está desatualizado", intervention: "Aplicar as migrações pendentes no banco de teste antes da suíte" }
+    expected: repeat
+  # Estratégias realmente diferentes
+  - id: cache-vs-header
+    previous: { hypothesis: "O cache do navegador guarda a versão antiga do script", intervention: "Limpar o cache do navegador" }
+    new: { hypothesis: "O servidor não manda cabeçalho de versão no arquivo", intervention: "Adicionar hash de versão no nome do arquivo gerado no build" }
+    expected: distinct
+  - id: timeout-vs-query
+    previous: { hypothesis: "A requisição estoura o tempo limite de 5 segundos", intervention: "Aumentar o timeout para 30 segundos" }
+    new: { hypothesis: "A consulta no banco por trás do endpoint é lenta", intervention: "Otimizar a consulta e adicionar paginação" }
+    expected: distinct
+  - id: env-vs-code
+    previous: { hypothesis: "A variável DATABASE_URL não está definida no CI", intervention: "Adicionar DATABASE_URL aos segredos do CI" }
+    new: { hypothesis: "O código lê o nome errado da variável", intervention: "Corrigir o nome da variável lida na configuração" }
+    expected: distinct
+  - id: dependency-vs-adapter
+    previous: { hypothesis: "A versão 3 da biblioteca de datas quebrou a API", intervention: "Fixar a biblioteca de datas na versão 2" }
+    new: { hypothesis: "A versão 3 da biblioteca de datas quebrou a API", intervention: "Adaptar o código para a nova API da versão 3" }
+    expected: distinct
+  - id: race-vs-queue
+    previous: { hypothesis: "Duas threads gravam o mesmo arquivo ao mesmo tempo", intervention: "Colocar um lock em volta da gravação" }
+    new: { hypothesis: "O arquivo é corrompido porque a gravação não é atômica", intervention: "Gravar num arquivo temporário e renomear no final" }
+    expected: distinct
+  - id: index-vs-cache
+    previous: { hypothesis: "A consulta está lenta por falta de índice na coluna email", intervention: "Criar índice em users.email" }
+    new: { hypothesis: "A mesma consulta é repetida centenas de vezes por página", intervention: "Guardar o resultado em cache por requisição" }
+    expected: distinct
+  - id: retry-vs-circuit
+    previous: { hypothesis: "A API externa falha de vez em quando", intervention: "Repetir a chamada até 3 vezes" }
+    new: { hypothesis: "A API externa recusa porque passamos do limite de requisições", intervention: "Respeitar o limite com uma fila e espaçamento entre chamadas" }
+    expected: distinct
+  - id: permission-vs-path
+    previous: { hypothesis: "O usuário do serviço não tem permissão na pasta de logs", intervention: "Dar permissão de escrita na pasta de logs" }
+    new: { hypothesis: "O serviço tenta gravar num caminho que não existe em produção", intervention: "Ler o caminho dos logs da configuração do ambiente" }
+    expected: distinct
+  - id: encoding-vs-delimiter
+    previous: { hypothesis: "O arquivo CSV está em Latin-1 e é lido como UTF-8", intervention: "Abrir o CSV com encoding latin-1" }
+    new: { hypothesis: "O CSV usa ponto e vírgula como separador", intervention: "Detectar o separador antes de ler o arquivo" }
+    expected: distinct
+  - id: flaky-sleep-vs-healthcheck
+    previous: { hypothesis: "O teste roda antes de o servidor subir", intervention: "Esperar 2 segundos antes do teste" }
+    new: { hypothesis: "O teste roda antes de o servidor subir", intervention: "Esperar o endpoint de saúde responder antes de começar" }
+    expected: distinct
+  - id: token-vs-clock
+    previous: { hypothesis: "O token JWT expirou", intervention: "Renovar o token antes da chamada" }
+    new: { hypothesis: "O relógio do servidor está adiantado e invalida tokens válidos", intervention: "Sincronizar o relógio do servidor por NTP" }
+    expected: distinct
+  - id: cors-vs-proxy
+    previous: { hypothesis: "O CORS não permite a origem do app", intervention: "Adicionar a origem do app à lista do CORS" }
+    new: { hypothesis: "O app chama a API pelo endereço errado em produção", intervention: "Corrigir a URL base da API no build de produção" }
+    expected: distinct
+  - id: memory-vs-leak
+    previous: { hypothesis: "O processo fica sem memória ao carregar o arquivo inteiro", intervention: "Ler o arquivo em partes" }
+    new: { hypothesis: "Um listener é registrado a cada requisição e nunca removido", intervention: "Remover o listener ao fim de cada requisição" }
+    expected: distinct
+  - id: node-vs-polyfill
+    previous: { hypothesis: "O Node 22 mudou o comportamento do fetch", intervention: "Usar Node 20 no CI" }
+    new: { hypothesis: "O Node 22 mudou o comportamento do fetch", intervention: "Trocar o fetch nativo por uma biblioteca HTTP com comportamento fixo" }
+    expected: distinct
+  - id: migration-vs-seed
+    previous: { hypothesis: "A migração não rodou no ambiente de teste", intervention: "Rodar as migrações antes dos testes" }
+    new: { hypothesis: "Os testes dependem de dados que só existem no banco de desenvolvimento", intervention: "Criar os dados necessários em fixtures de teste" }
+    expected: distinct

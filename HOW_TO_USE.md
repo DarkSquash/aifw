@@ -532,8 +532,12 @@ Avaliador de tarefas em modo sombra (veja [Roteamento](docs/routing.md)). Para f
 aifw change assess --task "Adicionar validação de CEP no formulário" --diff
 aifw assess report
 aifw assess verdict --id 1,2,3 --agree --by "human:proprietario"
-aifw assess verdict --id 4 --path PLANNED --note "mexe em pagamento" --by "human:proprietario"
+aifw assess verdict --id 4 --value PLANNED --note "mexe em pagamento" --by "human:proprietario"
+aifw assess report --feature impasse
+aifw assess verdict --feature impasse --id 2 --value distinct --by "human:proprietario"
 ```
+
+`spec.assessment.features` escolhe o que é avaliado: `tasks` (padrão) e `impasse`, que compara cada tentativa nova com as anteriores (veja [Prevenção de impasse](docs/impasse-prevention.md)).
 
 ### `aifw runs show`
 

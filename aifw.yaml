@@ -20,3 +20,6 @@ spec:
   - openrouter
   assessment:
     mode: shadow
+    features:
+    - tasks
+    - impasse

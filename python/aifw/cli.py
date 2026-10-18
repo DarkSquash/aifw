@@ -175,10 +175,13 @@ def create_parser():
     option(leaf, "--task", required=True)
     option(leaf, "--diff", action="store_true")
     option(leaf, "--base")
-    command("assess report", "report shadow assessments and your verdicts against the activation criteria")
+    leaf = command("assess report", "report shadow assessments and your verdicts against the activation criteria")
+    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse"])
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
+    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse"])
     option(leaf, "--id", required=True)
     option(leaf, "--agree", action="store_true")
+    option(leaf, "--value", choices=["FAST", "WORK", "PLANNED", "CRITICAL", "repeat", "distinct"])
     option(leaf, "--path", choices=["FAST", "WORK", "PLANNED", "CRITICAL"])
     option(leaf, "--note")
     option(leaf, "--by", required=True)
@@ -496,17 +499,18 @@ def execute(args, root):
     if action == "assess report":
         from .assessment import render_report, report
 
-        value = report(root)
+        value = report(root, args.feature)
         return (value if args.json else render_report(value)), 0
     if action == "assess verdict":
         from .assessment import record_verdicts
 
-        require(args.agree != bool(args.path), "Use either --agree or --path.")
+        answer = args.value or args.path  # --path stays as the tasks spelling
+        require(args.agree != bool(answer), "Use either --agree or --value.")
         try:
             ids = [int(item) for item in comma_list(args.id)]
         except ValueError as error:
             raise AifwError("MANIFEST_INVALID", "--id takes assessment numbers, such as 1,2,3.") from error
-        return record_verdicts(root, ids, args.by, args.path, args.note or ""), 0
+        return record_verdicts(root, ids, args.by, answer, args.note or "", feature=args.feature), 0
     if action == "change classify":
         signals = {}
         for flag in SIGNALS:
@@ -610,17 +614,22 @@ def execute(args, root):
             return impasse.save_case(root, case, exclusive=True), 0
         case = impasse.load_case(root, args.id)
         if action == "impasse attempt":
-            case = impasse.record_attempt(
-                case,
-                dict(
-                    id=f"attempt-{len(case['attempts']) + 1}",
-                    hypothesis=args.hypothesis,
-                    intervention=args.intervention,
-                    evidence=comma_list(args.evidence),
-                    outcome=args.outcome,
-                    occurredAt=at,
-                ),
+            new = dict(
+                id=f"attempt-{len(case['attempts']) + 1}",
+                hypothesis=args.hypothesis,
+                intervention=args.intervention,
+                evidence=comma_list(args.evidence),
+                outcome=args.outcome,
+                occurredAt=at,
             )
+            if case["state"] in {"NORMAL", "SUSPECTED"}:
+                from .assessment import compare_attempt
+
+                try:
+                    compare_attempt(root, case, new)
+                except AifwError:
+                    pass  # shadow only: the attempt is recorded either way
+            case = impasse.record_attempt(case, new)
         elif action == "impasse review":
             case = impasse.request_human_review(
                 case,

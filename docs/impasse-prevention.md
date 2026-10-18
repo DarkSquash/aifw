@@ -15,6 +15,11 @@ Cada tentativa registra:
 
 Trocar `padding: 10px` por `9px`, depois `8px`, sem nova hipótese não são três estratégias. O fingerprint de hipótese + intervenção detecta repetição.
 
+O fingerprint só pega texto idêntico depois de normalizado: reescrever a mesma ideia com outras palavras passa como tentativa nova. Com `impasse` em `spec.assessment.features` (modo sombra, ADR-0024), cada `aifw impasse attempt` também pergunta ao Decider, contra cada tentativa anterior, se a nova repete a estratégia.
+- **Registro:** a probabilidade fica gravada em `.aifw/assessments/impasse.jsonl`, e o caso não muda.
+- **Revisão:** você confere com `aifw assess report --feature impasse` e registra o veredito com `aifw assess verdict --feature impasse`.
+- **Modo ativo, ainda não implementado:** com probabilidade de 0,7 ou mais, a tentativa contaria como repetição. O modelo só poderia antecipar o congelamento, nunca adiar.
+
 ## Limites
 
 Mudanças seguras L0 e L1 permitem no máximo **cinco tentativas realmente distintas** sem sucesso. Mudanças arriscadas L2 e L3 permitem **duas tentativas realmente distintas**. Uma estratégia idêntica repetida abre o impasse imediatamente.

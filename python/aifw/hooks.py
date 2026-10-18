@@ -429,15 +429,9 @@ def session_start(root, payload):
     if not assess_intake(root)["complete"]:
         lines.append("Intake is incomplete: run `aifw intake status`.")
     lines += [f"Impasse {c['id']} is {c['state']}." for c in load_cases(root) if c["state"] != "RESOLVED"]
-    from .assessment import ACTIVATION, report, settings
+    from .assessment import pending_notices
 
-    summary = report(root)["summary"]
-    if settings(root)["mode"] == "shadow" and summary["assessments"] >= ACTIVATION["requests"] > 0:
-        if summary["judged"] < summary["assessments"]:
-            lines.append(
-                f"Task assessor: {summary['assessments']} shadow assessments recorded. Run `aifw assess report`"
-                " and show it to the person so they can record their verdicts."
-            )
+    lines += pending_notices(root)
     for file in sorted((Path(root) / ".aifw/changes/active").glob("*/change.yaml")):
         change = read_yaml(file)
         meta = change.get("metadata", {})

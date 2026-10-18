@@ -10,6 +10,10 @@
   - `aifw assess verdict` é a aprovação humana que registra se você concorda;
   - o início de sessão avisa quando há 50 avaliações.
 - `openrouter` na tabela de domínios da allowlist e `spec.assessment` no manifesto.
+- Impasse em modo sombra (ADR-0024):
+  - `spec.assessment.features` liga cada avaliação;
+  - com `impasse`, cada tentativa nova é comparada pelo Decider com as anteriores, para detectar a mesma estratégia escrita com outras palavras;
+  - relatório e vereditos com `--feature impasse`.
 
 ## 0.4.1 — 2026-10-15
 

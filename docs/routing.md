@@ -49,5 +49,5 @@ Com `spec.assessment.mode: shadow` em `aifw.yaml`, `aifw change assess --task "<
 
   Sem isso, responde `unavailable` e não chama a API. Custo aproximado: US$ 0,00001 por pedido.
 - `aifw assess report` mostra as perguntas, as respostas de cada pedido e os seus vereditos.
-- `aifw assess verdict --id 1,2 --agree --by human:<nome>`, ou `--path <caminho>`, registra se você concorda. É uma aprovação humana, rodada só no seu terminal.
+- `aifw assess verdict --id 1,2 --agree --by human:<nome>`, ou `--value <caminho>`, registra se você concorda. É uma aprovação humana, rodada só no seu terminal.
 - O critério para um futuro modo ativo é 50 pedidos com veredito, 90% de concordância e nenhum caso CRITICAL rebaixado. Ao atingir 50 avaliações, o início de sessão avisa que o relatório está pronto. Consulte o [ADR-0023](decisions/ADR-0023-task-assessor-shadow.md).
