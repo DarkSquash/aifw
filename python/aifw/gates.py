@@ -1,6 +1,7 @@
 """Risk-selected gates and process execution with explicit platform boundaries."""
 
 import os
+from functools import lru_cache
 from pathlib import Path
 import re
 import shutil
@@ -12,12 +13,36 @@ from .waiver import apply_waivers
 from .workspace import build_workspace_map, load_manifest
 
 
+@lru_cache(maxsize=None)
+def real_interpreter(launcher):
+    """The interpreter a `python` on PATH actually runs.
+
+    Launchers such as the Python install manager's `bin\\python.exe` start the real interpreter
+    themselves; under CREATE_NO_WINDOW they can hand it invalid standard handles (WinError 6),
+    which broke gates at random. Asking the launcher once and calling the interpreter directly avoids it.
+    """
+    try:
+        found = subprocess.run(
+            [launcher, "-c", "import sys; print(sys.executable)"],
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
+        ).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        return launcher
+    return found if found and Path(found).is_file() else launcher
+
+
 def run_command(executable, args, cwd=None, timeout=600):
     resolved = shutil.which(executable)
     # The Windows Store alias in WindowsApps is a launcher stub, not an interpreter.
     stub = resolved is not None and "windowsapps" in resolved.lower()
     if resolved is None or (stub and executable in {"python", "python3"}):
         resolved = sys.executable if executable in {"python", "python3"} else executable
+    elif executable in {"python", "python3"}:
+        resolved = real_interpreter(resolved)
     command = [resolved, *args]
     if os.name == "nt" and Path(resolved).suffix.lower() in {".cmd", ".bat"}:
         # cmd expands percent variables even inside quotes; reject shell-sensitive tokens.
@@ -33,6 +58,7 @@ def run_command(executable, args, cwd=None, timeout=600):
         completed = subprocess.run(
             command,
             cwd=cwd,
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             encoding="utf-8",

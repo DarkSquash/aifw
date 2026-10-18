@@ -60,8 +60,15 @@ aifw context select --task "corrigir login" --intent bugfix --files src/auth.ts 
 
 A seleção considera palavras da tarefa no caminho/scope, intenção explícita, arquivos
 afetados e `required: true`. Inclui transitivamente `depends-on`, com proteção contra
-ciclos. Informa os motivos de seleção e dependências fora do índice. Não usa rede,
-embeddings ou um modelo para inferir responsabilidades.
+ciclos. Informa os motivos de seleção e dependências fora do índice. A seleção em si não
+usa rede, embeddings nem modelo para inferir responsabilidades.
+
+Com `context` em `spec.assessment.features` (modo sombra, ADR-0026), o resultado ganha o
+campo `assessment`. Nele o Decider aponta os documentos relevantes que as palavras não
+acharam e os escolhidos só por uma palavra em comum. A avaliação usa só o caminho e o
+assunto de cada documento, nunca o corpo, e a seleção não muda: o agente pode ler os
+sugeridos. O relatório sai com `aifw assess report --feature context`. Um assunto
+descritivo (`scope` nos metadados) melhora a avaliação.
 
 O orçamento é informativo, estimado por caracteres/4 arredondados para cima. Não
 confia em `tokens:` declarado. Documentos selecionados e dependências não são

@@ -11,6 +11,9 @@
 - Opções `opaqueCode` (padrão `ask`) e `trustedPackages` em `permissions.yaml`. Neste repositório, `npx ctx7` roda sem perguntar.
 - Uma aprovação do AIFW escondida em código que também roda programas passa a ser detectada.
 - O cache de validação dos arquivos YAML inclui o hash do schema, então uma mudança de schema sempre valida de novo.
+- Falhas aleatórias no Windows (WinError 6, "identificador inválido") corrigidas:
+  - os subprocessos do AIFW recebem a própria entrada padrão. Antes, uma entrada herdada inválida fazia o `git` parecer ausente e zerava o piso de risco do diff;
+  - os gates com `python` chamam o interpretador real por trás de atalhos como o `bin\python.exe` do instalador do Python. O atalho, rodando sem console, repassava entradas inválidas aos testes.
 - O hook trata o conteúdo de um heredoc como dado. Ele só é analisado como código quando alimenta um interpretador ou um shell, ou quando, sem aspas, expande `$(...)`.
 
 ### Adicionado
@@ -25,6 +28,9 @@
   - `spec.assessment.features` liga cada avaliação;
   - com `impasse`, cada tentativa nova é comparada pelo Decider com as anteriores, para detectar a mesma estratégia escrita com outras palavras;
   - relatório e vereditos com `--feature impasse`.
+- Seleção de contexto em modo sombra (ADR-0026):
+  - com `context`, o `context select` informa os documentos que o Decider considera relevantes e as palavras não acharam, e os escolhidos só por uma palavra em comum;
+  - na suíte de 20 tarefas, a cobertura foi de 42% para 82%.
 
 ## 0.4.1 — 2026-10-15
 

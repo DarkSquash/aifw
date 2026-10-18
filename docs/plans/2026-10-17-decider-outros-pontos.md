@@ -1,6 +1,6 @@
 # Plano: o Decider em outros cinco pontos do AIFW
 
-- Status: aprovado em 2026-10-18 (ordem da seção 2; corte do impasse em 0,7; critério de ativação igual ao do avaliador). Ponto 1, o impasse, implementado em modo sombra (ADR-0024).
+- Status: aprovado em 2026-10-18 (ordem da seção 2; corte do impasse em 0,7; critério de ativação igual ao do avaliador). Pontos 1 e 2 implementados em modo sombra: impasse (ADR-0024) e seleção de contexto (ADR-0026).
 - Data: 2026-10-17
 - Base: o avaliador de tarefas em modo sombra (ADR-0023), que já tem a chamada ao OpenRouter, as guardas de privacidade e o registro em arquivo
 

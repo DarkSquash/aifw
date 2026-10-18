@@ -178,12 +178,16 @@ def create_parser():
     leaf = command(
         "assess report", "report shadow assessments and your verdicts against the activation criteria"
     )
-    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse"])
+    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context"])
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
-    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse"])
+    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context"])
     option(leaf, "--id", required=True)
     option(leaf, "--agree", action="store_true")
-    option(leaf, "--value", choices=["FAST", "WORK", "PLANNED", "CRITICAL", "repeat", "distinct"])
+    option(
+        leaf,
+        "--value",
+        choices=["FAST", "WORK", "PLANNED", "CRITICAL", "repeat", "distinct", "model", "keyword"],
+    )
     option(leaf, "--path", choices=["FAST", "WORK", "PLANNED", "CRITICAL"])
     option(leaf, "--note")
     option(leaf, "--by", required=True)
@@ -337,6 +341,12 @@ def execute(args, root):
             except ValueError as error:
                 raise AifwError("MANIFEST_INVALID", "Context budget must be a positive integer.") from error
             value = context.select_context(root, args.task, args.intent, comma_list(args.files), budget)
+            from .assessment import review_context
+
+            try:
+                value["assessment"] = review_context(root, args.task, value)
+            except AifwError as error:  # shadow only: the selection stands either way
+                value["assessment"] = dict(status="unavailable", reason=str(error), recorded=False)
         return value, 0 if value["status"] == "pass" else 2
     if action.startswith("instructions "):
         from .instructions import sync_instructions

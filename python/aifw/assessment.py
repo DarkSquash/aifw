@@ -22,19 +22,22 @@ from .common import AifwError, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-FEATURES = ("tasks", "impasse")
+FEATURES = ("tasks", "impasse", "context")
 LOGS = {
     "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
     "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),
+    "context": (".aifw/assessments/context.jsonl", ".aifw/assessments/context-verdicts.jsonl"),
 }
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
 REPEAT_THRESHOLD = 0.7
+SUGGEST_THRESHOLD = 0.5  # add a document the keywords missed
+DOUBT_THRESHOLD = 0.1  # question a document chosen only by a shared word
 LEVELS = ["L0", "L1", "L2", "L3"]
 IMPORTANCE = ["baixa", "média", "alta", "crítica"]
 COMPLEXITY = ["trivial", "simples", "moderada", "alta"]
 PATHS = ["FAST", "WORK", "PLANNED", "CRITICAL"]
-VALUES = {"tasks": PATHS, "impasse": ["repeat", "distinct"]}
+VALUES = {"tasks": PATHS, "impasse": ["repeat", "distinct"], "context": ["model", "keyword"]}
 QUESTIONS = {
     "risk": dict(
         type="choice",
@@ -73,6 +76,14 @@ SAME_ATTEMPT = dict(
     criteria={
         "true": "mesma hipótese e mesma intervenção, ainda que escritas com outras palavras",
         "false": "a hipótese ou a intervenção é realmente diferente",
+    },
+)
+RELEVANT_DOC = dict(
+    type="noul",
+    instructions="Este documento é relevante para executar a tarefa?",
+    criteria={
+        "true": "o documento traz regras, contexto ou decisões que a tarefa precisa seguir",
+        "false": "o documento trata de outro assunto",
     },
 )
 PATH_RULE = {
@@ -204,8 +215,9 @@ def attempt_text(attempt):
     return f"Hipótese: {attempt['hypothesis']}\nIntervenção: {attempt['intervention']}"
 
 
-def compare_attempt(root, case, attempt, call=decide):
+def compare_attempt(root, case, attempt, call=None):
     """Shadow check: how likely the new attempt repeats each earlier one. Never changes the case."""
+    call = call or decide
     config = settings(root)
     reason = blocker(config, "impasse")
     previous = case["attempts"]
@@ -237,6 +249,43 @@ def compare_attempt(root, case, attempt, call=decide):
     return dict(status="recorded", mode="shadow", recorded=True, **store(root, "impasse", record))
 
 
+def review_context(root, task, selection, call=None):
+    """Shadow check of `context select`: documents the keywords missed and ones chosen by a word only."""
+    from .context import check_context
+
+    call = call or decide
+    if not (Path(root) / "aifw.yaml").is_file():  # context select also works outside AIFW projects
+        return dict(status="unavailable", reason="not an AIFW project", recorded=False)
+    config = settings(root)
+    reason = blocker(config, "context")
+    if reason:
+        return dict(status="unavailable", reason=reason, recorded=False)
+    docs = check_context(root)["documents"]
+
+    def relevant(doc):
+        state = f"Tarefa: {task}\n\nDocumento: {doc['path']}\nAssunto: {doc['scope']}"
+        answers, cost = call(config["model"], state, {"relevant": RELEVANT_DOC})
+        return answers["relevant"]["noul"], cost
+
+    with ThreadPoolExecutor(16) as pool:
+        results = list(pool.map(relevant, docs))
+    probability = {doc["path"]: round(p, 3) for doc, (p, _) in zip(docs, results)}
+    chosen = {s["path"]: s["reasons"] for s in selection["selected"]}
+    record = dict(
+        at=now(),
+        model=config["model"],
+        task=task,
+        keywordSelection=sorted(chosen),
+        suggested=sorted(p for p, v in probability.items() if v >= SUGGEST_THRESHOLD and p not in chosen),
+        doubtful=sorted(
+            p for p, why in chosen.items() if why == ["task"] and probability.get(p, 1) < DOUBT_THRESHOLD
+        ),
+        probabilities=probability,
+        cost=round(sum(cost for _, cost in results), 8),
+    )
+    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "context", record))
+
+
 def store(root, feature, record):
     log = Path(root) / LOGS[feature][0]
     record["id"] = len(read_lines(log)) + 1
@@ -260,6 +309,8 @@ def suggestion(feature, entry):
     """What the model suggested for this entry, in the vocabulary of its verdicts."""
     if feature == "tasks":
         return entry["path"]
+    if feature == "context":
+        return "model"
     return "repeat" if entry["wouldRepeat"] else "distinct"
 
 
@@ -298,11 +349,10 @@ def report(root, feature="tasks"):
     demoted = [r for r in judged if r["verdict"]["value"] == "CRITICAL" and r["suggestion"] != "CRITICAL"]
     agreement = len(agreed) / len(judged) if judged else 0
     ready = len(judged) >= ACTIVATION["requests"] and agreement >= ACTIVATION["agreement"] and not demoted
-    questions = QUESTIONS if feature == "tasks" else {"same": SAME_ATTEMPT}
     return dict(
         feature=feature,
-        questions=questions,
-        rule=PATH_RULE if feature == "tasks" else {"repeat": f"probabilidade de {REPEAT_THRESHOLD} ou mais"},
+        questions=SHAPES[feature]["questions"],
+        rule=SHAPES[feature]["rule"],
         rows=rows,
         summary=dict(
             assessments=len(rows),
@@ -323,7 +373,8 @@ def cell(text, size=90):
 def render_report(value):
     """The report as Markdown, in the same shape as the manual review."""
     s, feature = value["summary"], value["feature"]
-    title = "Avaliador de tarefas" if feature == "tasks" else "Impasse: tentativa repetida"
+    shape = SHAPES[feature]
+    title = shape["title"]
     lines = [
         f"# {title}: relatório da sombra",
         "",
@@ -351,41 +402,97 @@ def render_report(value):
     lines += ["## Regra", ""]
     lines += [f"- {name}: {text}" for name, text in value["rule"].items()]
     lines += ["", "## Avaliações", ""]
-    if feature == "tasks":
-        lines += [
-            "| # | Pedido | Risco (confiança) | Piso do diff | Importância | Complexidade | Caminho | Seu veredito |",
-            "| --- | --- | --- | --- | --- | --- | --- | --- |",
-        ]
-    else:
-        lines += [
-            "| # | Caso | Nova tentativa | Mais parecida | Probabilidade | Sugestão | Texto idêntico | Seu veredito |",
-            "| --- | --- | --- | --- | --- | --- | --- | --- |",
-        ]
+    lines += ["| " + " | ".join(shape["columns"]) + " |", "|" + " --- |" * len(shape["columns"])]
     for r in value["rows"]:
         verdict = r["verdict"]
         mark = (
             "" if not verdict else ("concorda" if verdict["value"] == r["suggestion"] else verdict["value"])
         )
-        if feature == "tasks":
-            lines.append(
-                f"| {r['id']} | {cell(r['task'])} | {r['risk']['value']} ({r['risk']['confidence']:.0%}) | "
-                f"{r['floor']['level'] or '—'} | {r['importance']['value']} | {r['complexity']['value']} | "
-                f"{r['path']} | {mark or 'pendente'} |"
-            )
-        else:
-            closest = max(r["comparisons"], key=lambda c: c["probability"])
-            lines.append(
-                f"| {r['id']} | {r['case']} | {cell(attempt_text(r['attempt']), 120)} | {closest['attempt']} | "
-                f"{r['maxProbability']:.0%} | {r['suggestion']} | {'sim' if r['exactRepeat'] else 'não'} | "
-                f"{mark or 'pendente'} |"
-            )
-    example = "--value WORK" if feature == "tasks" else "--value distinct"
+        lines.append("| " + " | ".join([*shape["row"](r), mark or "pendente"]) + " |")
+    example = shape["example"]
     lines += [
         "",
         f"Para registrar: `aifw assess verdict --feature {feature} --id 1,2,3 --agree --by human:<nome>` "
         f"ou `aifw assess verdict --feature {feature} --id 4 {example} --by human:<nome>`, no seu terminal.",
     ]
     return "\n".join(lines) + "\n"
+
+
+def short(paths):
+    return ", ".join(p.removeprefix("docs/") for p in paths) or "—"
+
+
+# How each feature appears in the report: questions, rule, table columns and one row per assessment.
+SHAPES = {
+    "tasks": dict(
+        title="Avaliador de tarefas",
+        questions=QUESTIONS,
+        rule=PATH_RULE,
+        columns=["#", "Pedido", "Risco (confiança)", "Piso do diff", "Importância", "Complexidade", "Caminho"]
+        + ["Seu veredito"],
+        row=lambda r: [
+            str(r["id"]),
+            cell(r["task"]),
+            f"{r['risk']['value']} ({r['risk']['confidence']:.0%})",
+            r["floor"]["level"] or "—",
+            r["importance"]["value"],
+            r["complexity"]["value"],
+            r["path"],
+        ],
+        example="--value WORK",
+    ),
+    "impasse": dict(
+        title="Impasse: tentativa repetida",
+        questions={"same": SAME_ATTEMPT},
+        rule={"repeat": f"probabilidade de {REPEAT_THRESHOLD} ou mais"},
+        columns=[
+            "#",
+            "Caso",
+            "Nova tentativa",
+            "Mais parecida",
+            "Probabilidade",
+            "Sugestão",
+            "Texto idêntico",
+        ]
+        + ["Seu veredito"],
+        row=lambda r: [
+            str(r["id"]),
+            r["case"],
+            cell(attempt_text(r["attempt"]), 120),
+            max(r["comparisons"], key=lambda c: c["probability"])["attempt"],
+            f"{r['maxProbability']:.0%}",
+            r["suggestion"],
+            "sim" if r["exactRepeat"] else "não",
+        ],
+        example="--value distinct",
+    ),
+    "context": dict(
+        title="Seleção de contexto",
+        questions={"relevant": RELEVANT_DOC},
+        rule={
+            "sugeridos": f"fora da seleção, com probabilidade de {SUGGEST_THRESHOLD} ou mais",
+            "duvidosos": f"escolhidos só por palavra em comum, com probabilidade abaixo de {DOUBT_THRESHOLD}",
+            "model": "seu veredito quando a seleção ajustada pelo modelo é pelo menos tão boa quanto a atual",
+            "keyword": "seu veredito quando a seleção atual, por palavras, é melhor",
+        },
+        columns=[
+            "#",
+            "Tarefa",
+            "Selecionados por palavra",
+            "Sugeridos pelo modelo",
+            "Duvidosos",
+            "Seu veredito",
+        ],
+        row=lambda r: [
+            str(r["id"]),
+            cell(r["task"]),
+            short(r["keywordSelection"]),
+            short(r["suggested"]),
+            short(r["doubtful"]),
+        ],
+        example="--value keyword",
+    ),
+}
 
 
 def pending_notices(root):

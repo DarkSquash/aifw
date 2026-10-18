@@ -32,6 +32,7 @@ def scan_history(root):
     log = subprocess.run(
         ["git", "log", "--all", "-p", "-U0", "--no-color", "--no-ext-diff", "--format=commit %H"],
         cwd=root,
+        stdin=subprocess.DEVNULL,
         capture_output=True,
     )
     findings, commit, path = [], None, None

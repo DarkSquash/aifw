@@ -237,3 +237,12 @@ def test_validation_cache_follows_the_schema(tmp_path, monkeypatch):
     schema.write_text('{"type": "object", "required": ["b"]}')
     common.read_valid_yaml(file, "x.schema.json")
     assert calls == ["x.schema.json"]  # a changed schema validates again
+
+
+def test_every_subprocess_gets_its_own_stdin():
+    # An inherited stdin can be an invalid handle on Windows (WinError 6), which made git look absent.
+    from pathlib import Path
+
+    for file in (Path(__file__).parents[1] / "python/aifw").glob("*.py"):
+        text = file.read_text(encoding="utf-8")
+        assert text.count("subprocess.run(") == text.count("stdin=subprocess.DEVNULL"), file.name

@@ -329,6 +329,7 @@ def tree_state(root):
         listed = subprocess.run(
             ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all"],
             cwd=root,
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             check=True,
         ).stdout.decode("utf-8", "replace")

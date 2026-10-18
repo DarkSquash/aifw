@@ -1,0 +1,66 @@
+# Suíte da seleção de contexto: tarefas reais deste repositório e os documentos que deveriam ser lidos.
+# Gabarito escrito pelo agente em 2026-10-18; revisar caso a caso. Lista só o essencial de cada tarefa.
+apiVersion: aifw.dev/v1alpha1
+kind: AssessmentEvaluationSuite
+feature: context
+cases:
+  - id: impasse-limit
+    task: Mudar quantas tentativas falhas abrem um impasse em mudanças L2
+    expected: [docs/impasse-prevention.md]
+  - id: new-gate
+    task: Adicionar um gate de qualidade que verifica acessibilidade
+    expected: [docs/quality-gates.md]
+  - id: brain-model
+    task: Trocar o modelo usado na rota BRAIN
+    expected: [docs/routing.md, docs/decisions/ADR-0003-routing-disabled-default.md, docs/runbooks/routing-regression.md]
+  - id: allowlist-domain
+    task: Liberar um novo domínio na allowlist de serviços externos
+    expected: [docs/security.md, docs/claude-code.md, docs/decisions/ADR-0021-embedded-code-and-domains.md]
+  - id: go-profile
+    task: Criar um profile para projetos em Go
+    expected: [docs/quality-gates.md, docs/decisions/ADR-0004-flutter-mobile-profile.md]
+  - id: adopt-flutter
+    task: Adotar o AIFW num projeto Flutter que já existe
+    expected: [docs/existing-project-adoption.md, docs/flutter-mobile.md, docs/project-intake.md]
+  - id: intake-questions
+    task: Mudar as perguntas da entrevista inicial do projeto
+    expected: [docs/project-intake.md, docs/decisions/ADR-0013-skill-delegation.md]
+  - id: spec-archive
+    task: Alterar como uma mudança com spec é arquivada
+    expected: [docs/spec-lifecycle.md, docs/decisions/ADR-0010-spec-archive-integrity.md, docs/traceability.md]
+  - id: commit-hook
+    task: Corrigir o hook que pede confirmação para commits
+    expected: [docs/claude-code.md, docs/decisions/ADR-0025-approval-scope.md, docs/decisions/ADR-0015-claude-code-hooks.md]
+  - id: decision-category
+    task: Adicionar uma nova categoria ao catálogo de decisões de arquitetura
+    expected: [docs/decision-catalogs.md, docs/decisions/ADR-0005-global-decision-catalogs.md]
+  - id: decider-assessor
+    task: Ajustar as perguntas do avaliador de tarefas do Decider
+    expected: [docs/decisions/ADR-0023-task-assessor-shadow.md, docs/routing.md, docs/plans/2026-10-17-avaliador-de-tarefas.md]
+  - id: wsl-tests
+    task: Rodar os testes do projeto no WSL
+    expected: [docs/windows-wsl.md]
+  - id: release
+    task: Publicar uma nova versão do AIFW
+    expected: [docs/migrations.md]
+  - id: runbooks
+    task: Escrever um runbook de incidente para o serviço
+    expected: [docs/observability-and-runbooks.md]
+  - id: charter-approval
+    task: Mudar quem pode aprovar o Charter do projeto
+    expected: [docs/authority.md, docs/project-intake.md, docs/decisions/ADR-0020-decision-files-and-evidence.md]
+  - id: new-principle
+    task: Adicionar um princípio de engenharia novo ao catálogo
+    expected: [docs/engineering-principles.md, docs/decisions/ADR-0007-contextual-engineering-principles.md]
+  - id: project-map
+    task: Atualizar o mapa do projeto depois de criar um módulo
+    expected: [docs/project-map.md]
+  - id: change-levels
+    task: Explicar como o AIFW decide o nível de risco L0 a L3 de uma mudança
+    expected: [docs/change-lifecycle.md, docs/routing.md]
+  - id: required-skill
+    task: Tornar uma skill nova obrigatória para usar o AIFW
+    expected: [docs/tooling-and-mcps.md, docs/claude-code.md]
+  - id: secret-history
+    task: Procurar senhas e chaves vazadas no histórico do git
+    expected: [docs/security.md, docs/quality-gates.md]

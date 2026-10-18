@@ -37,7 +37,12 @@ def git_checkpoint(root):
 
     try:
         sha = subprocess.run(
-            ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            check=True,
         ).stdout.strip()
         return f"git:{sha}"
     except (OSError, subprocess.CalledProcessError):

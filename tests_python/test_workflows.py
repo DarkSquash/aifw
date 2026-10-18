@@ -202,3 +202,10 @@ def test_editing_an_approved_charter_reopens_intake(tmp_path):
     charter["outcomes"].append("Unapproved addition")
     write_yaml(tmp_path / ".aifw/charter.yaml", charter)
     assert not intake.assess_intake(tmp_path)["complete"]
+
+
+def test_python_launchers_resolve_to_the_real_interpreter(tmp_path):
+    gates.real_interpreter.cache_clear()
+    assert Path(gates.real_interpreter(sys.executable)).is_file()
+    missing = str(tmp_path / "no-python.exe")
+    assert gates.real_interpreter(missing) == missing  # a launcher that cannot run is used as is

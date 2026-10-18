@@ -188,7 +188,9 @@ def changed_files(root, base=None):
     """Files changed against base (default HEAD), plus untracked ones; all files before the first commit."""
 
     def git(*args):
-        return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=True).stdout
+        return subprocess.run(
+            ["git", *args], cwd=root, stdin=subprocess.DEVNULL, capture_output=True, text=True, check=True
+        ).stdout
 
     try:
         untracked = git("ls-files", "--others", "--exclude-standard").splitlines()

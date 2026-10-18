@@ -20,7 +20,9 @@ def signed_and_unchanged(root, path):
     """The file's last commit has a good signature and the file has not changed since."""
 
     def git(*args):
-        return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
+        return subprocess.run(
+            ["git", *args], cwd=root, stdin=subprocess.DEVNULL, capture_output=True, text=True
+        )
 
     relative = (
         Path(path).resolve().relative_to(Path(root).resolve()).as_posix()

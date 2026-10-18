@@ -590,6 +590,7 @@ def project_files(root):
         listed = subprocess.run(
             ["git", "ls-files", "-co", "--exclude-standard"],
             cwd=root,
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             encoding="utf-8",
