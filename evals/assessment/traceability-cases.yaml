@@ -1,0 +1,241 @@
+# Suíte da rastreabilidade: o cenário verifica o requisito?
+# Pares reais das specs aceitas e arquivadas; os casos swap trocam o cenário pelo de outro requisito da mesma capability.
+# expected: covers ou weak. Gerado pelo agente em 2026-10-18; revisar os swaps que por acaso ainda cubram o requisito.
+apiVersion: aifw.dev/v1alpha1
+kind: AssessmentEvaluationSuite
+feature: traceability
+cases:
+- id: ok-00
+  requirement:
+    id: REQ-AIFW-BROWNFIELD
+    strength: MUST
+    statement: O framework deve mapear fatos de projetos existentes sem aprovar inferências semânticas automaticamente.
+  scenario:
+    id: SCN-AIFW-BROWNFIELD-TWO-PHASE
+    given: &id007
+    - um projeto existente inicializado no AIFW
+    when: &id008
+    - discovery e aplicação do baseline são executados
+    then: &id009
+    - candidatos factuais são persistidos e permanecem pendentes de revisão humana
+  expected: covers
+- id: swap-01
+  requirement:
+    id: REQ-AIFW-INTEGRITY-APPROVAL
+    strength: MUST
+    statement: O archive L3 deve revalidar aprovação humana e arquivo de registro existente dentro da raiz real do projeto.
+  scenario:
+    id: SCN-AIFW-PYTHON-PI
+    given: &id001
+    - uma policy persistida em recommendation-only
+    when: &id002
+    - o adapter solicita uma rota pela ponte Python
+    then: &id003
+    - BRAIN é recomendado para L3 sem ativar troca automática
+  expected: weak
+- id: ok-02
+  requirement:
+    id: REQ-AIFW-INTEGRITY-EVIDENCE
+    strength: MUST
+    statement: Artefatos passed devem apontar para arquivos dentro do projeto; gates ligados por checkedBy devem estar passed.
+  scenario:
+    id: SCN-AIFW-INTEGRITY-EVIDENCE
+    given:
+    - uma mudança com evidência ausente ou gate obrigatório não aprovado
+    when:
+    - ready ou archive é solicitado
+    then:
+    - a mudança é bloqueada e o cenário sem evidência não conta como verificado
+  expected: covers
+- id: swap-03
+  requirement:
+    id: REQ-AIFW-INTEGRITY-RECOVERY
+    strength: MUST
+    statement: O archive deve preservar o estado instalado quando a limpeza de backups falhar, e restaurar o estado anterior quando uma troca falhar antes do commit.
+  scenario:
+    id: SCN-AIFW-SPEC-ARCHIVE
+    given: &id004
+    - uma mudança pronta com tarefas e evidências completas
+    when: &id005
+    - o archive é executado
+    then: &id006
+    - as specs atuais são trocadas atomicamente e o contexto completo é arquivado
+  expected: weak
+- id: ok-04
+  requirement:
+    id: REQ-AIFW-INTEGRITY-UNIQUE-DELTA
+    strength: MUST
+    statement: Uma mudança deve possuir no máximo um delta por capability.
+  scenario:
+    id: SCN-AIFW-INTEGRITY-UNIQUE-DELTA
+    given:
+    - dois deltas da mesma capability com requisitos distintos
+    when:
+    - a mudança é validada
+    then:
+    - a duplicidade bloqueia antes de sobrescrever requisitos
+  expected: covers
+- id: swap-05
+  requirement:
+    id: REQ-AIFW-INTEGRITY-VALID-OUTPUT
+    strength: MUST
+    statement: O lifecycle deve rejeitar títulos vazios e validar a CapabilitySpec produzida antes de staging.
+  scenario:
+    id: SCN-AIFW-TRACE-BLOCK
+    given: &id010
+    - uma mudança com rastreabilidade incompleta
+    when: &id011
+    - a mudança é analisada ou promovida a ready
+    then: &id012
+    - findings objetivos bloqueiam a promoção
+  expected: weak
+- id: ok-06
+  requirement:
+    id: REQ-AIFW-PERSISTED-TRUTH
+    strength: MUST
+    statement: Decisões arquiteturais e comportamentais devem existir em fontes versionadas do projeto e nunca somente em conversa com IA.
+  scenario:
+    id: SCN-AIFW-PERSISTED-DECISION
+    given:
+    - uma mudança arquitetural relevante
+    when:
+    - a decisão é aprovada
+    then:
+    - um ADR ou registro equivalente dentro do projeto contém a decisão e sua evidência
+  expected: covers
+- id: swap-07
+  requirement:
+    id: REQ-AIFW-PYTHON-PARITY
+    strength: MUST
+    statement: A migração deve preservar comandos, contratos, decisões de governança e integridade de archive.
+  scenario:
+    id: SCN-AIFW-INTEGRITY-APPROVAL
+    given:
+    - uma mudança ready cuja aprovação ou classificação foi alterada
+    when:
+    - archive é solicitado
+    then:
+    - a aprovação inválida bloqueia sem alterar current ou active
+  expected: weak
+- id: ok-08
+  requirement:
+    id: REQ-AIFW-PYTHON-PI
+    strength: MUST
+    statement: O adapter opcional Pi deve delegar governança ao núcleo Python.
+  scenario:
+    id: SCN-AIFW-PYTHON-PI
+    given: *id001
+    when: *id002
+    then: *id003
+  expected: covers
+- id: swap-09
+  requirement:
+    id: REQ-AIFW-PYTHON-RUNTIME
+    strength: MUST
+    statement: O CLI e todo o núcleo devem executar em Python sem Node.js.
+  scenario:
+    id: SCN-AIFW-INTEGRITY-RECOVERY
+    given:
+    - uma transação de archive com falha injetada de filesystem
+    when:
+    - a falha ocorre antes do commit ou durante a limpeza
+    then:
+    - o estado antigo é restaurado ou o novo é preservado com aviso de limpeza
+  expected: weak
+- id: ok-10
+  requirement:
+    id: REQ-AIFW-SPEC-LIFECYCLE
+    strength: MUST
+    statement: O framework deve isolar propostas em mudanças ativas e só alterar a verdade aceita após validação e archive controlado.
+  scenario:
+    id: SCN-AIFW-SPEC-ARCHIVE
+    given: *id004
+    when: *id005
+    then: *id006
+  expected: covers
+- id: swap-11
+  requirement:
+    id: REQ-AIFW-SPEC-LIFECYCLE
+    strength: MUST
+    statement: O framework deve isolar propostas em mudanças ativas e só alterar a verdade aceita após validação e archive controlado.
+  scenario:
+    id: SCN-AIFW-BROWNFIELD-TWO-PHASE
+    given: *id007
+    when: *id008
+    then: *id009
+  expected: weak
+- id: ok-12
+  requirement:
+    id: REQ-AIFW-TRACEABILITY
+    strength: MUST
+    statement: O framework deve detectar requisitos órfãos, cenários sem verificação, links quebrados e evidências ausentes.
+  scenario:
+    id: SCN-AIFW-TRACE-BLOCK
+    given: *id010
+    when: *id011
+    then: *id012
+  expected: covers
+- id: swap-13
+  requirement:
+    id: REQ-CONTEXT-ADR
+    strength: MUST
+    statement: Recognize conventional ADR directories and exclude documentation templates.
+  scenario:
+    id: SCN-CONTEXT-SELECTION
+    given:
+    - Documents declare scope, sources and dependencies.
+    when:
+    - A task requests context with a small budget.
+    then:
+    - Required dependencies remain present, reasons are explicit and overflow is reported.
+  expected: weak
+- id: ok-14
+  requirement:
+    id: REQ-CONTEXT-GATES
+    strength: MUST
+    statement: Require pass for mandatory gates and distinguish static CI references from executed evidence.
+  scenario:
+    id: SCN-CONTEXT-GATES
+    given: &id013
+    - A gate is missing, skipped, conditional or referenced by CI.
+    when: &id014
+    - Gate evaluation or wiring inspection runs.
+    then: &id015
+    - Unproven mandatory checks block and CI inspection never claims execution.
+  expected: covers
+- id: swap-15
+  requirement:
+    id: REQ-CONTEXT-INSTRUCTIONS
+    strength: MUST
+    statement: Generate shared managed instruction blocks preserving user text and recovery on write failure.
+  scenario:
+    id: SCN-CONTEXT-GATES
+    given: *id013
+    when: *id014
+    then: *id015
+  expected: weak
+- id: ok-16
+  requirement:
+    id: REQ-CONTEXT-INTEGRITY
+    strength: MUST
+    statement: Check local references and source drift without disclosing private file contents.
+  scenario:
+    id: SCN-CONTEXT-INTEGRITY
+    given: &id016
+    - A project contains missing references, restricted paths or a saved snapshot.
+    when: &id017
+    - Context is indexed or checked.
+    then: &id018
+    - Findings distinguish broken references and drift; secret files are not read as context.
+  expected: covers
+- id: swap-17
+  requirement:
+    id: REQ-CONTEXT-SELECTION
+    strength: MUST
+    statement: Select task-relevant documents with dependency closure and explicit budget overflow.
+  scenario:
+    id: SCN-CONTEXT-INTEGRITY
+    given: *id016
+    when: *id017
+    then: *id018
+  expected: weak

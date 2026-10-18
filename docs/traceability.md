@@ -43,6 +43,11 @@ Validação de delta acrescenta conflitos como adicionar requisito já vigente, 
 
 Um arquivo chamado `payment_service.dart` prova que o arquivo existe; não prova sozinho sua responsabilidade arquitetural. Relações semânticas precisam de contrato, importação, teste, documentação, ADR ou confirmação humana. Esse limite vale tanto para traceabilidade quanto para adoção brownfield.
 
+O mesmo vale para a ligação entre requisito e cenário: o `spec analyze` confere que ela existe, não que o cenário cobre o requisito. Com `traceability` em `spec.assessment.features` (modo sombra, ADR-0028), o resultado ganha `assessment.weakTraces`: os pares em que o Decider acha improvável que o cenário verifique o requisito, com probabilidade abaixo de 0,5.
+- **Não bloqueia:** os achados e o `pass` da análise não mudam; os pares fracos servem como aviso para a revisão independente.
+- **Cache:** a avaliação fica guardada pelo texto dos pares e só roda de novo quando a spec muda.
+- **Revisão:** o relatório sai com `aifw assess report --feature traceability`.
+
 ## Uso em CI
 
 Para cada mudança ativa relevante, a CI deve executar `spec validate` e `spec analyze`; failures retornam código diferente de zero. O archive continua sendo uma ação controlada, depois dos quality gates da stack e das aprovações aplicáveis.

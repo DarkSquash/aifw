@@ -499,14 +499,14 @@ options:
 
 ```text
 usage: aifw assess report [-h] [--json]
-                          [--feature {tasks,impasse,context,intake}]
+                          [--feature {tasks,impasse,context,intake,traceability}]
 
 report shadow assessments and your verdicts against the activation criteria
 
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context,intake}
+  --feature {tasks,impasse,context,intake,traceability}
                         feature
 ```
 
@@ -514,8 +514,8 @@ options:
 
 ```text
 usage: aifw assess verdict [-h] [--json]
-                           [--feature {tasks,impasse,context,intake}] --id ID
-                           [--agree]
+                           [--feature {tasks,impasse,context,intake,traceability}]
+                           --id ID [--agree]
                            [--value {FAST,WORK,PLANNED,CRITICAL,repeat,distinct,model,keyword,right,wrong}]
                            [--path {FAST,WORK,PLANNED,CRITICAL}] [--note NOTE]
                            --by BY
@@ -525,7 +525,7 @@ record whether you agree with shadow assessments
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context,intake}
+  --feature {tasks,impasse,context,intake,traceability}
                         feature
   --id ID               id
   --agree               agree

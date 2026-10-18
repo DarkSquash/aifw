@@ -36,6 +36,9 @@
 - Respostas do intake em modo sombra (ADR-0027):
   - com `intake`, o `intake status` aponta as respostas do Charter vagas ou parciais, que viram perguntas da entrevista, sem bloquear a aprovação;
   - na suíte de 20 respostas, acertou fraca ou não fraca em todas.
+- Rastreabilidade da spec em modo sombra (ADR-0028):
+  - com `traceability`, o `spec analyze` aponta pares de requisito e cenário em que o cenário provavelmente não verifica o requisito, sem bloquear;
+  - na suíte de 18 pares reais, acertou todos.
 
 ## 0.4.1 — 2026-10-15
 

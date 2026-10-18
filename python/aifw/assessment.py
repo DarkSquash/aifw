@@ -22,12 +22,13 @@ from .common import AifwError, digest, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-FEATURES = ("tasks", "impasse", "context", "intake")
+FEATURES = ("tasks", "impasse", "context", "intake", "traceability")
 LOGS = {
     "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
     "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),
     "context": (".aifw/assessments/context.jsonl", ".aifw/assessments/context-verdicts.jsonl"),
     "intake": (".aifw/assessments/intake.jsonl", ".aifw/assessments/intake-verdicts.jsonl"),
+    "traceability": (".aifw/assessments/traceability.jsonl", ".aifw/assessments/traceability-verdicts.jsonl"),
 }
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
@@ -43,7 +44,9 @@ VALUES = {
     "impasse": ["repeat", "distinct"],
     "context": ["model", "keyword"],
     "intake": ["right", "wrong"],
+    "traceability": ["right", "wrong"],
 }
+WEAK_TRACE_THRESHOLD = 0.5
 SPECIFICITY = ["vaga", "parcial", "específica"]
 INTAKE_FIELDS = ("problem", "audiences", "outcomes", "scope.in", "scope.out")
 QUESTIONS = {
@@ -102,6 +105,14 @@ SPECIFIC_ANSWER = dict(
         "parcial: dá uma direção, mas falta quem, quanto ou o limite",
         "específica: concreta e verificável, dá para decidir com ela",
     ],
+)
+COVERS = dict(
+    type="noul",
+    instructions="Este cenário verifica o comportamento exigido por este requisito?",
+    criteria={
+        "true": "passar no cenário mostra que o requisito foi cumprido",
+        "false": "o cenário testa outra coisa, ou só uma parte irrelevante do requisito",
+    },
 )
 PATH_RULE = {
     "FAST": "risco L0, complexidade trivial ou simples, importância baixa ou média: Haiku executa",
@@ -361,6 +372,63 @@ def review_intake(root, charter, call=None):
     return dict(status="recorded", mode="shadow", recorded=True, **store(root, "intake", record))
 
 
+def trace_text(requirement, scenario):
+    steps = "\n".join(
+        f"{label}: {'; '.join(scenario.get(key, []))}"
+        for label, key in (("Dado", "given"), ("Quando", "when"), ("Então", "then"))
+    )
+    return (
+        f"Requisito ({requirement.get('strength', 'MUST')}): {requirement['statement']}\n\nCenário:\n{steps}"
+    )
+
+
+def review_traces(root, change_id, call=None):
+    """Shadow check of `spec analyze`: requirement and scenario pairs where the scenario may not verify it.
+
+    Cached by the text of the pairs, so the model runs again only when the spec changes.
+    """
+    from .specs import load_artifacts
+
+    call = call or decide
+    config = settings(root)
+    reason = blocker(config, "traceability")
+    if reason:
+        return dict(status="unavailable", reason=reason, recorded=False)
+    _, deltas, _, _ = load_artifacts(root, change_id)
+    pairs = [
+        (requirement, scenario)
+        for delta in deltas
+        for requirement in delta["operations"]["added"] + delta["operations"]["modified"]
+        for scenario in requirement["scenarios"]
+    ]
+    content = digest([trace_text(r, s) for r, s in pairs])
+    log = read_lines(Path(root) / LOGS["traceability"][0])
+    previous = next((e for e in reversed(log) if e["change"] == change_id and e["specs"] == content), None)
+    if previous:
+        return dict(status="cached", mode="shadow", recorded=False, **previous)
+
+    def covers(pair):
+        answers, cost = call(config["model"], trace_text(*pair), {"covers": COVERS})
+        return answers["covers"]["noul"], cost
+
+    with ThreadPoolExecutor(8) as pool:
+        results = list(pool.map(covers, pairs))
+    checked = [
+        dict(requirement=r["id"], scenario=s["id"], probability=round(p, 3))
+        for (r, s), (p, _) in zip(pairs, results)
+    ]
+    record = dict(
+        at=now(),
+        model=config["model"],
+        change=change_id,
+        specs=content,
+        pairs=checked,
+        weakTraces=[c for c in checked if c["probability"] < WEAK_TRACE_THRESHOLD],
+        cost=round(sum(cost for _, cost in results), 8),
+    )
+    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "traceability", record))
+
+
 def store(root, feature, record):
     log = Path(root) / LOGS[feature][0]
     record["id"] = len(read_lines(log)) + 1
@@ -386,7 +454,7 @@ def suggestion(feature, entry):
         return entry["path"]
     if feature == "context":
         return "model"
-    if feature == "intake":
+    if feature in {"intake", "traceability"}:
         return "right"
     return "repeat" if entry["wouldRepeat"] else "distinct"
 
@@ -583,6 +651,26 @@ SHAPES = {
             r["charter"][:12],
             ", ".join(f"{f}: {v}" for f, v in r["levels"].items()) or "—",
             ", ".join(w["field"] for w in r["weakAnswers"]) or "nenhuma",
+        ],
+        example="--value wrong",
+    ),
+    "traceability": dict(
+        title="Rastreabilidade da spec",
+        questions={"covers": COVERS},
+        rule={
+            "fraco": f"par requisito e cenário com probabilidade abaixo de {WEAK_TRACE_THRESHOLD}; aviso, nunca bloqueio",
+            "right": "seu veredito quando os pares marcados como fracos, e só eles, estão certos",
+            "wrong": "seu veredito quando o modelo marcou um par bom como fraco, ou deixou passar um fraco",
+        },
+        columns=["#", "Mudança", "Pares avaliados", "Pares fracos", "Seu veredito"],
+        row=lambda r: [
+            str(r["id"]),
+            r["change"],
+            str(len(r["pairs"])),
+            ", ".join(
+                f"{w['requirement']} → {w['scenario']} ({w['probability']:.0%})" for w in r["weakTraces"]
+            )
+            or "nenhum",
         ],
         example="--value wrong",
     ),

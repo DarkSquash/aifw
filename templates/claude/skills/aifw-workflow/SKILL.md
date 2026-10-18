@@ -62,7 +62,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 
 ## Fechamento de uma mudança com specs
 
-- Execute `aifw spec validate <id>`, `aifw spec analyze <id>` e `aifw spec sync <id> --dry-run`. O preview não altera specs aceitas.
+- Execute `aifw spec validate <id>`, `aifw spec analyze <id>` e `aifw spec sync <id> --dry-run`. O preview não altera specs aceitas. Se o `spec analyze` trouxer `assessment.weakTraces`, revise esses cenários e cite-os no `independent-review.md`; são avisos, não bloqueios.
 - Complete tarefas e cenários com evidências. Para L3, vincule a autorização real a um arquivo persistido no projeto usando `spec approve --by human:<identidade> --record <arquivo>`.
 - Sem bloqueios, use `spec status <id> --set ready`, `aifw validate --change <id> --write` e `spec archive <id>`. O archive exige essa validação sem bloqueios e recusa se a mudança ou o código mudaram depois dela: nesse caso, valide de novo. Confira o archive e as specs resultantes antes de comunicar conclusão.
 - Se houver `cleanupPending`, o commit foi preservado: confira current/archive e informe o resíduo. Não repita o archive como tentativa de limpeza.

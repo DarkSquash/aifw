@@ -178,9 +178,13 @@ def create_parser():
     leaf = command(
         "assess report", "report shadow assessments and your verdicts against the activation criteria"
     )
-    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context", "intake"])
+    option(
+        leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context", "intake", "traceability"]
+    )
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
-    option(leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context", "intake"])
+    option(
+        leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context", "intake", "traceability"]
+    )
     option(leaf, "--id", required=True)
     option(leaf, "--agree", action="store_true")
     option(
@@ -472,6 +476,14 @@ def execute(args, root):
         value = function(root, args.id)
         if action == "spec sync":
             value["dryRun"] = True
+        if action == "spec analyze":
+            from .assessment import enabled, review_traces
+
+            if enabled(root, "traceability"):
+                try:
+                    value["assessment"] = review_traces(root, args.id)
+                except AifwError as error:  # shadow only: the analysis stands either way
+                    value["assessment"] = dict(status="unavailable", reason=str(error), recorded=False)
         return value, 0 if value["pass"] else 2
     if action == "spec approve":
         return dict(

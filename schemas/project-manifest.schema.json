@@ -67,7 +67,7 @@
             "features": {
               "type": "array",
               "uniqueItems": true,
-              "items": { "enum": ["tasks", "impasse", "context", "intake"] }
+              "items": { "enum": ["tasks", "impasse", "context", "intake", "traceability"] }
             }
           }
         }
