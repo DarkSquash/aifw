@@ -26,3 +26,4 @@ spec:
     - context
     - intake
     - traceability
+    - decisions

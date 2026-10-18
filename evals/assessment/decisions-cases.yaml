@@ -1,0 +1,72 @@
+# Suíte dos catálogos de decisão: sinais que o texto do projeto sustenta, por direcionador.
+# Um direcionador ausente em expected significa que o texto não dá base (o esperado é unknown).
+# Gabarito escrito pelo agente em 2026-10-18; revisar caso a caso.
+apiVersion: aifw.dev/v1alpha1
+kind: AssessmentEvaluationSuite
+feature: decisions
+cases:
+  - id: confeitaria
+    project: "Loja virtual de uma confeitaria, feita por um único desenvolvedor. Vender bolos por encomenda com pagamento Pix. Todo o site é lançado de uma vez. Regras de pedido simples: escolher o bolo, a data e pagar."
+    expected:
+      deployment-independence: deployment:together
+      operational-capacity: operations:limited
+      consistency-needs: consistency:transactional
+      domain-complexity: domain:simple
+      integration-count: integrations:few
+      project-size: size:small
+  - id: pagamentos
+    project: "Plataforma de pagamentos para 40 lojas parceiras e 5 bancos. Seis equipes independentes (cobrança, antifraude, conciliação, notificações, cadastro e relatórios), cada uma dona da sua parte, publicam quando quiserem. Um time de SRE opera Kubernetes e observabilidade há anos. A conciliação entre equipes pode acontecer depois; consistência eventual é aceita. Regras de antifraude mudam toda semana e precisam ser testadas sem banco nem rede."
+    expected:
+      deployment-independence: deployment:independent
+      operational-capacity: operations:mature
+      domain-boundaries: boundaries:stable
+      consistency-needs: consistency:eventual-ok
+      domain-complexity: domain:complex
+      integration-count: integrations:many
+      delivery-shape: delivery:feature-oriented
+      testability: testability:high
+      change-locality: changes:feature-local
+      team-ownership: ownership:feature
+      project-size: size:large
+  - id: rh
+    project: "Sistema interno de RH para uma empresa de 300 pessoas, mantido por 3 desenvolvedores sem experiência em sistemas distribuídos. As regras trabalhistas mudam todo ano e são complexas. Integra com a folha de pagamento e com o ponto eletrônico. As regras de cálculo precisam ser testadas sem banco e sem tela."
+    expected:
+      operational-capacity: operations:limited
+      domain-complexity: domain:complex
+      integration-count: integrations:few
+      testability: testability:high
+      project-size: size:medium
+  - id: clinicas
+    project: "App de agendamento para clínicas. MVP em 2 meses com 2 desenvolvedores. Ainda não sabemos quais módulos vão existir no futuro. Tudo sobe num deploy só."
+    expected:
+      deployment-independence: deployment:together
+      operational-capacity: operations:limited
+      domain-boundaries: boundaries:uncertain
+      project-size: size:small
+  - id: marketplace
+    project: "Marketplace com catálogo, carrinho, pagamentos e logística como áreas bem definidas. Cada funcionalidade é entregue de ponta a ponta por um squad dono dela, e as mudanças costumam ficar dentro da área do squad. A equipe de plataforma opera microsserviços há anos."
+    expected:
+      operational-capacity: operations:mature
+      domain-boundaries: boundaries:stable
+      delivery-shape: delivery:feature-oriented
+      change-locality: changes:feature-local
+      team-ownership: ownership:feature
+  - id: erp
+    project: "ERP de 15 anos para uma indústria. Os times são divididos por camada: front-end, back-end e banco de dados. Uma mudança costuma atravessar várias telas da mesma camada. Integra com 12 sistemas de fornecedores."
+    expected:
+      integration-count: integrations:many
+      delivery-shape: delivery:layer-oriented
+      change-locality: changes:cross-feature
+      team-ownership: ownership:technical-layer
+      project-size: size:large
+  - id: cli-planilhas
+    project: "Ferramenta de linha de comando open source para converter planilhas em CSV, mantida por uma pessoa nas horas vagas. Lançada como um único executável."
+    expected:
+      deployment-independence: deployment:together
+      operational-capacity: operations:limited
+      domain-complexity: domain:simple
+      project-size: size:small
+  - id: banco
+    project: "Sistema de transferências entre contas de um banco. Cada transferência precisa debitar uma conta e creditar a outra na mesma transação, sem estado intermediário visível ao cliente."
+    expected:
+      consistency-needs: consistency:transactional

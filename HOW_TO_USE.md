@@ -542,7 +542,8 @@ aifw assess verdict --feature impasse --id 2 --value distinct --by "human:propri
 - `impasse`, que compara cada tentativa nova com as anteriores (veja [Prevenção de impasse](docs/impasse-prevention.md));
 - `context`, que aponta documentos relevantes que o `context select` não achou (veja [Contexto por tarefa](docs/context-intelligence.md));
 - `intake`, que aponta respostas vagas ou parciais do Charter (veja [Project Intake](docs/project-intake.md));
-- `traceability`, que aponta cenários que provavelmente não verificam o requisito ligado (veja [Rastreabilidade](docs/traceability.md)).
+- `traceability`, que aponta cenários que provavelmente não verificam o requisito ligado (veja [Rastreabilidade](docs/traceability.md));
+- `decisions`, que sugere sinais para `decision recommend --suggest-signals` (veja [Catálogos de decisão](docs/decision-catalogs.md)).
 
 ### `aifw runs show`
 

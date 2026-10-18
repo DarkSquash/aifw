@@ -361,8 +361,9 @@ options:
 
 ```text
 usage: aifw decision recommend [-h] [--json] --category CATEGORY
-                               --signals SIGNALS [--selected SELECTED]
-                               [--write]
+                               [--signals SIGNALS] [--selected SELECTED]
+                               [--write] [--suggest-signals]
+                               [--context CONTEXT]
 
 rank alternatives from explicit signals
 
@@ -373,6 +374,8 @@ options:
   --signals SIGNALS    signals
   --selected SELECTED  selected
   --write              write
+  --suggest-signals    suggest signals
+  --context CONTEXT    context
 ```
 
 ## `aifw decision approve`
@@ -499,14 +502,14 @@ options:
 
 ```text
 usage: aifw assess report [-h] [--json]
-                          [--feature {tasks,impasse,context,intake,traceability}]
+                          [--feature {tasks,impasse,context,intake,traceability,decisions}]
 
 report shadow assessments and your verdicts against the activation criteria
 
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context,intake,traceability}
+  --feature {tasks,impasse,context,intake,traceability,decisions}
                         feature
 ```
 
@@ -514,7 +517,7 @@ options:
 
 ```text
 usage: aifw assess verdict [-h] [--json]
-                           [--feature {tasks,impasse,context,intake,traceability}]
+                           [--feature {tasks,impasse,context,intake,traceability,decisions}]
                            --id ID [--agree]
                            [--value {FAST,WORK,PLANNED,CRITICAL,repeat,distinct,model,keyword,right,wrong}]
                            [--path {FAST,WORK,PLANNED,CRITICAL}] [--note NOTE]
@@ -525,7 +528,7 @@ record whether you agree with shadow assessments
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context,intake,traceability}
+  --feature {tasks,impasse,context,intake,traceability,decisions}
                         feature
   --id ID               id
   --agree               agree

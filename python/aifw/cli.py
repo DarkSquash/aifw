@@ -152,9 +152,11 @@ def create_parser():
     option(leaf, "--category")
     leaf = command("decision recommend", "rank alternatives from explicit signals")
     option(leaf, "--category", required=True)
-    option(leaf, "--signals", required=True)
+    option(leaf, "--signals", default="")
     option(leaf, "--selected", default="")
     option(leaf, "--write", action="store_true")
+    option(leaf, "--suggest-signals", action="store_true")
+    option(leaf, "--context", default="")
     leaf = command("decision approve", "approve an eligible decision with an ADR")
     approval(leaf)
     for flag in ("--category", "--option", "--adr"):
@@ -179,11 +181,17 @@ def create_parser():
         "assess report", "report shadow assessments and your verdicts against the activation criteria"
     )
     option(
-        leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context", "intake", "traceability"]
+        leaf,
+        "--feature",
+        default="tasks",
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
     )
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
     option(
-        leaf, "--feature", default="tasks", choices=["tasks", "impasse", "context", "intake", "traceability"]
+        leaf,
+        "--feature",
+        default="tasks",
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
     )
     option(leaf, "--id", required=True)
     option(leaf, "--agree", action="store_true")
@@ -512,9 +520,17 @@ def execute(args, root):
             )
         return values, 0
     if action == "decision recommend":
-        return catalogs.recommend_workspace(
+        value = catalogs.recommend_workspace(
             root, args.category, comma_list(args.signals), comma_list(args.selected), args.write
-        ), 0
+        )
+        if args.suggest_signals:
+            from .assessment import suggest_signals
+
+            try:  # suggestions only: the ranking above uses the signals the person passed
+                value = dict(value, assessment=suggest_signals(root, args.category, args.context))
+            except AifwError as error:
+                value = dict(value, assessment=dict(status="unavailable", reason=str(error), recorded=False))
+        return value, 0
     if action == "decision approve":
         value = catalogs.approve_decision(root, args.category, args.option, args.by, at, args.adr)
         return dict(status=value["status"], record=value), 0

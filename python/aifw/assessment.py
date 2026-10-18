@@ -22,13 +22,14 @@ from .common import AifwError, digest, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-FEATURES = ("tasks", "impasse", "context", "intake", "traceability")
+FEATURES = ("tasks", "impasse", "context", "intake", "traceability", "decisions")
 LOGS = {
     "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
     "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),
     "context": (".aifw/assessments/context.jsonl", ".aifw/assessments/context-verdicts.jsonl"),
     "intake": (".aifw/assessments/intake.jsonl", ".aifw/assessments/intake-verdicts.jsonl"),
     "traceability": (".aifw/assessments/traceability.jsonl", ".aifw/assessments/traceability-verdicts.jsonl"),
+    "decisions": (".aifw/assessments/decisions.jsonl", ".aifw/assessments/decisions-verdicts.jsonl"),
 }
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
@@ -45,8 +46,11 @@ VALUES = {
     "context": ["model", "keyword"],
     "intake": ["right", "wrong"],
     "traceability": ["right", "wrong"],
+    "decisions": ["right", "wrong"],
 }
 WEAK_TRACE_THRESHOLD = 0.5
+SIGNAL_CONFIDENCE = 0.6  # suggest a decision signal only above this confidence
+UNKNOWN_SIGNAL = "unknown"
 SPECIFICITY = ["vaga", "parcial", "específica"]
 INTAKE_FIELDS = ("problem", "audiences", "outcomes", "scope.in", "scope.out")
 QUESTIONS = {
@@ -429,6 +433,76 @@ def review_traces(root, change_id, call=None):
     return dict(status="recorded", mode="shadow", recorded=True, **store(root, "traceability", record))
 
 
+def project_summary(charter, context=""):
+    """What the Charter says about the project, plus the request, as the state for decision drivers."""
+    lines = [f"{label}: {charter_answer(charter, field)}" for label, field in CHARTER_LABELS]
+    preference = (charter.get("technicalPreference") or {}).get("values") or []
+    if preference:
+        lines.append("Preferências técnicas: " + "; ".join(preference))
+    if context:
+        lines.append(f"Pedido atual: {context}")
+    return "\n".join(line for line in lines if not line.endswith(": "))
+
+
+CHARTER_LABELS = (
+    ("Problema", "problem"),
+    ("Públicos", "audiences"),
+    ("Resultados", "outcomes"),
+    ("Dentro do escopo", "scope.in"),
+    ("Fora do escopo", "scope.out"),
+    ("Restrições", "constraints"),
+)
+
+
+def suggest_signals(root, category, context="", call=None):
+    """Shadow suggestion of decision signals from the Charter and the request. The person confirms them."""
+    from .catalogs import load_decision_catalogs, recommend_decision
+    from .intake import load_charter
+
+    call = call or decide
+    config = settings(root)
+    reason = blocker(config, "decisions")
+    if reason:
+        return dict(status="unavailable", reason=reason, recorded=False)
+    catalogs = load_decision_catalogs(root)
+    drivers = {
+        d["id"]: d for c in catalogs if c["metadata"]["category"] == category for d in c["spec"]["drivers"]
+    }
+    require(drivers, f"No decision catalog exists for category {category}.")
+    state = project_summary(load_charter(root), context)
+
+    def answer(driver):
+        criteria = {s: s.split(":", 1)[-1].replace("-", " ") for s in driver["signals"]}
+        criteria[UNKNOWN_SIGNAL] = "o texto não dá base para responder"
+        question = dict(type="choice", instructions=driver["prompt"], criteria=criteria)
+        answers, cost = call(config["model"], state, {"driver": question})
+        return answers["driver"], cost
+
+    with ThreadPoolExecutor(8) as pool:
+        results = dict(zip(drivers, pool.map(answer, drivers.values())))
+    answers = {
+        driver: dict(signal=a["choice"], confidence=round(a.get("confidence", 0), 3))
+        for driver, (a, _) in results.items()
+    }
+    suggested = sorted(
+        a["signal"]
+        for a in answers.values()
+        if a["signal"] != UNKNOWN_SIGNAL and a["confidence"] >= SIGNAL_CONFIDENCE
+    )
+    ranking = recommend_decision(catalogs, category, suggested)["rankings"]
+    record = dict(
+        at=now(),
+        model=config["model"],
+        category=category,
+        context=context,
+        answers=answers,
+        suggestedSignals=suggested,
+        ranking=[{k: r[k] for k in ("optionId", "score", "eligible")} for r in ranking[:3]],
+        cost=round(sum(cost for _, cost in results.values()), 8),
+    )
+    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "decisions", record))
+
+
 def store(root, feature, record):
     log = Path(root) / LOGS[feature][0]
     record["id"] = len(read_lines(log)) + 1
@@ -454,7 +528,7 @@ def suggestion(feature, entry):
         return entry["path"]
     if feature == "context":
         return "model"
-    if feature in {"intake", "traceability"}:
+    if feature in {"intake", "traceability", "decisions"}:
         return "right"
     return "repeat" if entry["wouldRepeat"] else "distinct"
 
@@ -671,6 +745,32 @@ SHAPES = {
                 f"{w['requirement']} → {w['scenario']} ({w['probability']:.0%})" for w in r["weakTraces"]
             )
             or "nenhum",
+        ],
+        example="--value wrong",
+    ),
+    "decisions": dict(
+        title="Catálogos de decisão: sinais sugeridos",
+        questions={
+            "driver": dict(
+                instructions="A pergunta de cada direcionador do catálogo, respondida a partir do Charter e do pedido",
+                criteria={
+                    "sinais": "as alternativas do direcionador",
+                    UNKNOWN_SIGNAL: "o texto não dá base para responder",
+                },
+            )
+        },
+        rule={
+            "sugerido": f"resposta diferente de {UNKNOWN_SIGNAL} com confiança de {SIGNAL_CONFIDENCE} ou mais",
+            "uso": "os sinais só entram no ranking oficial quando você os passa em --signals",
+            "right": "seu veredito quando os sinais sugeridos estão certos",
+            "wrong": "seu veredito quando algum sinal sugerido está errado ou faltou",
+        },
+        columns=["#", "Categoria", "Sinais sugeridos", "Ranking com eles", "Seu veredito"],
+        row=lambda r: [
+            str(r["id"]),
+            r["category"],
+            ", ".join(r["suggestedSignals"]) or "nenhum",
+            ", ".join(f"{o['optionId']} ({o['score']:+d})" for o in r["ranking"]),
         ],
         example="--value wrong",
     ),

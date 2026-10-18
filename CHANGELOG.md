@@ -39,6 +39,10 @@
 - Rastreabilidade da spec em modo sombra (ADR-0028):
   - com `traceability`, o `spec analyze` aponta pares de requisito e cenário em que o cenário provavelmente não verifica o requisito, sem bloquear;
   - na suíte de 18 pares reais, acertou todos.
+- Sinais dos catálogos de decisão em modo sombra (ADR-0029):
+  - `decision recommend --suggest-signals [--context]` sugere os sinais de cada direcionador a partir do Charter e do pedido, mostrando o ranking que eles dariam;
+  - o ranking oficial continua usando só `--signals`, que deixou de ser obrigatório;
+  - na suíte, nenhum sinal sugerido contrariou o texto.
 
 ## 0.4.1 — 2026-10-15
 

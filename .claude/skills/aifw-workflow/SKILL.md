@@ -31,7 +31,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 - `adopt approve`, `intake approve`, `decision approve`, `spec approve`, `route activate`, `impasse decide`, `waiver add`, `break-glass grant` e `assess verdict` são aprovações humanas. O CLI só as aceita no terminal da pessoa que aprova, com o id do projeto digitado por ela; no shell do agente elas falham e o hook as nega. Mostre o comando exato e peça para a pessoa rodar. Nunca tente contornar essa exigência.
 - Conduza a entrevista do intake invocando a skill `grilling` pela ferramenta Skill, usando as perguntas de `aifw intake status` como fronteira inicial. Grave cada resposta com `aifw intake set --field <campo> --value <valor>`; editar um Charter aprovado o reabre. A skill não aprova nada.
 - Se `aifw intake status --json` trouxer `assessment.weakAnswers`, respostas que o Decider avaliou como vagas ou parciais, use-as como as próximas perguntas da entrevista. Não bloqueiam o `ready` nem a aprovação.
-- Use catálogos de decisão apenas quando a tarefa exigir uma escolha arquitetural.
+- Use catálogos de decisão apenas quando a tarefa exigir uma escolha arquitetural. Com o recurso `decisions` ligado, `decision recommend --suggest-signals --context "<pedido>"` sugere sinais. Confirme cada um com o usuário antes de passá-lo em `--signals`.
 
 ## Documentação existente e contexto
 

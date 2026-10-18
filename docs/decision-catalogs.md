@@ -46,6 +46,11 @@ aifw decision approve `
 
 Sinais são fatos ou preferências confirmadas do projeto, não palavras escolhidas para forçar o resultado. Se faltarem drivers, a confiança cai e o agente deve perguntar antes de recomendar com certeza artificial.
 
+Com `decisions` em `spec.assessment.features` (modo sombra, ADR-0029), `decision recommend --suggest-signals [--context "<pedido>"]` pede ao Decider para responder cada direcionador da categoria a partir do Charter e do pedido.
+- **O que mostra:** o campo `assessment` traz os sinais sugeridos (resposta diferente de "não diz", com confiança de 0,6 ou mais) e o ranking que eles dariam.
+- **O que não faz:** o ranking oficial do comando continua usando só os sinais passados em `--signals`. A sugestão serve para o agente perguntar à pessoa e confirmar antes de usar.
+- **Revisão:** o relatório sai com `aifw assess report --feature decisions`.
+
 ## Critérios de segurança
 
 - Pontuação sempre inclui o motivo e o peso aplicado.
