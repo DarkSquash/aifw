@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 
 from . import __version__
-from .common import assets, project_path, read_json, require, write_json
+from .common import assets, ignore_local_logs, project_path, read_json, require, write_json
 
 TOOLS = "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit"
 MISSING = (
@@ -27,6 +27,8 @@ HOOKS = {
     "PostToolUse": dict(matcher=TOOLS, hooks=[{**COMMAND, "async": True}]),
     "PostToolUseFailure": dict(matcher=TOOLS, hooks=[COMMAND]),
     "Stop": dict(hooks=[COMMAND]),
+    # The shadow task assessor calls the decision model; in the background the prompt never waits.
+    "UserPromptSubmit": dict(hooks=[{**COMMAND, "async": True, "timeout": 60}]),
     # Plain text on stdout becomes session context, so Claude can tell the person what is missing.
     "SessionStart": dict(hooks=[dict(COMMAND, command=f"aifw-hook || echo '{MISSING}'")]),
 }
@@ -78,6 +80,7 @@ def enable_project(root):
     return dict(
         status="enabled",
         hooksChanged=changed,
+        gitignored=ignore_local_logs(root),  # also for projects initialized before the logs were ignored
         settings=".claude/settings.json",
         skill=".claude/skills/aifw-workflow/SKILL.md",
         skillBackup=backup and ".claude/skills/aifw-workflow/SKILL.md.bak",

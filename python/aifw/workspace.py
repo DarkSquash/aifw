@@ -7,7 +7,17 @@ from pathlib import Path
 import re
 
 from . import __version__
-from .common import assets, normalize, read_json, read_yaml, require, sort_key, validate, write_yaml
+from .common import (
+    assets,
+    ignore_local_logs,
+    normalize,
+    read_json,
+    read_yaml,
+    require,
+    sort_key,
+    validate,
+    write_yaml,
+)
 
 
 def load_manifest(root):
@@ -212,4 +222,5 @@ def initialize_project(root, options):
         else:
             write_yaml(target, value, exclusive=True)
     build_workspace_map(root, write=True)
-    return {"createdFiles": sorted([*files, "PROJECT_MAP.md"]), "manifest": manifest}
+    ignored = ignore_local_logs(root)
+    return {"createdFiles": sorted([*files, "PROJECT_MAP.md"]), "gitignored": ignored, "manifest": manifest}

@@ -140,3 +140,23 @@ def test_service_failure_is_reported_not_recorded(project, monkeypatch):
     with pytest.raises(AifwError):
         assess(project, "tarefa")
     assert not (project / assessment.SHADOW_LOG).exists()
+
+
+def test_each_request_is_assessed_in_the_background(project, monkeypatch):
+    answer = fake("L2", "alta", "moderada")
+    monkeypatch.setattr(
+        assessment, "decide", lambda m, task, qs: ({k: answer(m, task, k)[0] for k in qs}, 0.0)
+    )
+
+    def prompt(text):
+        return handle(dict(cwd=str(project), hook_event_name="UserPromptSubmit", session_id="s", prompt=text))
+
+    for text in ("pode subir", "/ponytail lite", "sim pode fazer isso"):
+        assert prompt(text) is None
+    assert not (project / assessment.SHADOW_LOG).exists()
+    assert prompt("Reescrever a busca do app com api_key=abc123 para aceitar erros de digitação") is None
+    (record,) = [json.loads(line) for line in (project / assessment.SHADOW_LOG).read_text().splitlines()]
+    assert record["source"] == "prompt" and record["path"] and "abc123" not in record["task"]
+    set_spec(project, assessment=dict(mode="shadow", features=["impasse"]))
+    prompt("Outra tarefa longa o bastante para avaliar")
+    assert len((project / assessment.SHADOW_LOG).read_text().splitlines()) == 1

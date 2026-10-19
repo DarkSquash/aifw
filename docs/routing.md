@@ -31,7 +31,7 @@ Projetos nascem com `enabled: false` e `mode: recommendation-only`. `aifw route 
 
 ## Avaliador de tarefas (modo sombra)
 
-Com `spec.assessment.mode: shadow` em `aifw.yaml`, `aifw change assess --task "<pedido>"` manda três perguntas independentes ao `perplexity/pplx-decider-v1.2`, pelo OpenRouter: risco (L0–L3), importância e complexidade. Uma regra fixa transforma as respostas no caminho:
+Com `spec.assessment.mode: shadow` em `aifw.yaml`, cada pedido da pessoa com 5 palavras ou mais é avaliado automaticamente, em segundo plano, pelo hook `UserPromptSubmit` (ADR-0031); segredos reconhecidos são mascarados antes do envio. `aifw change assess --task "<pedido>"` faz o mesmo à mão. A avaliação manda três perguntas independentes ao `perplexity/pplx-decider-v1.2`, pelo OpenRouter: risco (L0–L3), importância e complexidade. Uma regra fixa transforma as respostas no caminho:
 
 | Caminho | Quando | Planeja | Executa | Revisa |
 | --- | --- | --- | --- | --- |

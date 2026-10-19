@@ -526,7 +526,7 @@ aifw template copy --name runbook.md --output docs/runbooks/pagamentos.md
 
 ### `aifw change assess` e `aifw assess`
 
-Avaliador de tarefas em modo sombra (veja [Roteamento](docs/routing.md)). Para funcionar, o `aifw.yaml` precisa de `spec.assessment.mode: shadow` e de `openrouter` em `spec.externalAllowlist`, e a chave de API do OpenRouter precisa estar na variável `OPENROUTER_API_KEY`. Os vereditos são aprovações humanas, rodadas no seu terminal.
+Avaliador de tarefas em modo sombra (veja [Roteamento](docs/routing.md)). Para funcionar, o `aifw.yaml` precisa de `spec.assessment.mode: shadow` e de `openrouter` em `spec.externalAllowlist`, e a chave de API do OpenRouter precisa estar na variável `OPENROUTER_API_KEY`. Cada pedido seu com 5 palavras ou mais é avaliado sozinho, em segundo plano; `change assess` serve para avaliar à mão ou com o piso de risco do diff. Os vereditos são aprovações humanas, rodadas no seu terminal.
 
 ```powershell
 aifw change assess --task "Adicionar validação de CEP no formulário" --diff

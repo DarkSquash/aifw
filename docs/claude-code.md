@@ -37,7 +37,7 @@ Para desabilitar, remova a entrada `aifw-hook` de `.claude/settings.json` e a pa
 | Evento | Ação |
 | --- | --- |
 | PreToolUse | cobre Bash, PowerShell, edições, Read, Grep, Glob, web, subagentes e MCP; aplica permissões, impasses, arquivos de controle, MCP, delegação, classificação dos dados e break-glass (detalhes abaixo); se o `aifw-hook` não puder rodar, a ação é bloqueada (`onFailure: block`) |
-| PostToolUse | registra comandos e edições em `.aifw/runs/<sessão>.jsonl`, em segundo plano |
+| PostToolUse | registra comandos e edições em `.aifw/runs/<sessão>.jsonl`, em segundo plano; `aifw init` e `aifw claude enable` colocam `.aifw/runs/` e `.aifw/assessments/` no `.gitignore` |
 | PostToolUseFailure | registra a falha; se o mesmo comando de teste falhar duas vezes sem impasse aberto, sugere `aifw impasse open` |
 | Stop | é um aviso, não uma trava: o Claude Code repassa o bloqueio uma vez por resposta. Impede concluir com código alterado depois da última verificação bem-sucedida, uma vez por resposta. Compara o estado do git, então pega edições feitas por qualquer caminho (scripts, `sed -i`, geradores). Só conta como verificação o próprio executor de testes ou `aifw validate`, não um `echo pytest`. Se o agente parar de novo sem verificar, o AIFW registra o ocorrido e `aifw runs show` (gate `session-conformance`) reprova a sessão |
 | SessionStart | informa intake incompleto, mudanças ativas e impasses abertos; guarda o estado inicial do git e apaga registros de sessão com mais de 30 dias |

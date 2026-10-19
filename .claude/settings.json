@@ -64,6 +64,19 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "aifw-hook || true",
+            "shell": "bash",
+            "timeout": 60,
+            "async": true
+          }
+        ]
+      }
     ]
   }
 }

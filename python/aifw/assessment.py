@@ -33,6 +33,7 @@ LOGS = {
 }
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
+MIN_TASK_WORDS = 5  # shorter prompts are replies, not tasks, and are not assessed automatically
 REPEAT_THRESHOLD = 0.7
 SUGGEST_THRESHOLD = 0.5  # add a document the keywords missed
 DOUBT_THRESHOLD = 0.1  # question a document chosen only by a shared word
@@ -216,7 +217,7 @@ def diff_floor(root, base=None):
     return classify_change(derived["signals"])["level"], derived["reasons"]
 
 
-def assess(root, task, use_diff=False, base=None, call=ask):
+def assess(root, task, use_diff=False, base=None, call=ask, source="manual"):
     require(isinstance(task, str) and task.strip(), "Describe the task with --task.")
     config = settings(root)
     reason = blocker(config)
@@ -234,6 +235,7 @@ def assess(root, task, use_diff=False, base=None, call=ask):
         at=now(),
         model=config["model"],
         task=task.strip(),
+        source=source,
         risk=dict(value=model_risk, confidence=round(risk.get("confidence", 0), 3)),
         importance=dict(value=most_likely(importance, IMPORTANCE), level=round(importance["score"], 2)),
         complexity=dict(value=most_likely(complexity, COMPLEXITY), level=round(complexity["score"], 2)),

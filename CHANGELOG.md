@@ -20,6 +20,9 @@
   - opção `commits: allow` em `permissions.yaml`: criar e reescrever commits deixa de pedir confirmação, exceto com algum arquivo de controle alterado; push e commit com `-S` continuam pedindo. Ligada neste repositório;
   - delegar para o `haiku` só pede confirmação com mudança L3 ativa;
   - a mensagem sobre código ilegível sugere gravá-lo num arquivo `.py` ou `.js`, que o hook lê.
+- Avaliação automática das tarefas (ADR-0031): com o recurso `tasks` ligado, o hook `UserPromptSubmit` avalia em segundo plano cada pedido com 5 palavras ou mais, sem atrasar a sessão; o registro marca `source: prompt`. `aifw claude enable` instala o novo hook.
+- `aifw init` e `aifw claude enable` colocam `.aifw/runs/` e `.aifw/assessments/` no `.gitignore` do projeto. Antes, os registros de sessão, com os comandos rodados, podiam ir para o git.
+- Menos confirmações falsas: `cut`, `tr`, `nl`, `basename`, `dirname` e `realpath` são leitura, e uma linha só com atribuição de variável (`L=x`) também. Cada confirmação pedida pelo hook fica registrada em `.aifw/runs/` (`tool: Ask`), para achar as que podem sair. Os registros de sessão e de avaliação não contam mais como arquivo de controle alterado num commit.
 - Os testes deixam de falhar ao acaso no Windows com WinError 6: o pytest troca a entrada padrão e o identificador do Windows ficava apontando para a antiga, já fechada (`tests_python/conftest.py`).
 - O hook trata o conteúdo de um heredoc como dado. Ele só é analisado como código quando alimenta um interpretador ou um shell, ou quando, sem aspas, expande `$(...)`.
 

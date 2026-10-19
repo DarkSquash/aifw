@@ -15,6 +15,9 @@ from test_workflows import init
         ("git -C . push", "git-remote", False),
         ("git --git-dir=.git push origin main", "git-remote", False),
         ('grep "git push" notas.txt', "read-only", False),
+        ("tail -3 log.jsonl | cut -c1-300", "read-only", False),
+        ("L=log.jsonl && wc -l < $L", "read-only", False),
+        ("X=$(git push)", "opaque", False),
         ('git commit -m "push it"', "commit", False),
         ('bash -c "git push origin main"', "git-remote", False),
         ("echo Z2l0IHB1c2g= | base64 -d | sh", "opaque", False),
@@ -121,3 +124,12 @@ def test_approvals_require_typing_the_project_id(monkeypatch):
 )
 def test_heredoc_bodies_are_data_unless_they_feed_code(command, kind):
     assert analyze(command)["kind"] == kind
+
+
+def test_prompts_are_logged_for_review(tmp_path):
+    init(tmp_path)
+    payload = dict(cwd=str(tmp_path), session_id="s1", tool_name="Bash", tool_input=dict(command="git push"))
+    assert handle(payload)["hookSpecificOutput"]["permissionDecision"] == "ask"
+    handle(dict(payload, tool_input=dict(command="git status")))
+    entries = (tmp_path / ".aifw/runs/s1.jsonl").read_text().splitlines()
+    assert len(entries) == 1 and '"tool": "Ask"' in entries[0] and "git push" in entries[0]

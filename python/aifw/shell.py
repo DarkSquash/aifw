@@ -96,6 +96,8 @@ READ_ONLY = {
     "find", "pwd", "echo", "printf", "wc", "which", "where", "get-childitem", "get-content",
     "select-string", "get-command", "get-location", "less", "more", "stat", "file", "sort", "uniq",
     "diff", "tree", "test", "true", "false", "du", "df", "date", "whoami", "aifw", "write-output",
+    "cut", "tr", "nl", "basename", "dirname", "realpath",
+    "",  # only variable assignments (L=x); $(...) inside them is analyzed on its own
 }  # fmt: skip
 GIT_VALUE_OPTIONS = {"-C", "-c", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--config-env"}
 GIT_READ = {

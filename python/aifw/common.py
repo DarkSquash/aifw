@@ -237,6 +237,23 @@ def project_path(root, relative, *, file=False):
     return candidate
 
 
+LOCAL_LOGS = (".aifw/runs/", ".aifw/assessments/")
+
+
+def ignore_local_logs(root):
+    """Add AIFW's local logs (session commands, shadow assessments) to .gitignore; returns the entries added."""
+    file = project_path(root, ".gitignore")
+    text = file.read_text(encoding="utf-8") if file.is_file() else ""
+    present = {line.strip().lstrip("/").rstrip("/") for line in text.splitlines()}
+    missing = [entry for entry in LOCAL_LOGS if entry.rstrip("/") not in present]
+    if missing:
+        lines = ["# AIFW local logs: session commands and shadow assessments", *missing]
+        prefix = "\n" if text and not text.endswith("\n") else ""
+        with file.open("a", encoding="utf-8", newline="\n") as stream:
+            stream.write(prefix + "\n".join(lines) + "\n")
+    return missing
+
+
 def file_state(root, relative):
     if not isinstance(relative, str) or not relative.strip():
         return "missing"

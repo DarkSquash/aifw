@@ -205,3 +205,17 @@ def test_enable_replaces_outdated_hooks_and_check_reports_gaps(tmp_path):
     findings = check_project(tmp_path, tmp_path / "home")["findings"]
     assert not any(f.startswith("hook ") or "aifw-workflow" in f for f in findings)
     assert any("grilling" in f for f in findings)
+
+
+def test_init_and_enable_keep_local_logs_out_of_git(tmp_path):
+    init(tmp_path)
+    lines = (tmp_path / ".gitignore").read_text().splitlines()
+    assert ".aifw/runs/" in lines and ".aifw/assessments/" in lines
+    old = tmp_path / "old"
+    old.mkdir()
+    init(old)
+    (old / ".gitignore").write_text("node_modules\n/.aifw/runs")  # no final newline, leading slash
+    assert enable_project(old)["gitignored"] == [".aifw/assessments/"]
+    assert (old / ".gitignore").read_text().splitlines()[:2] == ["node_modules", "/.aifw/runs"]
+    assert enable_project(old)["gitignored"] == []
+    assert (old / ".gitignore").read_text().count(".aifw/assessments/") == 1

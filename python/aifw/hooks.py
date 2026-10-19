@@ -283,6 +283,14 @@ def pre_tool_use(root, payload):
     if result is None:
         return None
     level, reasons = result
+    try:  # which actions still reach the person, to find prompts worth removing
+        detail = payload.get("tool_input") or {}
+        target = str(detail.get("command") or detail.get("file_path") or "")
+        append(
+            root, payload, dict(at=now(), tool="Ask", decision=level, reasons=reasons, target=target[:2000])
+        )
+    except Exception:  # noqa: BLE001 - logging never changes the decision
+        pass
     return dict(
         hookSpecificOutput=dict(
             hookEventName="PreToolUse",
@@ -351,7 +359,8 @@ def dirty_control(root):
     except (OSError, subprocess.CalledProcessError):
         return None
     for control in (*CONTROL, "/change.yaml"):
-        if control in listed:
+        # Session and assessment logs are written by the hook itself and never hold an approval.
+        if control in listed and control not in {".aifw/runs/", ".aifw/assessments/"}:
             return control
     return ""
 
@@ -491,7 +500,21 @@ def session_start(root, payload):
     return dict(hookSpecificOutput=dict(hookEventName="SessionStart", additionalContext="\n".join(lines)))
 
 
+def user_prompt(root, payload):
+    """Shadow-assess each request as the person sends it, in the background; never changes the session."""
+    from .assessment import MIN_TASK_WORDS, assess, enabled
+    from .context import redact
+
+    prompt = (payload.get("prompt") or "").strip()
+    # Slash commands and short replies ("pode", "sim, pode subir") are not tasks.
+    if prompt.startswith("/") or len(prompt.split()) < MIN_TASK_WORDS or not enabled(root, "tasks"):
+        return None
+    assess(root, redact(prompt)[:4000], source="prompt")
+    return None
+
+
 HANDLERS = {
+    "UserPromptSubmit": user_prompt,
     "PreToolUse": pre_tool_use,
     "PostToolUse": post_tool_use,
     "PostToolUseFailure": post_tool_use,
