@@ -13,6 +13,8 @@ approvals:
 # Packages that npx/uvx may download and run without asking (ADR-0025).
 trustedPackages:
   - ctx7
+# Commits run without asking, except with a control file changed; pushes still ask (ADR-0030).
+commits: allow
 childAgents:
   capabilityCeiling: parent
 breakGlass:

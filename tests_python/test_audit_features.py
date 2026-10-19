@@ -55,7 +55,9 @@ def test_mcp_delegation_and_data_classification(tmp_path):
     assert pre(tmp_path, "mcp__figma__get_file") == "deny"
     assert pre(tmp_path, "mcp__markitdown__convert") == "ask"
     assert pre(tmp_path, "mcp__other__tool") is None
-    specs.create_change(tmp_path, dict(id="risky", title="Risky", summary="S", level="L2", createdAt=AT))
+    specs.create_change(tmp_path, dict(id="routine", title="Routine", summary="S", level="L2", createdAt=AT))
+    assert pre(tmp_path, "Agent", model="haiku") is None  # L2 is the agent's call
+    specs.create_change(tmp_path, dict(id="risky", title="Risky", summary="S", level="L3", createdAt=AT))
     assert pre(tmp_path, "Agent", model="haiku") == "ask"
     assert pre(tmp_path, "Agent", model="sonnet") is None
     set_spec(tmp_path, externalAllowlist=["github"])

@@ -29,7 +29,7 @@ def test_delegation_reads_custom_agent_model_and_asks_for_cloud_sessions(tmp_pat
     agents.mkdir(parents=True)
     (agents / "scout.md").write_text("---\nname: scout\nmodel: haiku\n---\nSearch.\n")
     assert pre(tmp_path, "Agent", subagent_type="scout") is None
-    specs.create_change(tmp_path, dict(id="risky", title="R", summary="S", level="L2", createdAt=AT))
+    specs.create_change(tmp_path, dict(id="risky", title="R", summary="S", level="L3", createdAt=AT))
     assert pre(tmp_path, "Agent", subagent_type="scout") == "ask"
     assert pre(tmp_path, "Agent", subagent_type="general-purpose") is None
     assert pre(tmp_path, "Agent", model="claude-haiku-5-5") == "ask"

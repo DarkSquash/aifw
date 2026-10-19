@@ -200,6 +200,37 @@ def test_opaque_code_asks_unless_the_project_allows_it(tmp_path):
     assert decision(tmp_path, "Bash", command=hidden) == "deny"
 
 
+def test_commits_allowed_by_policy_still_ask_with_control_files_changed(tmp_path):
+    init(tmp_path)
+    policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
+    write_yaml(tmp_path / ".aifw/permissions.yaml", dict(policy, commits="allow"))
+    command = 'git commit -m "x"'
+    assert decision(tmp_path, "Bash", command=command) == "ask"  # no git repository
+    git = ["git", "-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false"]
+    subprocess.run(
+        ["git", "init", "-q"], cwd=tmp_path, check=True, stdin=subprocess.DEVNULL, capture_output=True
+    )
+    subprocess.run(
+        ["git", "add", "-A"], cwd=tmp_path, check=True, stdin=subprocess.DEVNULL, capture_output=True
+    )
+    subprocess.run(
+        [*git, "commit", "-qm", "init"],
+        cwd=tmp_path,
+        check=True,
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+    )
+    (tmp_path / "app.py").write_text("x = 1\n")
+    assert decision(tmp_path, "Bash", command=command) is None
+    assert decision(tmp_path, "Bash", command="git push") == "ask"
+    assert decision(tmp_path, "Bash", command="git commit -S -m x") == "ask"
+    assert decision(tmp_path, "Bash", command="git add -A && git commit -m x") is None
+    assert decision(tmp_path, "Bash", command="python gen.py && git commit -am x") == "ask"
+    (tmp_path / ".aifw/waivers").mkdir(exist_ok=True)
+    (tmp_path / ".aifw/waivers/w.yaml").write_text("id: w\n")
+    assert decision(tmp_path, "Bash", command=command) == "ask"
+
+
 @pytest.mark.parametrize(
     ("command", "expected"),
     [

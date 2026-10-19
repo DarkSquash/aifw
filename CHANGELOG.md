@@ -16,6 +16,11 @@
 - Falhas aleatórias no Windows (WinError 6, "identificador inválido") corrigidas:
   - os subprocessos do AIFW recebem a própria entrada padrão. Antes, uma entrada herdada inválida fazia o `git` parecer ausente e zerava o piso de risco do diff;
   - os gates com `python` chamam o interpretador real por trás de atalhos como o `bin\python.exe` do instalador do Python. O atalho, rodando sem console, repassava entradas inválidas aos testes.
+- Mais autonomia (ADR-0030):
+  - opção `commits: allow` em `permissions.yaml`: criar e reescrever commits deixa de pedir confirmação, exceto com algum arquivo de controle alterado; push e commit com `-S` continuam pedindo. Ligada neste repositório;
+  - delegar para o `haiku` só pede confirmação com mudança L3 ativa;
+  - a mensagem sobre código ilegível sugere gravá-lo num arquivo `.py` ou `.js`, que o hook lê.
+- Os testes deixam de falhar ao acaso no Windows com WinError 6: o pytest troca a entrada padrão e o identificador do Windows ficava apontando para a antiga, já fechada (`tests_python/conftest.py`).
 - O hook trata o conteúdo de um heredoc como dado. Ele só é analisado como código quando alimenta um interpretador ou um shell, ou quando, sem aspas, expande `$(...)`.
 
 ### Adicionado

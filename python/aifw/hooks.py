@@ -172,7 +172,11 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         if policy.get("opaqueCode", "ask") == "allow":
             return findings  # the project accepts code the hook cannot read (ADR-0025)
         findings.append(
-            ("ask", "runs code the hook cannot read (eval, inline code, aliases or piped into a shell)")
+            (
+                "ask",
+                "runs code the hook cannot read (eval, inline code, aliases or piped into a shell);"
+                " write it to a .py or .js file and run that file so the hook can read it",
+            )
         )
     elif kind == "secret-read":
         findings.append(("ask", "reads files or variables that usually hold secrets"))
@@ -185,7 +189,13 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
             ("ask", "installs a package, program or new project; installs need the person's approval")
         )
     elif kind == "commit":
-        findings.append(("ask", "creates or rewrites a commit; the person reviews every commit"))
+        allowed = policy.get("commits", "ask") == "allow" and not item.get("mixed")
+        control = dirty_control(root) if allowed else None
+        if control is None:
+            findings.append(("ask", "creates or rewrites a commit; the person reviews every commit"))
+        elif control:
+            # A commit carrying a control file can turn into an approval once signed.
+            findings.append(("ask", f"commits with the AIFW control file {control} changed"))
     elif kind == "mcp":
         servers = policy.get("mcpServers", {})
         if item["server"] in servers.get("deny", []):
@@ -193,10 +203,10 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         elif item["server"] in servers.get("ask", []):
             findings.append(("ask", f"MCP server {item['server']} requires confirmation"))
     elif kind == "delegation":
-        risky = active_levels(root) & {"L2", "L3"}
+        risky = active_levels(root) & {"L3"}
         model = item.get("model") or agent_model(root, item.get("agent")) or ""
         if "haiku" in model and risky:
-            # The model table never runs L2/L3 work on haiku.
+            # The model table never runs L3 work on haiku; on L2 it is the agent's call (ADR-0030).
             findings.append(("ask", f"delegates to haiku while an active {max(risky)} change exists"))
         if item.get("remote"):
             # Subagents on this machine inherit these hooks; a cloud session runs outside them.
@@ -239,7 +249,11 @@ def evaluate(root, tool_name, tool_input, cwd=None):
                     f"impasse {case['id']} is {case['state']}; see `aifw impasse status`",
                 )
             )
-    for item in request.get("requests", [request]):
+    items = request.get("requests", [request])
+    # The control-file check reads git status before the command runs, so a commit beside other writes asks.
+    mixed = any(i["kind"] not in {"commit", "git-local", "read-only", "signing"} for i in items)
+    for item in items:
+        item = dict(item, mixed=True) if mixed and item["kind"] == "commit" else item
         findings += item_findings(root, policy, item, allowlist, classification, tool_name, tool_input)
     control = control_target(
         root, tool_name, tool_input, request["mutation"], policy.get("protectedPaths", [])
@@ -321,6 +335,25 @@ def append(root, payload, entry):
     with log.open("a", encoding="utf-8", newline="\n") as stream:
         stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
     return entry
+
+
+def dirty_control(root):
+    """The first changed, staged or untracked control file, "" when there is none, None without git."""
+    try:
+        listed = subprocess.run(
+            ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+            cwd=root,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    for control in (*CONTROL, "/change.yaml"):
+        if control in listed:
+            return control
+    return ""
 
 
 def tree_state(root):
