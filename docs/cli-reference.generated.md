@@ -2,7 +2,7 @@
 
 > Gerado por `python scripts/generate_cli_reference.py`. Guia: [HOW_TO_USE.md](../HOW_TO_USE.md).
 
-Esta referência contém 60 comandos finais e suas opções.
+Esta referência contém 61 comandos finais e suas opções.
 
 ## `aifw --help`
 
@@ -496,6 +496,24 @@ options:
   --task TASK  task
   --diff       diff
   --base BASE  base
+```
+
+## `aifw assess eval`
+
+```text
+usage: aifw assess eval [-h] [--json]
+                        --feature {tasks,impasse,context,intake,traceability,decisions}
+                        [--cases CASES] [--output OUTPUT]
+
+run a reviewable suite in evals/assessment against the decision model
+
+options:
+  -h, --help            show this help message and exit
+  --json                emit stable machine-readable JSON
+  --feature {tasks,impasse,context,intake,traceability,decisions}
+                        feature
+  --cases CASES         cases
+  --output OUTPUT       output
 ```
 
 ## `aifw assess report`

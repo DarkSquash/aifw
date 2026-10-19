@@ -257,6 +257,27 @@ def attempt_text(attempt):
     return f"Hipótese: {attempt['hypothesis']}\nIntervenção: {attempt['intervention']}"
 
 
+def pair_state(earlier, attempt):
+    return f"Tentativa anterior:\n{attempt_text(earlier)}\n\nNova tentativa:\n{attempt_text(attempt)}"
+
+
+def doc_state(task, doc):
+    return f"Tarefa: {task}\n\nDocumento: {doc['path']}\nAssunto: {doc['scope']}"
+
+
+def answer_state(field, answer):
+    from .intake import PROMPTS
+
+    return f"Pergunta: {PROMPTS[field]}\nResposta: {answer}"
+
+
+def driver_question(driver):
+    """A decision driver as a choice question, with an explicit way out when the text says nothing."""
+    criteria = {s: s.split(":", 1)[-1].replace("-", " ") for s in driver["signals"]}
+    criteria[UNKNOWN_SIGNAL] = "o texto não dá base para responder"
+    return dict(type="choice", instructions=driver["prompt"], criteria=criteria)
+
+
 def compare_attempt(root, case, attempt, call=None):
     """Shadow check: how likely the new attempt repeats each earlier one. Never changes the case."""
     call = call or decide
@@ -267,8 +288,7 @@ def compare_attempt(root, case, attempt, call=None):
         return dict(status="unavailable" if reason else "nothing-to-compare", reason=reason, recorded=False)
 
     def same(earlier):
-        state = f"Tentativa anterior:\n{attempt_text(earlier)}\n\nNova tentativa:\n{attempt_text(attempt)}"
-        answers, cost = call(config["model"], state, {"same": SAME_ATTEMPT})
+        answers, cost = call(config["model"], pair_state(earlier, attempt), {"same": SAME_ATTEMPT})
         return answers["same"]["noul"], cost
 
     with ThreadPoolExecutor(4) as pool:
@@ -305,8 +325,7 @@ def review_context(root, task, selection, call=None):
     docs = check_context(root)["documents"]
 
     def relevant(doc):
-        state = f"Tarefa: {task}\n\nDocumento: {doc['path']}\nAssunto: {doc['scope']}"
-        answers, cost = call(config["model"], state, {"relevant": RELEVANT_DOC})
+        answers, cost = call(config["model"], doc_state(task, doc), {"relevant": RELEVANT_DOC})
         return answers["relevant"]["noul"], cost
 
     with ThreadPoolExecutor(16) as pool:
@@ -358,7 +377,7 @@ def review_intake(root, charter, call=None):
     fields = [f for f in INTAKE_FIELDS if charter_answer(charter, f)]
 
     def judge(field):
-        state = f"Pergunta: {PROMPTS[field]}\nResposta: {charter_answer(charter, field)}"
+        state = answer_state(field, charter_answer(charter, field))
         answers, cost = call(config["model"], state, {"specific": SPECIFIC_ANSWER})
         return most_likely(answers["specific"], SPECIFICITY), cost
 
@@ -474,10 +493,7 @@ def suggest_signals(root, category, context="", call=None):
     state = project_summary(load_charter(root), context)
 
     def answer(driver):
-        criteria = {s: s.split(":", 1)[-1].replace("-", " ") for s in driver["signals"]}
-        criteria[UNKNOWN_SIGNAL] = "o texto não dá base para responder"
-        question = dict(type="choice", instructions=driver["prompt"], criteria=criteria)
-        answers, cost = call(config["model"], state, {"driver": question})
+        answers, cost = call(config["model"], state, {"driver": driver_question(driver)})
         return answers["driver"], cost
 
     with ThreadPoolExecutor(8) as pool:

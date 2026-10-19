@@ -106,7 +106,7 @@ gates:
   - --session
   - latest
 - id: independent-review
-  enforcement: audit
+  enforcement: hard
   levels:
   - L2
   - L3

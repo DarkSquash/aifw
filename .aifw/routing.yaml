@@ -1,7 +1,7 @@
 apiVersion: aifw.dev/v1alpha1
 kind: RoutingPolicy
-enabled: false
-mode: recommendation-only
+enabled: true
+mode: automatic
 aliases:
   FAST: haiku
   WORK: sonnet
@@ -21,3 +21,11 @@ activation:
   minimumPassRate: 0.95
   criticalFailures: 0
   humanApprovalRequired: true
+approval:
+  approvedBy: human:DarkSquash
+  record: docs/decisions/ADR-0032-routing-activation.md
+  activatedAt: '2026-10-19T03:30:05.663Z'
+  report:
+    cases: 32
+    passRate: 1.0
+    criticalFailures: 0

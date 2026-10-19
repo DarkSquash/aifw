@@ -200,6 +200,8 @@ def validate_workspace(root, level, run=run_command, approval=None, evidence=Non
             ],
         )
     builtins.update(evidence or {})
+    if "independent-review" in configured and "independent-review" not in builtins:
+        builtins["independent-review"] = pending_reviews(root)
     if approval:
         builtins["human-approval"] = dict(
             gateId="human-approval",
@@ -351,6 +353,43 @@ def run_doctor(platform=None, run=run_command):
     )
 
 
+REVIEW_VERDICT = re.compile(
+    r"^[\s>*_-]*resultado[*_]*\s*:[\s*_]*(aprovado com ressalvas|aprovado|reprovado)",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def review_result(root, path):
+    """The independent-review gate reads the reviewer's verdict, not only that the file exists."""
+    match = REVIEW_VERDICT.search((Path(root) / path).read_text(encoding="utf-8"))
+    verdict = match and match.group(1).lower()
+    return dict(
+        gateId="independent-review",
+        status="pass" if verdict in {"aprovado", "aprovado com ressalvas"} else "fail",
+        summary=f"Independent review: {verdict}."
+        if verdict
+        else "independent-review.md needs a line `Resultado: aprovado | aprovado com ressalvas | reprovado`.",
+        evidence=[path],
+    )
+
+
+def pending_reviews(root):
+    """Without a change id there is nothing to review; say which active changes still need `--change`."""
+    active = sorted(
+        read_yaml(file)["metadata"]["id"]
+        for file in (Path(root) / ".aifw/changes/active").glob("*/change.yaml")
+        if read_yaml(file).get("metadata", {}).get("level") in {"L2", "L3"}
+    )
+    return dict(
+        gateId="independent-review",
+        status="not-run" if active else "pass",
+        summary="Review is checked per change: run `aifw validate --change <id>` for " + ", ".join(active)
+        if active
+        else "No active L2/L3 change needs an independent review.",
+        evidence=[],
+    )
+
+
 def validate_change_workspace(root, change_id, write=False, run=run_command):
     """Validate a spec change: its level's gates, approval and required artifacts, optionally recorded."""
     from . import specs
@@ -370,12 +409,7 @@ def validate_change_workspace(root, change_id, write=False, run=run_command):
     review = {}
     if level in specs.LEVEL_ARTIFACTS and "independent-review" not in [m["artifact"] for m in missing]:
         path = (specs.change_dir(root, change_id) / "independent-review.md").relative_to(root).as_posix()
-        review["independent-review"] = dict(
-            gateId="independent-review",
-            status="pass",
-            summary="Independent review recorded.",
-            evidence=[path],
-        )
+        review["independent-review"] = review_result(root, path)
     report = validate_workspace(root, level, run, approval, review)
     report["blockers"] = report["blockers"] + [
         dict(

@@ -339,7 +339,13 @@ def test_validate_change_checks_level_artifacts_and_records_evidence(fixture):
     design = (base / "design.md").read_text(encoding="utf-8")
     design = design.replace("## Approach\n", "## Approach\n\nIndex records.\n")
     (base / "design.md").write_text(design + "\nRevert the index.\n", encoding="utf-8")
-    (base / "independent-review.md").write_text("No findings.\n", encoding="utf-8")
+    review = base / "independent-review.md"
+    for text, status in (("No findings.\n", "fail"), ("**Resultado:** reprovado\n", "fail")):
+        review.write_text(text, encoding="utf-8")
+        report = gates.validate_change_workspace(root, ID, run=ok)
+        gate = [r for r in report["warnings"] + report["blockers"] if r["gateId"] == "independent-review"]
+        assert gate and gate[0]["status"] == status
+    review.write_text("No findings.\n\nResultado: aprovado com ressalvas\n", encoding="utf-8")
     report = gates.validate_change_workspace(root, ID, write=True, run=ok)
     assert report["status"] in {"pass", "warning"} and not report["missingArtifacts"]
     assert "independent-review" in [r["gateId"] for r in report["passed"]]

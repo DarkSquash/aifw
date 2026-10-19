@@ -219,3 +219,16 @@ def test_init_and_enable_keep_local_logs_out_of_git(tmp_path):
     assert (old / ".gitignore").read_text().splitlines()[:2] == ["node_modules", "/.aifw/runs"]
     assert enable_project(old)["gitignored"] == []
     assert (old / ".gitignore").read_text().count(".aifw/assessments/") == 1
+
+
+def test_level_validation_points_active_changes_to_their_review(tmp_path):
+    init(tmp_path)
+    review = gates.pending_reviews(tmp_path)
+    assert review["status"] == "pass"
+    specs.create_change(tmp_path, dict(id="big", title="Big", summary="S", level="L2", createdAt=AT))
+    review = gates.pending_reviews(tmp_path)
+    assert (
+        review["status"] == "not-run"
+        and review["summary"].endswith("for big")
+        and "--change" in review["summary"]
+    )

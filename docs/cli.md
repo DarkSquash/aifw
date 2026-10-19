@@ -30,6 +30,7 @@ A CLI é o **plano de controle** do framework: uma camada pequena que lê fontes
 | `template list/copy` | cria documentos a partir dos templates |
 | `secrets scan` | procura segredos nos arquivos do projeto (e no histórico do git com `--history`), sem mostrar os valores |
 | `change assess`, `assess report/verdict` | avaliador de tarefas em modo sombra e seus vereditos |
+| `assess eval` | roda uma suíte de `evals/assessment/` contra o modelo de decisão e mostra acertos e cortes |
 | `runs show` | resume as sessões gravadas contra as regras do fluxo |
 | `claude install/enable/check` | comando `/aifw`, ativação por projeto e diagnóstico da integração |
 | `eval` | executa conformance cases contra traces |

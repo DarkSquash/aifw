@@ -20,6 +20,8 @@
   - opção `commits: allow` em `permissions.yaml`: criar e reescrever commits deixa de pedir confirmação, exceto com algum arquivo de controle alterado; push e commit com `-S` continuam pedindo. Ligada neste repositório;
   - delegar para o `haiku` só pede confirmação com mudança L3 ativa;
   - a mensagem sobre código ilegível sugere gravá-lo num arquivo `.py` ou `.js`, que o hook lê.
+- `aifw assess eval --feature <recurso>` roda as suítes de `evals/assessment/` contra o modelo de decisão, com acertos, divergências e acertos por corte (ADR-0033). As perguntas são as mesmas do modo sombra.
+- Gate `independent-review` (ADR-0033): lê a linha `Resultado:` do `independent-review.md` e falha sem ela ou com `reprovado`; no `validate --level`, sem mudança, aponta as mudanças L2/L3 ativas em vez de avisar que não há comando. Neste repositório o gate passou a ser hard.
 - Avaliação automática das tarefas (ADR-0031): com o recurso `tasks` ligado, o hook `UserPromptSubmit` avalia em segundo plano cada pedido com 5 palavras ou mais, sem atrasar a sessão; o registro marca `source: prompt`. `aifw claude enable` instala o novo hook.
 - `aifw init` e `aifw claude enable` colocam `.aifw/runs/` e `.aifw/assessments/` no `.gitignore` do projeto. Antes, os registros de sessão, com os comandos rodados, podiam ir para o git.
 - Menos confirmações falsas: `cut`, `tr`, `nl`, `basename`, `dirname` e `realpath` são leitura, e uma linha só com atribuição de variável (`L=x`) também. Cada confirmação pedida pelo hook fica registrada em `.aifw/runs/` (`tool: Ask`), para achar as que podem sair. Os registros de sessão e de avaliação não contam mais como arquivo de controle alterado num commit.

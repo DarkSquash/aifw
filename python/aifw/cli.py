@@ -177,6 +177,15 @@ def create_parser():
     option(leaf, "--task", required=True)
     option(leaf, "--diff", action="store_true")
     option(leaf, "--base")
+    leaf = command("assess eval", "run a reviewable suite in evals/assessment against the decision model")
+    option(
+        leaf,
+        "--feature",
+        required=True,
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
+    )
+    option(leaf, "--cases")
+    option(leaf, "--output")
     leaf = command(
         "assess report", "report shadow assessments and your verdicts against the activation criteria"
     )
@@ -555,6 +564,13 @@ def execute(args, root):
         from .assessment import assess
 
         return assess(root, args.task, args.diff, args.base), 0
+    if action == "assess eval":
+        from .assessment_eval import evaluate, render
+
+        value = evaluate(root, args.feature, args.cases)
+        if args.output:
+            write_json(args.output, value)
+        return (value if args.json else render(value)), 0 if value["status"] == "evaluated" else 2
     if action == "assess report":
         from .assessment import render_report, report
 

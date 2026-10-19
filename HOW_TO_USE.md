@@ -535,7 +535,10 @@ aifw assess verdict --id 1,2,3 --agree --by "human:proprietario"
 aifw assess verdict --id 4 --value PLANNED --note "mexe em pagamento" --by "human:proprietario"
 aifw assess report --feature impasse
 aifw assess verdict --feature impasse --id 2 --value distinct --by "human:proprietario"
+aifw assess eval --feature impasse
 ```
+
+`assess eval` roda a suíte do recurso em `evals/assessment/<recurso>-cases.yaml` (ou a de `--cases`) contra o modelo e mostra acertos, divergências e, no impasse e na rastreabilidade, os acertos em cada corte de probabilidade. Não grava nada nos registros do modo sombra. Use depois de trocar o modelo ou antes de recalibrar um corte; `--output` grava o resultado em JSON.
 
 `spec.assessment.features` escolhe o que é avaliado:
 - `tasks` (padrão);
