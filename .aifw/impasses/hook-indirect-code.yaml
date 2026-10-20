@@ -1,0 +1,32 @@
+id: impasse:hook-indirect-code
+impact: L3
+state: HALF_OPEN
+attempts:
+- id: attempt-1
+  hypothesis: Ler o arquivo de script executado (shell, python -m, npm run, make) basta para o hook ver o codigo indireto
+  intervention: Ramos novos em shell.segment_requests para scripts, package.json e receitas do Makefile, e .git/hooks e .git/config como controle
+  evidence:
+  - .aifw/changes/active/hook-indirect-code/evidence/independent-review-1.md
+  outcome: failure
+  occurredAt: '2026-10-20T02:53:35.531Z'
+- id: attempt-2
+  hypothesis: Um leitor completo e fechado em erro (modulo indirect.py) cobre todas as formas de indirecao
+  intervention: 'Modulo indirect.py: opcoes com valor, source, expansao de variaveis do make, script inexistente ou reescrito no mesmo comando, .git inteiro e pastas de ferramentas como controle'
+  evidence:
+  - .aifw/changes/active/hook-indirect-code/evidence/independent-review-2.md
+  outcome: failure
+  occurredAt: '2026-10-20T02:53:36.168Z'
+attemptFingerprints:
+- 04730eca1c9e1a4c7a3cac490f2db6fb042c2754dd2aee3bdba315d42dfbb638
+- bcff893eecf23865531ba9c190da27f8ace58f8b83194fa42be4943abff63931
+stopDestructiveChanges: true
+openReason: distinct-attempt-limit
+proposal:
+  suspectedRuleId: threat-model.md da mudança hook-indirect-code (revisão independente julga o hook como sandbox contra agente adversário)
+  explanation: 'Duas revisões independentes reprovaram: cada rodada fecha os casos apontados e a seguinte acha novas formas de indireção (variáveis de ambiente, configs de ferramentas, regras implícitas do make). Ler texto não consegue garantir contenção contra um agente adversário.'
+  proposedChange: 'Opção 1 escolhida pelo usuário em 2026-10-20: o hook protege contra erros do agente e caminhos óbvios, não contra agente determinado. Corrigir as regressões N1 (node -r/--require/--import) e N3 (yarn/pnpm publish), e os casos baratos: variáveis de ambiente na linha que executam programas (GIT_SSH_COMMAND, GIT_EXTERNAL_DIFF, GIT_CONFIG_*, NODE_OPTIONS, BASH_ENV, npm_config_script_shell), make SHELL=/--eval/-E/vários -f, npm --script-shell. O restante vira risco residual declarado no threat model e no ADR-0034, com o sandbox do Claude Code como contenção real. A próxima revisão julga contra esse modelo.'
+humanDecision:
+  approved: true
+  decisionRecord: .aifw/impasses/hook-indirect-code.yaml
+  decidedBy: human:DarkSquash
+  decidedAt: '2026-10-20T03:22:50.304Z'
