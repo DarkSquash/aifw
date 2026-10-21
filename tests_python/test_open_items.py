@@ -43,9 +43,10 @@ def test_script_files_are_read_like_inline_code(tmp_path):
     assert analyze("python run.py", cwd=tmp_path)["kind"] == "opaque"
     assert analyze("uv run python send.py", cwd=tmp_path)["kind"] == "external-write"
     assert analyze("python plain.py", cwd=tmp_path)["kind"] == "read-only"
-    # Without a folder or an existing file, the call keeps the old reading: an ordinary local write.
+    # Without a folder the call keeps the old reading: an ordinary local write.
     assert analyze("python run.py")["kind"] == "filesystem-write"
-    assert analyze("python missing.py", cwd=tmp_path)["kind"] == "filesystem-write"
+    # A script that does not exist yet may be written by the same command, so it cannot be read (ADR-0034).
+    assert analyze("python missing.py", cwd=tmp_path)["kind"] == "opaque"
 
 
 def test_ignored_stop_is_recorded_and_reported(tmp_path):

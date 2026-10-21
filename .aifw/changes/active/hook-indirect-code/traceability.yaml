@@ -1,0 +1,29 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: hook-indirect-code
+artifacts:
+- id: TEST-HOOK-INDIRECT
+  type: test
+  path: .aifw/changes/active/hook-indirect-code/evidence/tests.txt
+  status: passed
+- id: RED-HOOK-INDIRECT
+  type: evidence
+  path: .aifw/changes/active/hook-indirect-code/evidence/red.txt
+  status: passed
+- id: ADR-0034
+  type: adr
+  path: docs/decisions/ADR-0034-hook-indirect-code.md
+  status: passed
+links:
+- from: SCN-HOOK-SCRIPT-FILES
+  relation: verifiedBy
+  to: TEST-HOOK-INDIRECT
+- from: SCN-HOOK-TASK-RUNNERS
+  relation: verifiedBy
+  to: TEST-HOOK-INDIRECT
+- from: SCN-HOOK-UNREADABLE-CODE
+  relation: verifiedBy
+  to: TEST-HOOK-INDIRECT
+- from: SCN-HOOK-GIT-EXEC
+  relation: verifiedBy
+  to: TEST-HOOK-INDIRECT

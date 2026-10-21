@@ -47,7 +47,13 @@ CONTROL = (
     ".claude/settings.local.json",
     ".claude/skills/aifw-workflow/",
     ".aifw/assessments/",
+    # git runs code from here by itself (hooks, aliases and helpers from config), unread by the hook.
+    ".git/",
+    ".husky/",  # husky points core.hooksPath here: git runs these hooks on commit
 )
+# Installed tools the hook runs without reading (ADR-0034): editing them with the edit tools asks.
+# Shell commands are not checked: `.venv/bin/ruff format .` names the folder without changing it.
+INSTALLED = re.compile(r"(^|[\s'\"=:/])(\.venv|node_modules|\.tox)/")
 
 
 def find_root(cwd):
@@ -66,15 +72,23 @@ def control_target(root, tool_name, tool_input, mutation, protected=()):
             # Claude Code settings anywhere (the global one too) can disable every hook.
             settings = target.parent.name == ".claude" and target.name.startswith("settings")
             return f"{target.parent.name}/{target.name}" if settings else None
-        text = target.relative_to(Path(root).resolve()).as_posix()
+        # Lowercase: Windows and macOS file systems ignore case, so .GIT/hooks is .git/hooks.
+        text = target.relative_to(Path(root).resolve()).as_posix().lower()
         matches = [
-            c for c in (*CONTROL, *protected) if text == c or text.startswith(c) or text.endswith("/" + c)
+            c
+            for c in (*CONTROL, *protected)
+            if text == c.lower() or text.startswith(c.lower()) or text.endswith("/" + c.lower())
         ]
+        if "/.git/" in "/" + text:
+            matches.append(".git/")  # a nested repository or a submodule
         if text.startswith(".aifw/changes/") and text.endswith("/change.yaml"):
             matches.append("change.yaml")  # holds the spec approval
+        if INSTALLED.search(text):
+            matches.append(INSTALLED.search(text).group(2) + "/")
     elif tool_name in SHELL_TOOLS and mutation:
-        text = tool_input.get("command", "").replace("\\", "/")
-        matches = [c for c in (*CONTROL, *protected, "change.yaml", ".claude/settings") if c in text]
+        text = tool_input.get("command", "").replace("\\", "/").lower()
+        controls = (*CONTROL, *protected, "change.yaml", ".claude/settings")
+        matches = [c for c in controls if c.lower() in text]
     else:
         return None
     return matches[0] if matches else None

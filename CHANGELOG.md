@@ -4,6 +4,15 @@
 
 ### Alterado
 
+- O hook lê o código que um comando executa indiretamente, em `python/aifw/indirect.py` (ADR-0034). Antes, pôr um `git push` dentro de um script bastava para ele passar sem pergunta.
+  - Scripts de shell, PowerShell e `.bat` (`bash x.sh`, `./x.sh`, `source x.sh`, `pwsh -File x.ps1`, `call x.bat`) são analisados como comandos; `uv run x.py`, `./x.py`, `python x` sem extensão e módulos do projeto em `python -m` seguem as regras do código inline.
+  - Os scripts do `package.json` (`npm`, `pnpm`, `yarn`, `bun`, com `pre`, `post` e `--prefix`) e os comandos do `Makefile` (receitas, `;`, `$(shell ...)`, `!=`, variáveis expandidas, `-C` e `-f`) também são lidos.
+  - Falha fechada: pedem confirmação, como código ilegível, arquivos em Perl, Ruby ou binários; scripts que ainda não existem ou que o mesmo comando altera; código da entrada padrão; `env -S`; `package.json` que não se lê; Makefile com `include`, funções do make ou variáveis do ambiente; e configurações do git que executam programas (`alias.*`, `core.hooksPath`, `diff.external`, `hook.*` e afins), por `git config`, `-c` ou `--config-env`.
+  - Toda a pasta `.git/` é arquivo de controle, sem diferenciar maiúsculas; editar `.venv/`, `node_modules/` ou `.tox/` com as ferramentas de edição pede confirmação.
+  - `timeout`, `nice -n`, `sudo -u` e `uv run --with` pulam os próprios valores antes de achar o programa.
+  - Código carregado por opção ou variável também conta: `node -r ./x.js` lê o módulo; variáveis como `GIT_SSH_COMMAND`, `NODE_OPTIONS`, `BASH_ENV` e `npm_config_*` na linha ou em `export`, `--script-shell`, `script-shell` no `.npmrc` e `make SHELL=`, `--eval` ou `-e` pedem confirmação.
+  - Para pedir menos confirmações: `make` lê só os alvos pedidos e seus pré-requisitos; valores comuns como `GIT_EDITOR=true` e `NODE_OPTIONS=--experimental-vm-modules` não perguntam; `source ~/.bashrc`, scripts `activate` e wrappers `./gradlew`/`./mvnw` commitados rodam sem leitura. `bun publish`, `gradle publish` e `mvn deploy` contam como publicação e `.husky/` como arquivo de controle.
+  - Modelo de ameaças decidido no impasse `hook-indirect-code`: o hook protege contra erros do agente e caminhos óbvios, não é um sandbox; o resto fica como risco residual declarado no ADR.
 - Escopo das aprovações (ADR-0025):
   - instalar pacote, programa ou projeto novo (inclusive `npx`, `uvx`, `winget` e `git clone`) e criar ou reescrever commits sempre pedem confirmação;
   - a allowlist não libera mais instalações;

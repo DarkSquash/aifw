@@ -1,0 +1,3263 @@
+FFFFFFFFFFFFFFFF..................FFF.FF.FFFFFFFFFFFF.....FFFFFFFFFF...F [ 38%]
+.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.............F.FFFFFFFF [ 77%]
+FFFFFF..FF.....FFFFF.....FFFFFFFFFFFF.FFF                                [100%]
+================================== FAILURES ===================================
+______________ test_indirect_code_that_pushes_asks[bash run.sh] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes0')
+command = 'bash run.sh'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes0'), 'bash run.sh')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes0') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes0'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+______________ test_indirect_code_that_pushes_asks[sh ./run.sh] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes1')
+command = 'sh ./run.sh'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes1'), 'sh ./run.sh')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes1') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes1'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+________________ test_indirect_code_that_pushes_asks[./run.sh] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes2')
+command = './run.sh'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes2'), './run.sh')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes2') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes2'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+___________ test_indirect_code_that_pushes_asks[pwsh -File run.ps1] ___________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes3')
+command = 'pwsh -File run.ps1'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes3'), 'pwsh -File run.ps1')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes3') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes3'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_ test_indirect_code_that_pushes_asks[powershell -ExecutionPolicy Bypass -File run.ps1] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes4')
+command = 'powershell -ExecutionPolicy Bypass -File run.ps1'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes4'), 'powershell -ExecutionPolicy Bypass -File run.ps1')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes4') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes4'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_______________ test_indirect_code_that_pushes_asks[./run.ps1] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes5')
+command = './run.ps1'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes5'), './run.ps1')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes5') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes5'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_____________ test_indirect_code_that_pushes_asks[cmd /c run.bat] _____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes6')
+command = 'cmd /c run.bat'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes6'), 'cmd /c run.bat')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes6') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes6'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_____________ test_indirect_code_that_pushes_asks[uv run run.py] ______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes7')
+command = 'uv run run.py'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes7'), 'uv run run.py')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes7') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes7'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+________________ test_indirect_code_that_pushes_asks[./run.py] ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes8')
+command = './run.py'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes8'), './run.py')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes8') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes8'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_______________ test_indirect_code_that_pushes_asks[python run] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes9')
+command = 'python run'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes9'), 'python run')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes9') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes9'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_____________ test_indirect_code_that_pushes_asks[python -m tool] _____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes10')
+command = 'python -m tool'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes10'), 'python -m tool')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes10') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes10'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_____________ test_indirect_code_that_pushes_asks[python -m pkg] ______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes11')
+command = 'python -m pkg'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes11'), 'python -m pkg')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes11') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes11'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+_____________ test_indirect_code_that_pushes_asks[npm run deploy] _____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes12')
+command = 'npm run deploy'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes12'), 'npm run deploy')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes12') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes12'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+______________ test_indirect_code_that_pushes_asks[yarn deploy] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes13')
+command = 'yarn deploy'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes13'), 'yarn deploy')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes13') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes13'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+______________ test_indirect_code_that_pushes_asks[make release] ______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes14')
+command = 'make release'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes14'), 'make release')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes14') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes14'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+________ test_indirect_code_that_pushes_asks[make -f Makefile release] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes15')
+command = 'make -f Makefile release'
+
+    @pytest.mark.parametrize("command", VECTORS)
+    def test_indirect_code_that_pushes_asks(tmp_path, command):
+        init(tmp_path)
+>       assert decision(project(tmp_path), command) == "ask"
+E       AssertionError: assert None == 'ask'
+E        +  where None = decision(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes15'), 'make -f Makefile release')
+E        +    where WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes15') = project(WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_indirect_code_that_pushes15'))
+
+tests_python\test_indirect_code.py:66: AssertionError
+____________ test_code_the_hook_cannot_read_is_opaque[perl run.pl] ____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_the_hook_cannot_read0')
+command = 'perl run.pl'
+
+    @pytest.mark.parametrize("command", ["perl run.pl", "./run.pl"])
+    def test_code_the_hook_cannot_read_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=project(tmp_path))["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:77: AssertionError
+_____________ test_code_the_hook_cannot_read_is_opaque[./run.pl] ______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_the_hook_cannot_read1')
+command = './run.pl'
+
+    @pytest.mark.parametrize("command", ["perl run.pl", "./run.pl"])
+    def test_code_the_hook_cannot_read_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=project(tmp_path))["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:77: AssertionError
+________________ test_binaries_built_in_the_project_are_opaque ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_binaries_built_in_the_pro0')
+
+    def test_binaries_built_in_the_project_are_opaque(tmp_path):
+        (tmp_path / "app").write_bytes(b"\x7fELF\0\0binary")
+>       assert analyze("./app", cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:82: AssertionError
+________________ test_scripts_read_the_scripts_they_call_once _________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_scripts_read_the_scripts_0')
+
+    def test_scripts_read_the_scripts_they_call_once(tmp_path):
+        (tmp_path / "a.sh").write_text("bash b.sh\n")
+        (tmp_path / "b.sh").write_text(PUSH)
+>       assert analyze("bash a.sh", cwd=tmp_path)["kind"] == "git-remote"
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:98: AssertionError
+__________________ test_a_quote_left_open_is_opaque_and_fast __________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_a_quote_left_open_is_opaq0')
+
+    def test_a_quote_left_open_is_opaque_and_fast(tmp_path):
+        (tmp_path / "long.sh").write_text("echo it's\n" + "echo line\n" * 3000)
+        started = time.perf_counter()
+>       assert analyze("bash long.sh", cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:109: AssertionError
+______ test_test_runners_written_in_the_project_are_read[./gradlew test] ______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_test_runners_written_in_t0')
+command = './gradlew test'
+
+    @pytest.mark.parametrize("command", ["./gradlew test", "./pytest -q", "python -m pytest"])
+    def test_test_runners_written_in_the_project_are_read(tmp_path, command):
+        """Only an unchanged wrapper from the repository runs unread; a local pytest.py shadows the package."""
+        for name in ("gradlew", "pytest"):
+            (tmp_path / name).write_text("#!/bin/sh\ngit push\n")
+        (tmp_path / "pytest.py").write_text(PYTHON_PUSH)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'read-only' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:137: AssertionError
+_______ test_test_runners_written_in_the_project_are_read[./pytest -q] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_test_runners_written_in_t1')
+command = './pytest -q'
+
+    @pytest.mark.parametrize("command", ["./gradlew test", "./pytest -q", "python -m pytest"])
+    def test_test_runners_written_in_the_project_are_read(tmp_path, command):
+        """Only an unchanged wrapper from the repository runs unread; a local pytest.py shadows the package."""
+        for name in ("gradlew", "pytest"):
+            (tmp_path / name).write_text("#!/bin/sh\ngit push\n")
+        (tmp_path / "pytest.py").write_text(PYTHON_PUSH)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'read-only' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:137: AssertionError
+_____ test_test_runners_written_in_the_project_are_read[python -m pytest] _____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_test_runners_written_in_t2')
+command = 'python -m pytest'
+
+    @pytest.mark.parametrize("command", ["./gradlew test", "./pytest -q", "python -m pytest"])
+    def test_test_runners_written_in_the_project_are_read(tmp_path, command):
+        """Only an unchanged wrapper from the repository runs unread; a local pytest.py shadows the package."""
+        for name in ("gradlew", "pytest"):
+            (tmp_path / name).write_text("#!/bin/sh\ngit push\n")
+        (tmp_path / "pytest.py").write_text(PYTHON_PUSH)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'read-only' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:137: AssertionError
+______________ test_package_scripts_include_pre_and_post_scripts ______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_package_scripts_include_p0')
+
+    def test_package_scripts_include_pre_and_post_scripts(tmp_path):
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo ok", "postbuild": PUSH}}))
+>       assert analyze("npm run build", cwd=tmp_path)["kind"] == "git-remote"
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:142: AssertionError
+________ test_make_reads_shell_calls_and_keeps_make_variables_as_data _________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_reads_shell_calls_an0')
+
+    def test_make_reads_shell_calls_and_keeps_make_variables_as_data(tmp_path):
+        (tmp_path / "Makefile").write_text(
+            "FLAGS = -k\nall:\n\t$(MAKE) -C sub $(FLAGS)\n\t$(MAKE) other $@ $(CC)\n"
+        )
+        assert analyze("make", cwd=tmp_path)["kind"] != "opaque"
+        (tmp_path / "Makefile").write_text("all:\n\techo $(shell git push)\n")
+>       assert analyze("make", cwd=tmp_path)["kind"] == "git-remote"
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:151: AssertionError
+_ test_git_settings_that_run_programs_are_opaque[git config alias.p push-opaque] _
+
+command = 'git config alias.p push', kind = 'opaque'
+
+    @pytest.mark.parametrize(
+        ("command", "kind"),
+        [
+            ("git config alias.p push", "opaque"),
+            ("git config --global alias.l list", "opaque"),
+            ("git config set alias.x push", "opaque"),
+            ("git config core.hooksPath .hooks", "opaque"),
+            ("git config core.sshCommand 'ssh -i k'", "opaque"),
+            ("git -c core.hooksPath=x commit -m x", "opaque"),
+            ("git -c diff.x.textconv=cat diff", "opaque"),
+            ("git config --get alias.p", "read-only"),
+            ("git config get alias.p", "git-local"),
+            ("git config --list", "read-only"),
+            ("git config --unset alias.p", "git-local"),
+            ("git config user.name x", "git-local"),
+        ],
+    )
+    def test_git_settings_that_run_programs_are_opaque(command, kind):
+>       assert analyze(command)["kind"] == kind
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:172: AssertionError
+_ test_git_settings_that_run_programs_are_opaque[git config --global alias.l list-opaque] _
+
+command = 'git config --global alias.l list', kind = 'opaque'
+
+    @pytest.mark.parametrize(
+        ("command", "kind"),
+        [
+            ("git config alias.p push", "opaque"),
+            ("git config --global alias.l list", "opaque"),
+            ("git config set alias.x push", "opaque"),
+            ("git config core.hooksPath .hooks", "opaque"),
+            ("git config core.sshCommand 'ssh -i k'", "opaque"),
+            ("git -c core.hooksPath=x commit -m x", "opaque"),
+            ("git -c diff.x.textconv=cat diff", "opaque"),
+            ("git config --get alias.p", "read-only"),
+            ("git config get alias.p", "git-local"),
+            ("git config --list", "read-only"),
+            ("git config --unset alias.p", "git-local"),
+            ("git config user.name x", "git-local"),
+        ],
+    )
+    def test_git_settings_that_run_programs_are_opaque(command, kind):
+>       assert analyze(command)["kind"] == kind
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:172: AssertionError
+_ test_git_settings_that_run_programs_are_opaque[git config set alias.x push-opaque] _
+
+command = 'git config set alias.x push', kind = 'opaque'
+
+    @pytest.mark.parametrize(
+        ("command", "kind"),
+        [
+            ("git config alias.p push", "opaque"),
+            ("git config --global alias.l list", "opaque"),
+            ("git config set alias.x push", "opaque"),
+            ("git config core.hooksPath .hooks", "opaque"),
+            ("git config core.sshCommand 'ssh -i k'", "opaque"),
+            ("git -c core.hooksPath=x commit -m x", "opaque"),
+            ("git -c diff.x.textconv=cat diff", "opaque"),
+            ("git config --get alias.p", "read-only"),
+            ("git config get alias.p", "git-local"),
+            ("git config --list", "read-only"),
+            ("git config --unset alias.p", "git-local"),
+            ("git config user.name x", "git-local"),
+        ],
+    )
+    def test_git_settings_that_run_programs_are_opaque(command, kind):
+>       assert analyze(command)["kind"] == kind
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:172: AssertionError
+_ test_git_settings_that_run_programs_are_opaque[git config core.hooksPath .hooks-opaque] _
+
+command = 'git config core.hooksPath .hooks', kind = 'opaque'
+
+    @pytest.mark.parametrize(
+        ("command", "kind"),
+        [
+            ("git config alias.p push", "opaque"),
+            ("git config --global alias.l list", "opaque"),
+            ("git config set alias.x push", "opaque"),
+            ("git config core.hooksPath .hooks", "opaque"),
+            ("git config core.sshCommand 'ssh -i k'", "opaque"),
+            ("git -c core.hooksPath=x commit -m x", "opaque"),
+            ("git -c diff.x.textconv=cat diff", "opaque"),
+            ("git config --get alias.p", "read-only"),
+            ("git config get alias.p", "git-local"),
+            ("git config --list", "read-only"),
+            ("git config --unset alias.p", "git-local"),
+            ("git config user.name x", "git-local"),
+        ],
+    )
+    def test_git_settings_that_run_programs_are_opaque(command, kind):
+>       assert analyze(command)["kind"] == kind
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:172: AssertionError
+_ test_git_settings_that_run_programs_are_opaque[git config core.sshCommand 'ssh -i k'-opaque] _
+
+command = "git config core.sshCommand 'ssh -i k'", kind = 'opaque'
+
+    @pytest.mark.parametrize(
+        ("command", "kind"),
+        [
+            ("git config alias.p push", "opaque"),
+            ("git config --global alias.l list", "opaque"),
+            ("git config set alias.x push", "opaque"),
+            ("git config core.hooksPath .hooks", "opaque"),
+            ("git config core.sshCommand 'ssh -i k'", "opaque"),
+            ("git -c core.hooksPath=x commit -m x", "opaque"),
+            ("git -c diff.x.textconv=cat diff", "opaque"),
+            ("git config --get alias.p", "read-only"),
+            ("git config get alias.p", "git-local"),
+            ("git config --list", "read-only"),
+            ("git config --unset alias.p", "git-local"),
+            ("git config user.name x", "git-local"),
+        ],
+    )
+    def test_git_settings_that_run_programs_are_opaque(command, kind):
+>       assert analyze(command)["kind"] == kind
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:172: AssertionError
+_ test_git_settings_that_run_programs_are_opaque[git -c core.hooksPath=x commit -m x-opaque] _
+
+command = 'git -c core.hooksPath=x commit -m x', kind = 'opaque'
+
+    @pytest.mark.parametrize(
+        ("command", "kind"),
+        [
+            ("git config alias.p push", "opaque"),
+            ("git config --global alias.l list", "opaque"),
+            ("git config set alias.x push", "opaque"),
+            ("git config core.hooksPath .hooks", "opaque"),
+            ("git config core.sshCommand 'ssh -i k'", "opaque"),
+            ("git -c core.hooksPath=x commit -m x", "opaque"),
+            ("git -c diff.x.textconv=cat diff", "opaque"),
+            ("git config --get alias.p", "read-only"),
+            ("git config get alias.p", "git-local"),
+            ("git config --list", "read-only"),
+            ("git config --unset alias.p", "git-local"),
+            ("git config user.name x", "git-local"),
+        ],
+    )
+    def test_git_settings_that_run_programs_are_opaque(command, kind):
+>       assert analyze(command)["kind"] == kind
+E       AssertionError: assert 'commit' == 'opaque'
+E         
+E         - opaque
+E         + commit
+
+tests_python\test_indirect_code.py:172: AssertionError
+_ test_git_settings_that_run_programs_are_opaque[git -c diff.x.textconv=cat diff-opaque] _
+
+command = 'git -c diff.x.textconv=cat diff', kind = 'opaque'
+
+    @pytest.mark.parametrize(
+        ("command", "kind"),
+        [
+            ("git config alias.p push", "opaque"),
+            ("git config --global alias.l list", "opaque"),
+            ("git config set alias.x push", "opaque"),
+            ("git config core.hooksPath .hooks", "opaque"),
+            ("git config core.sshCommand 'ssh -i k'", "opaque"),
+            ("git -c core.hooksPath=x commit -m x", "opaque"),
+            ("git -c diff.x.textconv=cat diff", "opaque"),
+            ("git config --get alias.p", "read-only"),
+            ("git config get alias.p", "git-local"),
+            ("git config --list", "read-only"),
+            ("git config --unset alias.p", "git-local"),
+            ("git config user.name x", "git-local"),
+        ],
+    )
+    def test_git_settings_that_run_programs_are_opaque(command, kind):
+>       assert analyze(command)["kind"] == kind
+E       AssertionError: assert 'read-only' == 'opaque'
+E         
+E         - opaque
+E         + read-only
+
+tests_python\test_indirect_code.py:172: AssertionError
+_______ test_git_hooks_and_config_are_control_files[Write-tool_input0] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_hooks_and_config_are_0')
+tool = 'Write', tool_input = {'file_path': '.git/hooks/pre-commit'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".git/hooks/pre-commit")),
+            ("Edit", dict(file_path=".git/config")),
+            ("Bash", dict(command="echo push > .git/hooks/post-commit")),
+        ],
+    )
+    def test_git_hooks_and_config_are_control_files(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:186: TypeError
+________ test_git_hooks_and_config_are_control_files[Edit-tool_input1] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_hooks_and_config_are_1')
+tool = 'Edit', tool_input = {'file_path': '.git/config'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".git/hooks/pre-commit")),
+            ("Edit", dict(file_path=".git/config")),
+            ("Bash", dict(command="echo push > .git/hooks/post-commit")),
+        ],
+    )
+    def test_git_hooks_and_config_are_control_files(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:186: TypeError
+________ test_git_hooks_and_config_are_control_files[Bash-tool_input2] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_hooks_and_config_are_2')
+tool = 'Bash', tool_input = {'command': 'echo push > .git/hooks/post-commit'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".git/hooks/pre-commit")),
+            ("Edit", dict(file_path=".git/config")),
+            ("Bash", dict(command="echo push > .git/hooks/post-commit")),
+        ],
+    )
+    def test_git_hooks_and_config_are_control_files(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:186: TypeError
+_ test_code_written_by_the_same_command_is_opaque[printf 'git push' > new.sh && bash new.sh] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_written_by_the_same_0')
+command = "printf 'git push' > new.sh && bash new.sh"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'git push' > new.sh && bash new.sh",
+            "printf 'git push' > new.sh && ./new.sh",
+            "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py",
+            "printf 'git push' > ok.sh && bash ok.sh",
+            "echo 'git push' >> ok.sh; ./ok.sh",
+            "sed -i s/hi/push/ package.json && npm run build",
+            "printf 'all:\\n\\tgit push' > Makefile && make",
+        ],
+    )
+    def test_code_written_by_the_same_command_is_opaque(tmp_path, command):
+        """The hook reads files before the command runs, so a file the command writes is not what it read."""
+        (tmp_path / "ok.sh").write_text("echo hi\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo hi"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:206: AssertionError
+_ test_code_written_by_the_same_command_is_opaque[printf 'git push' > new.sh && ./new.sh] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_written_by_the_same_1')
+command = "printf 'git push' > new.sh && ./new.sh"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'git push' > new.sh && bash new.sh",
+            "printf 'git push' > new.sh && ./new.sh",
+            "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py",
+            "printf 'git push' > ok.sh && bash ok.sh",
+            "echo 'git push' >> ok.sh; ./ok.sh",
+            "sed -i s/hi/push/ package.json && npm run build",
+            "printf 'all:\\n\\tgit push' > Makefile && make",
+        ],
+    )
+    def test_code_written_by_the_same_command_is_opaque(tmp_path, command):
+        """The hook reads files before the command runs, so a file the command writes is not what it read."""
+        (tmp_path / "ok.sh").write_text("echo hi\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo hi"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:206: AssertionError
+_ test_code_written_by_the_same_command_is_opaque[cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_written_by_the_same_2')
+command = "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'git push' > new.sh && bash new.sh",
+            "printf 'git push' > new.sh && ./new.sh",
+            "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py",
+            "printf 'git push' > ok.sh && bash ok.sh",
+            "echo 'git push' >> ok.sh; ./ok.sh",
+            "sed -i s/hi/push/ package.json && npm run build",
+            "printf 'all:\\n\\tgit push' > Makefile && make",
+        ],
+    )
+    def test_code_written_by_the_same_command_is_opaque(tmp_path, command):
+        """The hook reads files before the command runs, so a file the command writes is not what it read."""
+        (tmp_path / "ok.sh").write_text("echo hi\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo hi"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:206: AssertionError
+_ test_code_written_by_the_same_command_is_opaque[printf 'git push' > ok.sh && bash ok.sh] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_written_by_the_same_3')
+command = "printf 'git push' > ok.sh && bash ok.sh"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'git push' > new.sh && bash new.sh",
+            "printf 'git push' > new.sh && ./new.sh",
+            "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py",
+            "printf 'git push' > ok.sh && bash ok.sh",
+            "echo 'git push' >> ok.sh; ./ok.sh",
+            "sed -i s/hi/push/ package.json && npm run build",
+            "printf 'all:\\n\\tgit push' > Makefile && make",
+        ],
+    )
+    def test_code_written_by_the_same_command_is_opaque(tmp_path, command):
+        """The hook reads files before the command runs, so a file the command writes is not what it read."""
+        (tmp_path / "ok.sh").write_text("echo hi\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo hi"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:206: AssertionError
+_ test_code_written_by_the_same_command_is_opaque[echo 'git push' >> ok.sh; ./ok.sh] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_written_by_the_same_4')
+command = "echo 'git push' >> ok.sh; ./ok.sh"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'git push' > new.sh && bash new.sh",
+            "printf 'git push' > new.sh && ./new.sh",
+            "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py",
+            "printf 'git push' > ok.sh && bash ok.sh",
+            "echo 'git push' >> ok.sh; ./ok.sh",
+            "sed -i s/hi/push/ package.json && npm run build",
+            "printf 'all:\\n\\tgit push' > Makefile && make",
+        ],
+    )
+    def test_code_written_by_the_same_command_is_opaque(tmp_path, command):
+        """The hook reads files before the command runs, so a file the command writes is not what it read."""
+        (tmp_path / "ok.sh").write_text("echo hi\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo hi"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:206: AssertionError
+_ test_code_written_by_the_same_command_is_opaque[sed -i s/hi/push/ package.json && npm run build] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_written_by_the_same_5')
+command = 'sed -i s/hi/push/ package.json && npm run build'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'git push' > new.sh && bash new.sh",
+            "printf 'git push' > new.sh && ./new.sh",
+            "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py",
+            "printf 'git push' > ok.sh && bash ok.sh",
+            "echo 'git push' >> ok.sh; ./ok.sh",
+            "sed -i s/hi/push/ package.json && npm run build",
+            "printf 'all:\\n\\tgit push' > Makefile && make",
+        ],
+    )
+    def test_code_written_by_the_same_command_is_opaque(tmp_path, command):
+        """The hook reads files before the command runs, so a file the command writes is not what it read."""
+        (tmp_path / "ok.sh").write_text("echo hi\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo hi"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:206: AssertionError
+_ test_code_written_by_the_same_command_is_opaque[printf 'all:\\n\\tgit push' > Makefile && make] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_written_by_the_same_6')
+command = "printf 'all:\\n\\tgit push' > Makefile && make"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'git push' > new.sh && bash new.sh",
+            "printf 'git push' > new.sh && ./new.sh",
+            "cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py",
+            "printf 'git push' > ok.sh && bash ok.sh",
+            "echo 'git push' >> ok.sh; ./ok.sh",
+            "sed -i s/hi/push/ package.json && npm run build",
+            "printf 'all:\\n\\tgit push' > Makefile && make",
+        ],
+    )
+    def test_code_written_by_the_same_command_is_opaque(tmp_path, command):
+        """The hook reads files before the command runs, so a file the command writes is not what it read."""
+        (tmp_path / "ok.sh").write_text("echo hi\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"build": "echo hi"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:206: AssertionError
+__________ test_more_forms_that_run_scripts_are_read[source run.sh] ___________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip0')
+command = 'source run.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+_____ test_more_forms_that_run_scripts_are_read[bash -c 'source run.sh'] ______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip2')
+command = "bash -c 'source run.sh'"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+_______ test_more_forms_that_run_scripts_are_read[cmd /c call run.bat] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip3')
+command = 'cmd /c call run.bat'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+______ test_more_forms_that_run_scripts_are_read[timeout 10 bash run.sh] ______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip4')
+command = 'timeout 10 bash run.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+________ test_more_forms_that_run_scripts_are_read[nice -n 5 ./run.sh] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip5')
+command = 'nice -n 5 ./run.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+__ test_more_forms_that_run_scripts_are_read[uv run --with requests run.py] ___
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip6')
+command = 'uv run --with requests run.py'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+______ test_more_forms_that_run_scripts_are_read[env FOO=1 bash run.sh] _______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip7')
+command = 'env FOO=1 bash run.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+____________ test_more_forms_that_run_scripts_are_read[bun deploy] ____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip8')
+command = 'bun deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+__________ test_more_forms_that_run_scripts_are_read[bun run deploy] __________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip9')
+command = 'bun run deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+___ test_more_forms_that_run_scripts_are_read[npm --prefix web run deploy] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip10')
+command = 'npm --prefix web run deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+______ test_more_forms_that_run_scripts_are_read[pnpm -C web run deploy] ______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip11')
+command = 'pnpm -C web run deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+________ test_more_forms_that_run_scripts_are_read[npm version patch] _________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip12')
+command = 'npm version patch'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+_______ test_more_forms_that_run_scripts_are_read[powershell ./run.ps1] _______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_more_forms_that_run_scrip13')
+command = 'powershell ./run.ps1'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "source run.sh",
+            ". ./run.sh",
+            "bash -c 'source run.sh'",
+            "cmd /c call run.bat",
+            "timeout 10 bash run.sh",
+            "nice -n 5 ./run.sh",
+            "uv run --with requests run.py",
+            "env FOO=1 bash run.sh",
+            "bun deploy",
+            "bun run deploy",
+            "npm --prefix web run deploy",
+            "pnpm -C web run deploy",
+            "npm version patch",
+            "powershell ./run.ps1",
+        ],
+    )
+    def test_more_forms_that_run_scripts_are_read(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "web").mkdir()
+        (tmp_path / "web/package.json").write_text(json.dumps({"scripts": {"deploy": PUSH.strip()}}))
+        scripts = {"deploy": PUSH.strip(), "version": PUSH.strip()}
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:245: AssertionError
+_ test_makefile_forms_that_hide_commands_ask[PUSH = git push\nrelease:\n\t$(PUSH)\n] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_0')
+makefile = 'PUSH = git push\nrelease:\n\t$(PUSH)\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+______ test_makefile_forms_that_hide_commands_ask[release: ; git push\n] ______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_1')
+makefile = 'release: ; git push\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+_ test_makefile_forms_that_hide_commands_ask[X := $(shell git push)\nall:\n\techo hi\n] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_2')
+makefile = 'X := $(shell git push)\nall:\n\techo hi\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+_ test_makefile_forms_that_hide_commands_ask[X != git push\nall:\n\techo hi\n] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_3')
+makefile = 'X != git push\nall:\n\techo hi\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+_ test_makefile_forms_that_hide_commands_ask[include other.mk\nall:\n\techo hi\n] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_4')
+makefile = 'include other.mk\nall:\n\techo hi\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+_ test_makefile_forms_that_hide_commands_ask[.RECIPEPREFIX = >\nall:\n> git push\n] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_5')
+makefile = '.RECIPEPREFIX = >\nall:\n> git push\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+_ test_makefile_forms_that_hide_commands_ask[all:\n\techo hi && \\\ngit push\n] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_6')
+makefile = 'all:\n\techo hi && \\\ngit push\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+_ test_makefile_forms_that_hide_commands_ask[CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_makefile_forms_that_hide_7')
+makefile = 'CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n'
+
+    @pytest.mark.parametrize(
+        "makefile",
+        [
+            "PUSH = git push\nrelease:\n\t$(PUSH)\n",
+            "release: ; git push\n",
+            "X := $(shell git push)\nall:\n\techo hi\n",
+            "X != git push\nall:\n\techo hi\n",
+            "include other.mk\nall:\n\techo hi\n",
+            ".RECIPEPREFIX = >\nall:\n> git push\n",
+            "all:\n\techo hi && \\\ngit push\n",
+            "CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n",
+        ],
+    )
+    def test_makefile_forms_that_hide_commands_ask(tmp_path, makefile):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze("make", cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:263: AssertionError
+_______ test_make_options_glued_or_overriding_are_followed[make -Csub] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_options_glued_or_ove0')
+command = 'make -Csub'
+
+    @pytest.mark.parametrize(
+        "command",
+        ["make -Csub", "make --directory=sub", "make -fother.mk", "make --file=other.mk", "make PUSH='git push'"],
+    )
+    def test_make_options_glued_or_overriding_are_followed(tmp_path, command):
+        (tmp_path / "sub").mkdir()
+        (tmp_path / "sub/Makefile").write_text("all:\n\tgit push\n")
+        (tmp_path / "other.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "Makefile").write_text("PUSH = echo hi\nall:\n\t$(PUSH)\n")
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:275: AssertionError
+__ test_make_options_glued_or_overriding_are_followed[make --directory=sub] ___
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_options_glued_or_ove1')
+command = 'make --directory=sub'
+
+    @pytest.mark.parametrize(
+        "command",
+        ["make -Csub", "make --directory=sub", "make -fother.mk", "make --file=other.mk", "make PUSH='git push'"],
+    )
+    def test_make_options_glued_or_overriding_are_followed(tmp_path, command):
+        (tmp_path / "sub").mkdir()
+        (tmp_path / "sub/Makefile").write_text("all:\n\tgit push\n")
+        (tmp_path / "other.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "Makefile").write_text("PUSH = echo hi\nall:\n\t$(PUSH)\n")
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:275: AssertionError
+_____ test_make_options_glued_or_overriding_are_followed[make -fother.mk] _____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_options_glued_or_ove2')
+command = 'make -fother.mk'
+
+    @pytest.mark.parametrize(
+        "command",
+        ["make -Csub", "make --directory=sub", "make -fother.mk", "make --file=other.mk", "make PUSH='git push'"],
+    )
+    def test_make_options_glued_or_overriding_are_followed(tmp_path, command):
+        (tmp_path / "sub").mkdir()
+        (tmp_path / "sub/Makefile").write_text("all:\n\tgit push\n")
+        (tmp_path / "other.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "Makefile").write_text("PUSH = echo hi\nall:\n\t$(PUSH)\n")
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:275: AssertionError
+__ test_make_options_glued_or_overriding_are_followed[make --file=other.mk] ___
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_options_glued_or_ove3')
+command = 'make --file=other.mk'
+
+    @pytest.mark.parametrize(
+        "command",
+        ["make -Csub", "make --directory=sub", "make -fother.mk", "make --file=other.mk", "make PUSH='git push'"],
+    )
+    def test_make_options_glued_or_overriding_are_followed(tmp_path, command):
+        (tmp_path / "sub").mkdir()
+        (tmp_path / "sub/Makefile").write_text("all:\n\tgit push\n")
+        (tmp_path / "other.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "Makefile").write_text("PUSH = echo hi\nall:\n\t$(PUSH)\n")
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:275: AssertionError
+__ test_make_options_glued_or_overriding_are_followed[make PUSH='git push'] ___
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_options_glued_or_ove4')
+command = "make PUSH='git push'"
+
+    @pytest.mark.parametrize(
+        "command",
+        ["make -Csub", "make --directory=sub", "make -fother.mk", "make --file=other.mk", "make PUSH='git push'"],
+    )
+    def test_make_options_glued_or_overriding_are_followed(tmp_path, command):
+        (tmp_path / "sub").mkdir()
+        (tmp_path / "sub/Makefile").write_text("all:\n\tgit push\n")
+        (tmp_path / "other.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "Makefile").write_text("PUSH = echo hi\nall:\n\t$(PUSH)\n")
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:275: AssertionError
+_ test_code_without_a_readable_file_is_opaque[printf 'import os' > newmod.py && python -m newmod] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_without_a_readable_f0')
+command = "printf 'import os' > newmod.py && python -m newmod"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'import os' > newmod.py && python -m newmod",
+            "printf 'git push' > new && bash new",
+            "printf 'git push' > new && python new",
+            "printf 'all:\\n\\tgit push' > new.mk && make -f new.mk",
+            "echo 'git push' | python -",
+            "echo 'git push' | sh -s",
+        ],
+    )
+    def test_code_without_a_readable_file_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:290: AssertionError
+_ test_code_without_a_readable_file_is_opaque[printf 'git push' > new && bash new] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_without_a_readable_f1')
+command = "printf 'git push' > new && bash new"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'import os' > newmod.py && python -m newmod",
+            "printf 'git push' > new && bash new",
+            "printf 'git push' > new && python new",
+            "printf 'all:\\n\\tgit push' > new.mk && make -f new.mk",
+            "echo 'git push' | python -",
+            "echo 'git push' | sh -s",
+        ],
+    )
+    def test_code_without_a_readable_file_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:290: AssertionError
+_ test_code_without_a_readable_file_is_opaque[printf 'git push' > new && python new] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_without_a_readable_f2')
+command = "printf 'git push' > new && python new"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'import os' > newmod.py && python -m newmod",
+            "printf 'git push' > new && bash new",
+            "printf 'git push' > new && python new",
+            "printf 'all:\\n\\tgit push' > new.mk && make -f new.mk",
+            "echo 'git push' | python -",
+            "echo 'git push' | sh -s",
+        ],
+    )
+    def test_code_without_a_readable_file_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:290: AssertionError
+_ test_code_without_a_readable_file_is_opaque[printf 'all:\\n\\tgit push' > new.mk && make -f new.mk] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_without_a_readable_f3')
+command = "printf 'all:\\n\\tgit push' > new.mk && make -f new.mk"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'import os' > newmod.py && python -m newmod",
+            "printf 'git push' > new && bash new",
+            "printf 'git push' > new && python new",
+            "printf 'all:\\n\\tgit push' > new.mk && make -f new.mk",
+            "echo 'git push' | python -",
+            "echo 'git push' | sh -s",
+        ],
+    )
+    def test_code_without_a_readable_file_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:290: AssertionError
+___ test_code_without_a_readable_file_is_opaque[echo 'git push' | python -] ___
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_without_a_readable_f4')
+command = "echo 'git push' | python -"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'import os' > newmod.py && python -m newmod",
+            "printf 'git push' > new && bash new",
+            "printf 'git push' > new && python new",
+            "printf 'all:\\n\\tgit push' > new.mk && make -f new.mk",
+            "echo 'git push' | python -",
+            "echo 'git push' | sh -s",
+        ],
+    )
+    def test_code_without_a_readable_file_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:290: AssertionError
+____ test_code_without_a_readable_file_is_opaque[echo 'git push' | sh -s] _____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_code_without_a_readable_f5')
+command = "echo 'git push' | sh -s"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "printf 'import os' > newmod.py && python -m newmod",
+            "printf 'git push' > new && bash new",
+            "printf 'git push' > new && python new",
+            "printf 'all:\\n\\tgit push' > new.mk && make -f new.mk",
+            "echo 'git push' | python -",
+            "echo 'git push' | sh -s",
+        ],
+    )
+    def test_code_without_a_readable_file_is_opaque(tmp_path, command):
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:290: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git config diff.external ./x.sh] _
+
+command = 'git config diff.external ./x.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git config --file .git/config alias.p push] _
+
+command = 'git config --file .git/config alias.p push'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git config -f other alias.p push] _
+
+command = 'git config -f other alias.p push'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git config --type path core.hooksPath h] _
+
+command = 'git config --type path core.hooksPath h'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git --config-env core.hooksPath=H commit -m x] _
+
+command = 'git --config-env core.hooksPath=H commit -m x'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'commit' == 'opaque'
+E         
+E         - opaque
+E         + commit
+
+tests_python\test_indirect_code.py:308: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git config submodule.x.update '!git push'] _
+
+command = "git config submodule.x.update '!git push'"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git -c protocol.ext.allow=always fetch ext::x] _
+
+command = 'git -c protocol.ext.allow=always fetch ext::x'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+_ test_more_git_settings_that_run_programs_are_opaque[git config hook.pre-commit.command ./x.sh] _
+
+command = 'git config hook.pre-commit.command ./x.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+___ test_more_git_settings_that_run_programs_are_opaque[git config --edit] ____
+
+command = 'git config --edit'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "git config diff.external ./x.sh",
+            "git config --file .git/config alias.p push",
+            "git config -f other alias.p push",
+            "git config --type path core.hooksPath h",
+            "git --config-env core.hooksPath=H commit -m x",
+            "git config submodule.x.update '!git push'",
+            "git -c protocol.ext.allow=always fetch ext::x",
+            "git config hook.pre-commit.command ./x.sh",
+            "git config --edit",
+        ],
+    )
+    def test_more_git_settings_that_run_programs_are_opaque(command):
+>       assert analyze(command)["kind"] == "opaque"
+E       AssertionError: assert 'git-local' == 'opaque'
+E         
+E         - opaque
+E         + git-local
+
+tests_python\test_indirect_code.py:308: AssertionError
+_____________ test_a_package_json_the_hook_cannot_parse_is_opaque _____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_a_package_json_the_hook_c0')
+
+    def test_a_package_json_the_hook_cannot_parse_is_opaque(tmp_path):
+        (tmp_path / "package.json").write_bytes(b"\xef\xbb\xbf" + json.dumps({"scripts": {"x": PUSH}}).encode())
+>       assert analyze("npm run x", cwd=tmp_path)["kind"] == "git-remote"  # a BOM is read like npm reads it
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:313: AssertionError
+_______________________ test_env_split_string_is_opaque _______________________
+
+    def test_env_split_string_is_opaque():
+>       assert analyze("env -S 'git push'")["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:319: AssertionError
+___ test_git_folder_and_installed_tools_ask_in_any_case[Write-tool_input0] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_folder_and_installed_0')
+tool = 'Write', tool_input = {'file_path': '.GIT/hooks/pre-commit'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".GIT/hooks/pre-commit")),
+            ("Write", dict(file_path="sub/.git/hooks/pre-commit")),
+            ("Bash", dict(command="cp x .git/hook*/")),
+            ("Bash", dict(command="echo x > .GIT/config")),
+            ("Write", dict(file_path=".venv/bin/tool")),
+            ("Edit", dict(file_path="node_modules/.bin/eslint")),
+        ],
+    )
+    def test_git_folder_and_installed_tools_ask_in_any_case(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:336: TypeError
+___ test_git_folder_and_installed_tools_ask_in_any_case[Write-tool_input1] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_folder_and_installed_1')
+tool = 'Write', tool_input = {'file_path': 'sub/.git/hooks/pre-commit'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".GIT/hooks/pre-commit")),
+            ("Write", dict(file_path="sub/.git/hooks/pre-commit")),
+            ("Bash", dict(command="cp x .git/hook*/")),
+            ("Bash", dict(command="echo x > .GIT/config")),
+            ("Write", dict(file_path=".venv/bin/tool")),
+            ("Edit", dict(file_path="node_modules/.bin/eslint")),
+        ],
+    )
+    def test_git_folder_and_installed_tools_ask_in_any_case(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:336: TypeError
+____ test_git_folder_and_installed_tools_ask_in_any_case[Bash-tool_input2] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_folder_and_installed_2')
+tool = 'Bash', tool_input = {'command': 'cp x .git/hook*/'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".GIT/hooks/pre-commit")),
+            ("Write", dict(file_path="sub/.git/hooks/pre-commit")),
+            ("Bash", dict(command="cp x .git/hook*/")),
+            ("Bash", dict(command="echo x > .GIT/config")),
+            ("Write", dict(file_path=".venv/bin/tool")),
+            ("Edit", dict(file_path="node_modules/.bin/eslint")),
+        ],
+    )
+    def test_git_folder_and_installed_tools_ask_in_any_case(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:336: TypeError
+____ test_git_folder_and_installed_tools_ask_in_any_case[Bash-tool_input3] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_folder_and_installed_3')
+tool = 'Bash', tool_input = {'command': 'echo x > .GIT/config'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".GIT/hooks/pre-commit")),
+            ("Write", dict(file_path="sub/.git/hooks/pre-commit")),
+            ("Bash", dict(command="cp x .git/hook*/")),
+            ("Bash", dict(command="echo x > .GIT/config")),
+            ("Write", dict(file_path=".venv/bin/tool")),
+            ("Edit", dict(file_path="node_modules/.bin/eslint")),
+        ],
+    )
+    def test_git_folder_and_installed_tools_ask_in_any_case(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:336: TypeError
+___ test_git_folder_and_installed_tools_ask_in_any_case[Write-tool_input4] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_folder_and_installed_4')
+tool = 'Write', tool_input = {'file_path': '.venv/bin/tool'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".GIT/hooks/pre-commit")),
+            ("Write", dict(file_path="sub/.git/hooks/pre-commit")),
+            ("Bash", dict(command="cp x .git/hook*/")),
+            ("Bash", dict(command="echo x > .GIT/config")),
+            ("Write", dict(file_path=".venv/bin/tool")),
+            ("Edit", dict(file_path="node_modules/.bin/eslint")),
+        ],
+    )
+    def test_git_folder_and_installed_tools_ask_in_any_case(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:336: TypeError
+____ test_git_folder_and_installed_tools_ask_in_any_case[Edit-tool_input5] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_git_folder_and_installed_5')
+tool = 'Edit', tool_input = {'file_path': 'node_modules/.bin/eslint'}
+
+    @pytest.mark.parametrize(
+        ("tool", "tool_input"),
+        [
+            ("Write", dict(file_path=".GIT/hooks/pre-commit")),
+            ("Write", dict(file_path="sub/.git/hooks/pre-commit")),
+            ("Bash", dict(command="cp x .git/hook*/")),
+            ("Bash", dict(command="echo x > .GIT/config")),
+            ("Write", dict(file_path=".venv/bin/tool")),
+            ("Edit", dict(file_path="node_modules/.bin/eslint")),
+        ],
+    )
+    def test_git_folder_and_installed_tools_ask_in_any_case(tmp_path, tool, tool_input):
+        init(tmp_path)
+        output = handle(dict(cwd=str(tmp_path), tool_name=tool, tool_input=tool_input))
+>       assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'NoneType' object is not subscriptable
+
+tests_python\test_indirect_code.py:336: TypeError
+_______ test_second_review_forms_ask[node --require=./deploy.js ok.js] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_n1')
+command = 'node --require=./deploy.js ok.js'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'read-only' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+______________ test_second_review_forms_ask[make SHELL=./run.sh] ______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_m0')
+command = 'make SHELL=./run.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+______________ test_second_review_forms_ask[make --eval='x:=1'] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_m1')
+command = "make --eval='x:=1'"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+__________ test_second_review_forms_ask[make -f evil.mk -f Makefile] __________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_m2')
+command = 'make -f evil.mk -f Makefile'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+_______________ test_second_review_forms_ask[MAKEFLAGS=-e make] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_M3')
+command = 'MAKEFLAGS=-e make'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+_______ test_second_review_forms_ask[npm test --script-shell=./run.sh] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_n3')
+command = 'npm test --script-shell=./run.sh'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'read-only' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+__ test_second_review_forms_ask[npm_config_script_shell=./run.sh npm run ok] __
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_n4')
+command = 'npm_config_script_shell=./run.sh npm run ok'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+___________ test_second_review_forms_ask[yarn workspace web deploy] ___________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_y0')
+command = 'yarn workspace web deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+______ test_second_review_forms_ask[yarn workspaces foreach run deploy] _______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_y1')
+command = 'yarn workspaces foreach run deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+_____ test_second_review_forms_ask[GIT_SSH_COMMAND='sh run.sh' git fetch] _____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_G0')
+command = "GIT_SSH_COMMAND='sh run.sh' git fetch"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'git-local' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+______ test_second_review_forms_ask[GIT_CONFIG_COUNT=1 git commit -m x] _______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_G1')
+command = 'GIT_CONFIG_COUNT=1 git commit -m x'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'commit' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+__ test_second_review_forms_ask[export GIT_EXTERNAL_DIFF=./run.sh; git diff] __
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_e0')
+command = 'export GIT_EXTERNAL_DIFF=./run.sh; git diff'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+___ test_second_review_forms_ask[NODE_OPTIONS='-r ./deploy.js' node ok.js] ____
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_N5')
+command = "NODE_OPTIONS='-r ./deploy.js' node ok.js"
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'read-only' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+________ test_second_review_forms_ask[BASH_ENV=./run.sh bash -c true] _________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_B0')
+command = 'BASH_ENV=./run.sh bash -c true'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'read-only' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+_______________ test_second_review_forms_ask[python3.12 run.py] _______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_second_review_forms_ask_p0')
+command = 'python3.12 run.py'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "node -r ./deploy.js ok.js",
+            "node --require=./deploy.js ok.js",
+            "node --import ./deploy.js ok.js",
+            "make SHELL=./run.sh",
+            "make --eval='x:=1'",
+            "make -f evil.mk -f Makefile",
+            "MAKEFLAGS=-e make",
+            "npm test --script-shell=./run.sh",
+            "npm_config_script_shell=./run.sh npm run ok",
+            "yarn workspace web deploy",
+            "yarn workspaces foreach run deploy",
+            "GIT_SSH_COMMAND='sh run.sh' git fetch",
+            "GIT_CONFIG_COUNT=1 git commit -m x",
+            "export GIT_EXTERNAL_DIFF=./run.sh; git diff",
+            "NODE_OPTIONS='-r ./deploy.js' node ok.js",
+            "BASH_ENV=./run.sh bash -c true",
+            "python3.12 run.py",
+        ],
+    )
+    def test_second_review_forms_ask(tmp_path, command):
+        project(tmp_path)
+        (tmp_path / "deploy.js").write_text("require('child_process').execSync('git push')\n")
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "evil.mk").write_text("all:\n\tgit push\n")
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok", "test": "echo ok"}}))
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:396: AssertionError
+______________________ test_npmrc_script_shell_is_opaque ______________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_npmrc_script_shell_is_opa0')
+
+    def test_npmrc_script_shell_is_opaque(tmp_path):
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": {"ok": "echo ok"}}))
+        assert analyze("npm run ok", cwd=tmp_path)["kind"] != "opaque"
+        (tmp_path / ".npmrc").write_text("script-shell=./run.sh\n")
+>       assert analyze("npm run ok", cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:409: AssertionError
+______________ test_scripts_calling_scripts_many_times_stay_fast ______________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_scripts_calling_scripts_m0')
+
+    def test_scripts_calling_scripts_many_times_stay_fast(tmp_path):
+        for level in range(3):
+            calls = "".join(f"bash s{level + 1}_{i}.sh\n" for i in range(40))
+            for i in range(40):
+                (tmp_path / f"s{level}_{i}.sh").write_text(calls if level < 2 else "echo leaf\n")
+        (tmp_path / "s2_0.sh").write_text(PUSH)
+        started = time.perf_counter()
+>       assert analyze("bash s0_0.sh", cwd=tmp_path)["kind"] == "git-remote"
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:419: AssertionError
+_ test_make_still_reads_prerequisites_patterns_and_recursion[test: release\n\tpytest\nrelease:\n\tgit push\n-make test] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_still_reads_prerequi0')
+makefile = 'test: release\n\tpytest\nrelease:\n\tgit push\n'
+command = 'make test'
+
+    @pytest.mark.parametrize(
+        ("makefile", "command"),
+        [
+            ("test: release\n\tpytest\nrelease:\n\tgit push\n", "make test"),
+            ("test:\n\tpytest\n%:\n\tgit push\n", "make anything"),
+            ("all:\n\t$(MAKE) release\nrelease:\n\tgit push\n", "make"),
+            ("all:\n\techo hi\n", "make .SHELLFLAGS=-c"),
+            ("hello:\n", "make CC=./x hello"),
+        ],
+    )
+    def test_make_still_reads_prerequisites_patterns_and_recursion(tmp_path, makefile, command):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:460: AssertionError
+_ test_make_still_reads_prerequisites_patterns_and_recursion[test:\n\tpytest\n%:\n\tgit push\n-make anything] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_still_reads_prerequi1')
+makefile = 'test:\n\tpytest\n%:\n\tgit push\n', command = 'make anything'
+
+    @pytest.mark.parametrize(
+        ("makefile", "command"),
+        [
+            ("test: release\n\tpytest\nrelease:\n\tgit push\n", "make test"),
+            ("test:\n\tpytest\n%:\n\tgit push\n", "make anything"),
+            ("all:\n\t$(MAKE) release\nrelease:\n\tgit push\n", "make"),
+            ("all:\n\techo hi\n", "make .SHELLFLAGS=-c"),
+            ("hello:\n", "make CC=./x hello"),
+        ],
+    )
+    def test_make_still_reads_prerequisites_patterns_and_recursion(tmp_path, makefile, command):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:460: AssertionError
+_ test_make_still_reads_prerequisites_patterns_and_recursion[all:\n\t$(MAKE) release\nrelease:\n\tgit push\n-make] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_still_reads_prerequi2')
+makefile = 'all:\n\t$(MAKE) release\nrelease:\n\tgit push\n', command = 'make'
+
+    @pytest.mark.parametrize(
+        ("makefile", "command"),
+        [
+            ("test: release\n\tpytest\nrelease:\n\tgit push\n", "make test"),
+            ("test:\n\tpytest\n%:\n\tgit push\n", "make anything"),
+            ("all:\n\t$(MAKE) release\nrelease:\n\tgit push\n", "make"),
+            ("all:\n\techo hi\n", "make .SHELLFLAGS=-c"),
+            ("hello:\n", "make CC=./x hello"),
+        ],
+    )
+    def test_make_still_reads_prerequisites_patterns_and_recursion(tmp_path, makefile, command):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:460: AssertionError
+_ test_make_still_reads_prerequisites_patterns_and_recursion[all:\n\techo hi\n-make .SHELLFLAGS=-c] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_still_reads_prerequi3')
+makefile = 'all:\n\techo hi\n', command = 'make .SHELLFLAGS=-c'
+
+    @pytest.mark.parametrize(
+        ("makefile", "command"),
+        [
+            ("test: release\n\tpytest\nrelease:\n\tgit push\n", "make test"),
+            ("test:\n\tpytest\n%:\n\tgit push\n", "make anything"),
+            ("all:\n\t$(MAKE) release\nrelease:\n\tgit push\n", "make"),
+            ("all:\n\techo hi\n", "make .SHELLFLAGS=-c"),
+            ("hello:\n", "make CC=./x hello"),
+        ],
+    )
+    def test_make_still_reads_prerequisites_patterns_and_recursion(tmp_path, makefile, command):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:460: AssertionError
+_ test_make_still_reads_prerequisites_patterns_and_recursion[hello:\n-make CC=./x hello] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_still_reads_prerequi4')
+makefile = 'hello:\n', command = 'make CC=./x hello'
+
+    @pytest.mark.parametrize(
+        ("makefile", "command"),
+        [
+            ("test: release\n\tpytest\nrelease:\n\tgit push\n", "make test"),
+            ("test:\n\tpytest\n%:\n\tgit push\n", "make anything"),
+            ("all:\n\t$(MAKE) release\nrelease:\n\tgit push\n", "make"),
+            ("all:\n\techo hi\n", "make .SHELLFLAGS=-c"),
+            ("hello:\n", "make CC=./x hello"),
+        ],
+    )
+    def test_make_still_reads_prerequisites_patterns_and_recursion(tmp_path, makefile, command):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}
+E       AssertionError: assert 'filesystem-write' in {'git-remote', 'opaque'}
+
+tests_python\test_indirect_code.py:460: AssertionError
+__________ test_glued_preload_written_in_the_same_command_is_opaque ___________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_glued_preload_written_in_0')
+
+    def test_glued_preload_written_in_the_same_command_is_opaque(tmp_path):
+        (tmp_path / "ok.js").write_text("console.log(1)\n")
+        (tmp_path / "deploy.js").write_text("console.log(1)\n")
+        command = "printf x > deploy.js && node --require=./deploy.js ok.js"
+>       assert analyze(command, cwd=tmp_path)["kind"] == "opaque"
+E       AssertionError: assert 'filesystem-write' == 'opaque'
+E         
+E         - opaque
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:482: AssertionError
+____________ test_package_scripts_calling_npm_many_times_stay_fast ____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_package_scripts_calling_n0')
+
+    def test_package_scripts_calling_npm_many_times_stay_fast(tmp_path):
+        scripts = {
+            f"s{level}_{i}": " && ".join(f"npm run s{level + 1}_{j}" for j in range(20))
+            for level in range(2)
+            for i in range(20)
+        }
+        scripts |= {f"s2_{i}": "echo leaf" for i in range(20)}
+        scripts["s2_0"] = PUSH.strip()
+        (tmp_path / "package.json").write_text(json.dumps({"scripts": scripts}))
+        started = time.perf_counter()
+>       assert analyze("npm run s0_0", cwd=tmp_path)["kind"] == "git-remote"
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:495: AssertionError
+_______________ test_shell_setup_and_build_wrappers_stay_quiet ________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_shell_setup_and_build_wra0')
+
+    def test_shell_setup_and_build_wrappers_stay_quiet(tmp_path):
+        (tmp_path / "env/bin").mkdir(parents=True)
+        (tmp_path / "env/bin/activate").write_text("deactivate () { unset X; }\n")
+>       assert analyze("source env/bin/activate", cwd=tmp_path)["kind"] == "read-only"
+E       AssertionError: assert 'filesystem-write' == 'read-only'
+E         
+E         - read-only
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:502: AssertionError
+_____________________ test_fourth_review_regressions_ask ______________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_fourth_review_regressions0')
+
+    def test_fourth_review_regressions_ask(tmp_path):
+        (tmp_path / "infra/env").mkdir(parents=True)
+        (tmp_path / "infra/env/deploy.sh").write_text(PUSH)
+>       assert analyze("bash infra/env/deploy.sh", cwd=tmp_path)["kind"] == "git-remote"
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:516: AssertionError
+______ test_build_tool_publishing_asks[./gradlew publishToMavenCentral] _______
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_build_tool_publishing_ask0')
+command = './gradlew publishToMavenCentral'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "./gradlew publishToMavenCentral",
+            "./gradlew :lib:publish",
+            "./gradlew clean build publish",
+            "./mvnw -B -DskipTests deploy",
+            "mvn clean install deploy",
+            "mvn release:perform",
+        ],
+    )
+    def test_build_tool_publishing_asks(tmp_path, command):
+        (tmp_path / "gradlew").write_text("#!/bin/sh\neval exec java\n")
+        (tmp_path / "mvnw").write_text("#!/bin/sh\neval exec java\n")
+        git(tmp_path, "init", "-q")
+        git(tmp_path, "add", "gradlew", "mvnw")
+        git(tmp_path, "commit", "-qm", "wrappers")
+>       assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+E       AssertionError: assert 'filesystem-write' == 'external-write'
+E         
+E         - external-write
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:547: AssertionError
+___________ test_build_tool_publishing_asks[./gradlew :lib:publish] ___________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_build_tool_publishing_ask1')
+command = './gradlew :lib:publish'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "./gradlew publishToMavenCentral",
+            "./gradlew :lib:publish",
+            "./gradlew clean build publish",
+            "./mvnw -B -DskipTests deploy",
+            "mvn clean install deploy",
+            "mvn release:perform",
+        ],
+    )
+    def test_build_tool_publishing_asks(tmp_path, command):
+        (tmp_path / "gradlew").write_text("#!/bin/sh\neval exec java\n")
+        (tmp_path / "mvnw").write_text("#!/bin/sh\neval exec java\n")
+        git(tmp_path, "init", "-q")
+        git(tmp_path, "add", "gradlew", "mvnw")
+        git(tmp_path, "commit", "-qm", "wrappers")
+>       assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+E       AssertionError: assert 'filesystem-write' == 'external-write'
+E         
+E         - external-write
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:547: AssertionError
+_______ test_build_tool_publishing_asks[./gradlew clean build publish] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_build_tool_publishing_ask2')
+command = './gradlew clean build publish'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "./gradlew publishToMavenCentral",
+            "./gradlew :lib:publish",
+            "./gradlew clean build publish",
+            "./mvnw -B -DskipTests deploy",
+            "mvn clean install deploy",
+            "mvn release:perform",
+        ],
+    )
+    def test_build_tool_publishing_asks(tmp_path, command):
+        (tmp_path / "gradlew").write_text("#!/bin/sh\neval exec java\n")
+        (tmp_path / "mvnw").write_text("#!/bin/sh\neval exec java\n")
+        git(tmp_path, "init", "-q")
+        git(tmp_path, "add", "gradlew", "mvnw")
+        git(tmp_path, "commit", "-qm", "wrappers")
+>       assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+E       AssertionError: assert 'filesystem-write' == 'external-write'
+E         
+E         - external-write
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:547: AssertionError
+________ test_build_tool_publishing_asks[./mvnw -B -DskipTests deploy] ________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_build_tool_publishing_ask3')
+command = './mvnw -B -DskipTests deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "./gradlew publishToMavenCentral",
+            "./gradlew :lib:publish",
+            "./gradlew clean build publish",
+            "./mvnw -B -DskipTests deploy",
+            "mvn clean install deploy",
+            "mvn release:perform",
+        ],
+    )
+    def test_build_tool_publishing_asks(tmp_path, command):
+        (tmp_path / "gradlew").write_text("#!/bin/sh\neval exec java\n")
+        (tmp_path / "mvnw").write_text("#!/bin/sh\neval exec java\n")
+        git(tmp_path, "init", "-q")
+        git(tmp_path, "add", "gradlew", "mvnw")
+        git(tmp_path, "commit", "-qm", "wrappers")
+>       assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+E       AssertionError: assert 'filesystem-write' == 'external-write'
+E         
+E         - external-write
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:547: AssertionError
+__________ test_build_tool_publishing_asks[mvn clean install deploy] __________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_build_tool_publishing_ask4')
+command = 'mvn clean install deploy'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "./gradlew publishToMavenCentral",
+            "./gradlew :lib:publish",
+            "./gradlew clean build publish",
+            "./mvnw -B -DskipTests deploy",
+            "mvn clean install deploy",
+            "mvn release:perform",
+        ],
+    )
+    def test_build_tool_publishing_asks(tmp_path, command):
+        (tmp_path / "gradlew").write_text("#!/bin/sh\neval exec java\n")
+        (tmp_path / "mvnw").write_text("#!/bin/sh\neval exec java\n")
+        git(tmp_path, "init", "-q")
+        git(tmp_path, "add", "gradlew", "mvnw")
+        git(tmp_path, "commit", "-qm", "wrappers")
+>       assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+E       AssertionError: assert 'filesystem-write' == 'external-write'
+E         
+E         - external-write
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:547: AssertionError
+____________ test_build_tool_publishing_asks[mvn release:perform] _____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_build_tool_publishing_ask5')
+command = 'mvn release:perform'
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "./gradlew publishToMavenCentral",
+            "./gradlew :lib:publish",
+            "./gradlew clean build publish",
+            "./mvnw -B -DskipTests deploy",
+            "mvn clean install deploy",
+            "mvn release:perform",
+        ],
+    )
+    def test_build_tool_publishing_asks(tmp_path, command):
+        (tmp_path / "gradlew").write_text("#!/bin/sh\neval exec java\n")
+        (tmp_path / "mvnw").write_text("#!/bin/sh\neval exec java\n")
+        git(tmp_path, "init", "-q")
+        git(tmp_path, "add", "gradlew", "mvnw")
+        git(tmp_path, "commit", "-qm", "wrappers")
+>       assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+E       AssertionError: assert 'filesystem-write' == 'external-write'
+E         
+E         - external-write
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:547: AssertionError
+_ test_make_fifth_review_cases[PKGS = a\nT = $(addprefix publish-,$(PKGS))\nrelease: $(T)\npublish-a:\n\tgit push\n-make release-True] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_fifth_review_cases_P0')
+makefile = 'PKGS = a\nT = $(addprefix publish-,$(PKGS))\nrelease: $(T)\npublish-a:\n\tgit push\n'
+command = 'make release', asks = True
+
+    @pytest.mark.parametrize(
+        ("makefile", "command", "asks"),
+        [
+            (
+                "PKGS = a\nT = $(addprefix publish-,$(PKGS))\nrelease: $(T)\npublish-a:\n\tgit push\n",
+                "make release",
+                True,
+            ),
+            (".DEFAULT_GOAL := $(if $(X),a,b)\na:\n\techo a\nb:\n\tgit push\n", "make", True),
+            ("test: $(wildcard *.py)\n\tpytest\nrelease:\n\tgit push\n", "make test", False),
+        ],
+    )
+    def test_make_fifth_review_cases(tmp_path, makefile, command, asks):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert (analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}) == asks
+E       AssertionError: assert ('filesystem-write' in {'git-remote', 'opaque'}) == True
+
+tests_python\test_indirect_code.py:564: AssertionError
+_ test_make_fifth_review_cases[.DEFAULT_GOAL := $(if $(X),a,b)\na:\n\techo a\nb:\n\tgit push\n-make-True] _
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_make_fifth_review_cases__0')
+makefile = '.DEFAULT_GOAL := $(if $(X),a,b)\na:\n\techo a\nb:\n\tgit push\n'
+command = 'make', asks = True
+
+    @pytest.mark.parametrize(
+        ("makefile", "command", "asks"),
+        [
+            (
+                "PKGS = a\nT = $(addprefix publish-,$(PKGS))\nrelease: $(T)\npublish-a:\n\tgit push\n",
+                "make release",
+                True,
+            ),
+            (".DEFAULT_GOAL := $(if $(X),a,b)\na:\n\techo a\nb:\n\tgit push\n", "make", True),
+            ("test: $(wildcard *.py)\n\tpytest\nrelease:\n\tgit push\n", "make test", False),
+        ],
+    )
+    def test_make_fifth_review_cases(tmp_path, makefile, command, asks):
+        (tmp_path / "Makefile").write_text(makefile)
+>       assert (analyze(command, cwd=tmp_path)["kind"] in {"git-remote", "opaque"}) == asks
+E       AssertionError: assert ('filesystem-write' in {'git-remote', 'opaque'}) == True
+
+tests_python\test_indirect_code.py:564: AssertionError
+____________ test_only_virtual_environment_activation_runs_unread _____________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_only_virtual_environment_0')
+
+    def test_only_virtual_environment_activation_runs_unread(tmp_path):
+        (tmp_path / "scripts").mkdir()
+        (tmp_path / "scripts/activate-deploy.sh").write_text(PUSH)
+>       assert analyze("source scripts/activate-deploy.sh", cwd=tmp_path)["kind"] == "git-remote"
+E       AssertionError: assert 'filesystem-write' == 'git-remote'
+E         
+E         - git-remote
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:570: AssertionError
+_____________________ test_sourcing_from_home_stays_quiet _____________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_sourcing_from_home_stays_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000293ED71E8B0>
+
+    def test_sourcing_from_home_stays_quiet(tmp_path, monkeypatch):
+        home = tmp_path / "home"
+        home.mkdir()
+        (home / ".bashrc").write_text('eval "$(starship init bash)"\n')
+        monkeypatch.setenv("HOME", str(home))
+        monkeypatch.setenv("USERPROFILE", str(home))
+        project_dir = tmp_path / "project"
+        project_dir.mkdir()
+        for command in ("source ~/.bashrc", '. "$HOME/.bashrc"'):
+>           assert analyze(command, cwd=project_dir)["kind"] == "read-only"
+E           AssertionError: assert 'filesystem-write' == 'read-only'
+E             
+E             - read-only
+E             + filesystem-write
+
+tests_python\test_indirect_code.py:582: AssertionError
+____________________ test_bun_publish_and_husky_hooks_ask _____________________
+
+tmp_path = WindowsPath('C:/Users/DarkSquash/AppData/Local/Temp/pytest-of-DarkSquash/pytest-142/test_bun_publish_and_husky_hoo0')
+
+    def test_bun_publish_and_husky_hooks_ask(tmp_path):
+>       assert analyze("bun publish", cwd=tmp_path)["kind"] == "external-write"
+E       AssertionError: assert 'filesystem-write' == 'external-write'
+E         
+E         - external-write
+E         + filesystem-write
+
+tests_python\test_indirect_code.py:586: AssertionError
+=========================== short test summary info ===========================
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[bash run.sh]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[sh ./run.sh]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[./run.sh]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[pwsh -File run.ps1]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[powershell -ExecutionPolicy Bypass -File run.ps1]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[./run.ps1]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[cmd /c run.bat]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[uv run run.py]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[./run.py]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[python run]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[python -m tool]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[python -m pkg]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[npm run deploy]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[yarn deploy]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[make release]
+FAILED tests_python/test_indirect_code.py::test_indirect_code_that_pushes_asks[make -f Makefile release]
+FAILED tests_python/test_indirect_code.py::test_code_the_hook_cannot_read_is_opaque[perl run.pl]
+FAILED tests_python/test_indirect_code.py::test_code_the_hook_cannot_read_is_opaque[./run.pl]
+FAILED tests_python/test_indirect_code.py::test_binaries_built_in_the_project_are_opaque
+FAILED tests_python/test_indirect_code.py::test_scripts_read_the_scripts_they_call_once
+FAILED tests_python/test_indirect_code.py::test_a_quote_left_open_is_opaque_and_fast
+FAILED tests_python/test_indirect_code.py::test_test_runners_written_in_the_project_are_read[./gradlew test]
+FAILED tests_python/test_indirect_code.py::test_test_runners_written_in_the_project_are_read[./pytest -q]
+FAILED tests_python/test_indirect_code.py::test_test_runners_written_in_the_project_are_read[python -m pytest]
+FAILED tests_python/test_indirect_code.py::test_package_scripts_include_pre_and_post_scripts
+FAILED tests_python/test_indirect_code.py::test_make_reads_shell_calls_and_keeps_make_variables_as_data
+FAILED tests_python/test_indirect_code.py::test_git_settings_that_run_programs_are_opaque[git config alias.p push-opaque]
+FAILED tests_python/test_indirect_code.py::test_git_settings_that_run_programs_are_opaque[git config --global alias.l list-opaque]
+FAILED tests_python/test_indirect_code.py::test_git_settings_that_run_programs_are_opaque[git config set alias.x push-opaque]
+FAILED tests_python/test_indirect_code.py::test_git_settings_that_run_programs_are_opaque[git config core.hooksPath .hooks-opaque]
+FAILED tests_python/test_indirect_code.py::test_git_settings_that_run_programs_are_opaque[git config core.sshCommand 'ssh -i k'-opaque]
+FAILED tests_python/test_indirect_code.py::test_git_settings_that_run_programs_are_opaque[git -c core.hooksPath=x commit -m x-opaque]
+FAILED tests_python/test_indirect_code.py::test_git_settings_that_run_programs_are_opaque[git -c diff.x.textconv=cat diff-opaque]
+FAILED tests_python/test_indirect_code.py::test_git_hooks_and_config_are_control_files[Write-tool_input0]
+FAILED tests_python/test_indirect_code.py::test_git_hooks_and_config_are_control_files[Edit-tool_input1]
+FAILED tests_python/test_indirect_code.py::test_git_hooks_and_config_are_control_files[Bash-tool_input2]
+FAILED tests_python/test_indirect_code.py::test_code_written_by_the_same_command_is_opaque[printf 'git push' > new.sh && bash new.sh]
+FAILED tests_python/test_indirect_code.py::test_code_written_by_the_same_command_is_opaque[printf 'git push' > new.sh && ./new.sh]
+FAILED tests_python/test_indirect_code.py::test_code_written_by_the_same_command_is_opaque[cat > new.py <<'EOF'\nimport subprocess\nEOF\npython new.py]
+FAILED tests_python/test_indirect_code.py::test_code_written_by_the_same_command_is_opaque[printf 'git push' > ok.sh && bash ok.sh]
+FAILED tests_python/test_indirect_code.py::test_code_written_by_the_same_command_is_opaque[echo 'git push' >> ok.sh; ./ok.sh]
+FAILED tests_python/test_indirect_code.py::test_code_written_by_the_same_command_is_opaque[sed -i s/hi/push/ package.json && npm run build]
+FAILED tests_python/test_indirect_code.py::test_code_written_by_the_same_command_is_opaque[printf 'all:\\n\\tgit push' > Makefile && make]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[source run.sh]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[bash -c 'source run.sh']
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[cmd /c call run.bat]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[timeout 10 bash run.sh]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[nice -n 5 ./run.sh]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[uv run --with requests run.py]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[env FOO=1 bash run.sh]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[bun deploy]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[bun run deploy]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[npm --prefix web run deploy]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[pnpm -C web run deploy]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[npm version patch]
+FAILED tests_python/test_indirect_code.py::test_more_forms_that_run_scripts_are_read[powershell ./run.ps1]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[PUSH = git push\nrelease:\n\t$(PUSH)\n]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[release: ; git push\n]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[X := $(shell git push)\nall:\n\techo hi\n]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[X != git push\nall:\n\techo hi\n]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[include other.mk\nall:\n\techo hi\n]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[.RECIPEPREFIX = >\nall:\n> git push\n]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[all:\n\techo hi && \\\ngit push\n]
+FAILED tests_python/test_indirect_code.py::test_makefile_forms_that_hide_commands_ask[CMD = $(subst X,push,git X)\nall:\n\t$(CMD)\n]
+FAILED tests_python/test_indirect_code.py::test_make_options_glued_or_overriding_are_followed[make -Csub]
+FAILED tests_python/test_indirect_code.py::test_make_options_glued_or_overriding_are_followed[make --directory=sub]
+FAILED tests_python/test_indirect_code.py::test_make_options_glued_or_overriding_are_followed[make -fother.mk]
+FAILED tests_python/test_indirect_code.py::test_make_options_glued_or_overriding_are_followed[make --file=other.mk]
+FAILED tests_python/test_indirect_code.py::test_make_options_glued_or_overriding_are_followed[make PUSH='git push']
+FAILED tests_python/test_indirect_code.py::test_code_without_a_readable_file_is_opaque[printf 'import os' > newmod.py && python -m newmod]
+FAILED tests_python/test_indirect_code.py::test_code_without_a_readable_file_is_opaque[printf 'git push' > new && bash new]
+FAILED tests_python/test_indirect_code.py::test_code_without_a_readable_file_is_opaque[printf 'git push' > new && python new]
+FAILED tests_python/test_indirect_code.py::test_code_without_a_readable_file_is_opaque[printf 'all:\\n\\tgit push' > new.mk && make -f new.mk]
+FAILED tests_python/test_indirect_code.py::test_code_without_a_readable_file_is_opaque[echo 'git push' | python -]
+FAILED tests_python/test_indirect_code.py::test_code_without_a_readable_file_is_opaque[echo 'git push' | sh -s]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git config diff.external ./x.sh]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git config --file .git/config alias.p push]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git config -f other alias.p push]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git config --type path core.hooksPath h]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git --config-env core.hooksPath=H commit -m x]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git config submodule.x.update '!git push']
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git -c protocol.ext.allow=always fetch ext::x]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git config hook.pre-commit.command ./x.sh]
+FAILED tests_python/test_indirect_code.py::test_more_git_settings_that_run_programs_are_opaque[git config --edit]
+FAILED tests_python/test_indirect_code.py::test_a_package_json_the_hook_cannot_parse_is_opaque
+FAILED tests_python/test_indirect_code.py::test_env_split_string_is_opaque - ...
+FAILED tests_python/test_indirect_code.py::test_git_folder_and_installed_tools_ask_in_any_case[Write-tool_input0]
+FAILED tests_python/test_indirect_code.py::test_git_folder_and_installed_tools_ask_in_any_case[Write-tool_input1]
+FAILED tests_python/test_indirect_code.py::test_git_folder_and_installed_tools_ask_in_any_case[Bash-tool_input2]
+FAILED tests_python/test_indirect_code.py::test_git_folder_and_installed_tools_ask_in_any_case[Bash-tool_input3]
+FAILED tests_python/test_indirect_code.py::test_git_folder_and_installed_tools_ask_in_any_case[Write-tool_input4]
+FAILED tests_python/test_indirect_code.py::test_git_folder_and_installed_tools_ask_in_any_case[Edit-tool_input5]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[node --require=./deploy.js ok.js]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[make SHELL=./run.sh]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[make --eval='x:=1']
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[make -f evil.mk -f Makefile]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[MAKEFLAGS=-e make]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[npm test --script-shell=./run.sh]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[npm_config_script_shell=./run.sh npm run ok]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[yarn workspace web deploy]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[yarn workspaces foreach run deploy]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[GIT_SSH_COMMAND='sh run.sh' git fetch]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[GIT_CONFIG_COUNT=1 git commit -m x]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[export GIT_EXTERNAL_DIFF=./run.sh; git diff]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[NODE_OPTIONS='-r ./deploy.js' node ok.js]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[BASH_ENV=./run.sh bash -c true]
+FAILED tests_python/test_indirect_code.py::test_second_review_forms_ask[python3.12 run.py]
+FAILED tests_python/test_indirect_code.py::test_npmrc_script_shell_is_opaque
+FAILED tests_python/test_indirect_code.py::test_scripts_calling_scripts_many_times_stay_fast
+FAILED tests_python/test_indirect_code.py::test_make_still_reads_prerequisites_patterns_and_recursion[test: release\n\tpytest\nrelease:\n\tgit push\n-make test]
+FAILED tests_python/test_indirect_code.py::test_make_still_reads_prerequisites_patterns_and_recursion[test:\n\tpytest\n%:\n\tgit push\n-make anything]
+FAILED tests_python/test_indirect_code.py::test_make_still_reads_prerequisites_patterns_and_recursion[all:\n\t$(MAKE) release\nrelease:\n\tgit push\n-make]
+FAILED tests_python/test_indirect_code.py::test_make_still_reads_prerequisites_patterns_and_recursion[all:\n\techo hi\n-make .SHELLFLAGS=-c]
+FAILED tests_python/test_indirect_code.py::test_make_still_reads_prerequisites_patterns_and_recursion[hello:\n-make CC=./x hello]
+FAILED tests_python/test_indirect_code.py::test_glued_preload_written_in_the_same_command_is_opaque
+FAILED tests_python/test_indirect_code.py::test_package_scripts_calling_npm_many_times_stay_fast
+FAILED tests_python/test_indirect_code.py::test_shell_setup_and_build_wrappers_stay_quiet
+FAILED tests_python/test_indirect_code.py::test_fourth_review_regressions_ask
+FAILED tests_python/test_indirect_code.py::test_build_tool_publishing_asks[./gradlew publishToMavenCentral]
+FAILED tests_python/test_indirect_code.py::test_build_tool_publishing_asks[./gradlew :lib:publish]
+FAILED tests_python/test_indirect_code.py::test_build_tool_publishing_asks[./gradlew clean build publish]
+FAILED tests_python/test_indirect_code.py::test_build_tool_publishing_asks[./mvnw -B -DskipTests deploy]
+FAILED tests_python/test_indirect_code.py::test_build_tool_publishing_asks[mvn clean install deploy]
+FAILED tests_python/test_indirect_code.py::test_build_tool_publishing_asks[mvn release:perform]
+FAILED tests_python/test_indirect_code.py::test_make_fifth_review_cases[PKGS = a\nT = $(addprefix publish-,$(PKGS))\nrelease: $(T)\npublish-a:\n\tgit push\n-make release-True]
+FAILED tests_python/test_indirect_code.py::test_make_fifth_review_cases[.DEFAULT_GOAL := $(if $(X),a,b)\na:\n\techo a\nb:\n\tgit push\n-make-True]
+FAILED tests_python/test_indirect_code.py::test_only_virtual_environment_activation_runs_unread
+FAILED tests_python/test_indirect_code.py::test_sourcing_from_home_stays_quiet
+FAILED tests_python/test_indirect_code.py::test_bun_publish_and_husky_hooks_ask
+129 failed, 56 passed in 9.18s
+exit 1

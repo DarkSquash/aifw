@@ -1,13 +1,16 @@
 """Read shell command text for the Claude Code hook: words, segments and the action each one takes.
 
 The text is tokenized like a shell would (quotes, separators, redirections) instead of searched
-for patterns, so `git -C . push` is a push and `grep "git push" notes.txt` is a read. Code that
-the hook cannot read (eval, encoded commands, text piped into a shell) is reported as opaque.
+for patterns, so `git -C . push` is a push and `grep "git push" notes.txt` is a read. Code a
+command runs indirectly (a script file, a local module, a package.json script, a Makefile recipe)
+is read too. Code that the hook cannot read (eval, encoded commands, text piped into a shell, a
+binary or a language it does not read) is reported as opaque.
 """
 
-from pathlib import Path
 import re
 import shlex
+
+from . import indirect
 
 SEPARATORS = {"&&", "||", ";", "|", "&", "|&", ";;"}
 HARMLESS_REDIRECT = re.compile(r"\d?>&\d|\d?>\s*(/dev/null|\$null|NUL)\b", re.IGNORECASE)
@@ -37,7 +40,6 @@ OPAQUE = {
     "saps",
     "start",
     "xargs",
-    ".",
     # Pseudo-terminal drivers can type into prompts meant for a person.
     "expect",
     "unbuffer",
@@ -63,11 +65,20 @@ WRITES = re.compile(
 )
 DELETES = re.compile(r"rmtree|os\.(remove|unlink)|\.unlink\(|fs\.(rm|unlink)")
 INTERPRETERS = {"python", "python3", "py", "node", "perl", "ruby", "deno", "bun"}
-SCRIPT_SUFFIXES = (".py", ".js", ".mjs", ".cjs", ".ts")
+# Git settings that make git run another program: setting one is running code the hook cannot see.
+EXEC_CONFIG = re.compile(
+    r"(alias\.|include\.path|includeif\.|credential\.|filter\.|pager\.|hook\.|protocol\.|sequence\.editor"
+    r"|diff\.external|web\.browser|uploadpack\.packobjectshook"
+    r"|core\.(hookspath|fsmonitor|sshcommand|pager|editor|askpass|gitproxy)|gpg\.(\w+\.)?program"
+    r"|diff\.[^.=]+\.(command|textconv)|merge\.[^.=]+\.driver|remote\.[^=]+\.(receivepack|uploadpack)"
+    r"|(difftool|mergetool|browser|man|trailer)\.[^=]+\.(cmd|command|path)|submodule\.[^=]+\.update)",
+    re.IGNORECASE,
+)
+# git config options that take a value, so the value is not the key being set.
+CONFIG_VALUE_OPTIONS = {"--file", "-f", "--blob", "--type", "--default", "--comment", "--value"}
 PUBLISH = {
     "npm": "publish", "pnpm": "publish", "yarn": "publish", "twine": "upload", "docker": "push",
-    "podman": "push", "cargo": "publish", "gem": "push", "dart": "publish", "flutter": "publish",
-}  # fmt: skip
+    "podman": "push", "cargo": "publish", "gem": "push", "dart": "publish", "flutter": "publish", "bun": "publish",}  # fmt: skip
 REMOTE_SHELL = {"ssh", "scp", "sftp", "rsync"}
 # Installs of packages, programs or new projects always need the person (ADR-0025); `uv sync` only
 # restores what uv.lock already pins.
@@ -89,7 +100,21 @@ GIT_LOCAL = {
     "fetch", "pull", "clone", "init", "mv", "rm", "restore", "reset", "clean", "branch", "remote", "config",
     "worktree", "submodule", "apply", "notes", "bisect", "gc", "maintenance", "sparse-checkout", "lfs",
 }  # fmt: skip
-WRAPPERS = {"sudo", "env", "time", "nohup", "command", "exec", "nice"}
+WRAPPERS = {"sudo", "env", "time", "nohup", "command", "exec", "nice", "timeout"}
+# Wrapper options that take a value, and positional arguments a wrapper reads before the program.
+WRAPPER_VALUES = {
+    "sudo": {"-u", "-g", "-h", "-p", "-r", "-t", "-U", "-C", "-D"},
+    "env": {"-u", "--unset", "-C", "--chdir"},
+    "nice": {"-n", "--adjustment"},
+    "time": {"-f", "-o", "--format", "--output"},
+    "timeout": {"-s", "--signal", "-k", "--kill-after"},
+    "uv": {
+        "--with", "--with-requirements", "--with-editable", "--python", "-p", "--project", "--directory",
+        "--env-file", "--extra", "--group", "--only-group", "--no-group", "--index", "--default-index",
+        "--package", "--from",
+    },
+}  # fmt: skip
+WRAPPER_POSITIONALS = {"timeout": 1}
 PYTHONS = {"python", "python3", "py"}
 READ_ONLY = {
     "cd", "set-location", "pushd", "popd", "ls", "dir", "cat", "type", "head", "tail", "grep", "rg",
@@ -114,6 +139,42 @@ SEVERITY = [
 
 def request(kind, **extra):
     return dict(kind=kind, mutation=kind not in {"read-only", "external-read", "secret-read"}, **extra)
+
+
+MAVEN_PUBLISH = {"deploy", "deploy:deploy", "deploy:deploy-file", "release:prepare", "release:perform"}
+# Options whose next word is a value, not a task or goal, per tool and case-sensitive: gradle -x
+# publish skips publishing, while mvn -B and gradle -s are flags.
+BUILD_VALUE_OPTIONS = {
+    "gradle": {
+        "-x", "--exclude-task", "-p", "--project-dir", "-b", "--build-file", "-c", "--settings-file",
+        "--group", "--task", "-I", "--init-script", "-g", "--gradle-user-home", "-D", "-P",
+    },
+    "mvn": {
+        "-pl", "--projects", "-f", "--file", "-s", "--settings", "-gs", "--global-settings", "-rf",
+        "--resume-from", "-t", "--toolchains", "-P", "--activate-profiles", "-l", "--log-file", "-T",
+        "--threads", "-D",
+    },
+}  # fmt: skip
+
+
+def build_publishes(name, args):
+    """Gradle tasks that publish (publish, :lib:publish, publishToMavenCentral) and Maven deploy goals.
+
+    Publishing to the local repository (publishToMavenLocal) stays local; option values are not tasks.
+    """
+    tool = {"gradle": "gradle", "gradlew": "gradle", "mvn": "mvn", "mvnw": "mvn"}.get(name)
+    if tool is None:
+        return False
+    tasks, i = [], 0
+    while i < len(args):
+        a = args[i]
+        i += 2 if a in BUILD_VALUE_OPTIONS[tool] else 1
+        if not a.startswith("-"):
+            tasks.append(a.lower())
+    if tool == "mvn":
+        return bool(MAVEN_PUBLISH & set(tasks))
+    names = [t.rsplit(":", 1)[-1] for t in tasks]
+    return any("publish" in t and not t.endswith("tomavenlocal") for t in names)
 
 
 def prints_environment(words, name, args):
@@ -209,12 +270,15 @@ def heredoc_requests(words, body, quoted, allowlist, depth, cwd):
 def logical_lines(command):
     """Physical lines joined across continuations and open quotes."""
     command = re.sub(r"(\\|`)\r?\n", " ", HARMLESS_REDIRECT.sub(" ", command))
-    buffer = ""
+    buffer, joined = "", 0
     for line in command.splitlines():
-        buffer = f"{buffer}\n{line}" if buffer else line
+        buffer, joined = (f"{buffer}\n{line}", joined + 1) if buffer else (line, 0)
         try:
             lex(buffer)
         except ValueError:
+            if joined > 200:
+                # Re-reading an ever longer open quote would outlast the hook timeout; treat it as unreadable.
+                raise ValueError("quote left open for too long") from None
             continue
         yield buffer
         buffer = ""
@@ -296,11 +360,12 @@ def split_embedded(command):
 
 def name_of(word):
     name = re.split(r"[\\/]", word)[-1].lower()
-    return re.sub(r"\.(exe|cmd|bat|ps1|com)$", "", name)
+    name = re.sub(r"\.(exe|cmd|bat|ps1|com)$", "", name)
+    return re.sub(r"^(python3?)\.\d+$", r"\1", name)  # python3.12 is python3
 
 
-def program(words):
-    """(name, args) after variable assignments and wrappers such as sudo, uv run, python -m and npx."""
+def program_at(words):
+    """Index of the word naming the program, after assignments and wrappers such as sudo, uv run and python -m."""
     i = 0
     while i < len(words):
         name = name_of(words[i])
@@ -308,20 +373,75 @@ def program(words):
             i += 1
         elif name in WRAPPERS or (name == "uv" and words[i + 1 : i + 2] == ["run"]):
             i += 2 if name == "uv" else 1
-            while i < len(words) and words[i].startswith("-"):
-                i += 1
+            values, positionals = WRAPPER_VALUES.get(name, set()), WRAPPER_POSITIONALS.get(name, 0)
+            while i < len(words) and (words[i].startswith("-") or positionals):
+                if not words[i].startswith("-"):
+                    positionals -= 1
+                i += 2 if words[i] in values else 1
         elif name in PYTHONS and words[i + 1 : i + 2] == ["-m"] and i + 2 < len(words):
-            return name_of(words[i + 2]), words[i + 3 :]
+            return i + 2
         else:
-            return name, words[i + 1 :]
-    return "", []
+            return i
+    return i
+
+
+def env_splits(words):
+    """`env -S "cmd args"` splits one word into a command the reader sees as a single program name."""
+    head = words[: program_at(words)]
+    return any(name_of(w) == "env" for w in head) and any(
+        w == "-S" or w.startswith("--split-string") for w in head
+    )
+
+
+# Variables that make a program run another program or load code (ADR-0034).
+EXEC_ENVIRONMENT = re.compile(
+    r"^(GIT_(SSH|SSH_COMMAND|EXTERNAL_DIFF|PAGER|EDITOR|SEQUENCE_EDITOR|ASKPASS|PROXY_COMMAND|EXEC_PATH"
+    r"|TEMPLATE_DIR|CONFIG\w*)|NODE_OPTIONS|BASH_ENV|ENV|PROMPT_COMMAND|LD_PRELOAD|LD_LIBRARY_PATH|DYLD_\w+"
+    r"|PYTHONSTARTUP|PERL5OPT|RUBYOPT|EDITOR|VISUAL|PAGER|SHELL|MAKEFLAGS|MAKEFILES|NPM_CONFIG_\w+)=",
+    re.IGNORECASE,
+)
+
+
+def exec_environment(words):
+    """Sets, on this line or with export, a variable that makes a program run code the hook does not read.
+
+    shortcut: only variables named in EXEC_ENVIRONMENT; a tool's own variables beyond those stay unread.
+    """
+    i = program_at(words)
+    assigned = [w for w in words[:i] if ASSIGNMENT.match(w)]
+    if i < len(words) and name_of(words[i]) in {"export", "set", "setx", "declare", "typeset", "readonly"}:
+        assigned += words[i + 1 :]  # later commands inherit it
+    return any(EXEC_ENVIRONMENT.match(w) and not harmless_setting(w) for w in assigned)
+
+
+def harmless_setting(word):
+    """Common values that run nothing new: GIT_EDITOR=true, GIT_PAGER=cat, NODE_OPTIONS without preloads."""
+    key, value = word.split("=", 1)
+    key, value = key.upper(), value.strip().strip("'\"")
+    if key in {"GIT_CONFIG_NOSYSTEM", "GIT_CONFIG_NOGLOBAL"}:
+        return True  # these only switch configuration files off
+    if key == "GIT_CONFIG_GLOBAL" or key == "GIT_CONFIG_SYSTEM":
+        return value.lower() in {"/dev/null", "nul", ""}
+    if key == "NODE_OPTIONS":
+        return not re.search(r"(^|\s)(-r|--require|--import|--loader|--experimental-loader)\b", value)
+    if key in {"GIT_EDITOR", "GIT_SEQUENCE_EDITOR", "GIT_PAGER", "EDITOR", "VISUAL", "PAGER"}:
+        return value in {"", "true", "false", ":", "cat", "less", "less -R", "more"}
+    return False
+
+
+def program(words):
+    """(name, args) of the program the words run; python -m X runs X."""
+    i = program_at(words)
+    return (name_of(words[i]), words[i + 1 :]) if i < len(words) else ("", [])
 
 
 def git_requests(args):
     i, configs = 0, []
     while i < len(args) and args[i].startswith("-"):
-        if args[i] == "-c" and i + 1 < len(args):
+        if args[i] in {"-c", "--config-env"} and i + 1 < len(args):
             configs.append(args[i + 1].lower())
+        elif args[i].startswith("--config-env="):
+            configs.append(args[i].split("=", 1)[1].lower())
         i += 2 if args[i] in GIT_VALUE_OPTIONS else 1
     sub, rest = (args[i], args[i + 1 :]) if i < len(args) else ("", [])
     signs = any(c.startswith(("commit.gpgsign=true", "tag.gpgsign=true")) for c in configs) or (
@@ -333,6 +453,17 @@ def git_requests(args):
         )
     )
     signing = [request("signing")] if signs else []
+    keys, j = [], 0
+    while sub == "config" and j < len(rest):
+        if not rest[j].startswith("-"):
+            keys.append(rest[j])
+        j += 2 if rest[j] in CONFIG_VALUE_OPTIONS else 1
+    keys = keys[1:] if keys[:1] == ["set"] else keys  # git 2.46+: git config set <key> <value>
+    reads = {"--get", "--get-all", "--get-regexp", "--get-urlmatch", "--list", "-l", "--unset", "--unset-all"}
+    sets = len(keys) >= 2 and keys[0] not in {"get", "list", "unset"} and not reads.intersection(rest)
+    edits = sub == "config" and bool({"-e", "--edit"} & set(rest))  # an editor can write any setting
+    if edits or any(EXEC_CONFIG.match(c) for c in configs) or (sets and EXEC_CONFIG.match(keys[0])):
+        return [request("opaque")] + signing
     destructive = (
         (sub == "reset" and "--hard" in rest)
         or (
@@ -456,22 +587,6 @@ def inline_script(name, code):
     return found
 
 
-def script_source(cwd, args):
-    """Text of the script file an interpreter runs, read like inline code.
-
-    shortcut: only the file named on the command line, relative to the session folder; modules it
-    imports and scripts run after a `cd` stay unread, upgrade by following imports if that matters.
-    """
-    target = next((a for a in args if not a.startswith("-")), None)
-    if cwd is None or not target or not target.lower().endswith(SCRIPT_SUFFIXES):
-        return None
-    try:
-        file = Path(cwd) / target
-        return file.read_text(encoding="utf-8", errors="replace")[:1_000_000] if file.is_file() else None
-    except OSError:
-        return None
-
-
 def package_name(args):
     """The package npx and friends would run: `ctx7@latest` is ctx7, `@scope/tool@1` is @scope/tool."""
     if any(
@@ -494,8 +609,6 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
         found.append(request("read-only"))
     elif name in READABLE_INLINE and code is not None and depth <= 3:
         found += inline_script(name, code)
-    elif name in READABLE_INLINE and not interpreted and (source := script_source(cwd, args)) is not None:
-        found += inline_script(name, source)
     elif name == "script" and script_command(args) is not None and depth <= 3:
         found += analyze(script_command(args), allowlist, depth + 1, cwd)["requests"]
     elif name in {"invoke-command", "icm", "enter-pssession", "new-pssession"}:
@@ -509,10 +622,14 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
         or interpreted
         or name == "script"
         or (name in SHELLS and (set(lowered) & ENCODED or (piped and not args)))
+        or env_splits(words)
+        or exec_environment(words)
     ):
         found.append(request("opaque"))
     elif name in SHELLS and inline is not None:
         found += analyze(inline, allowlist, depth + 1, cwd)["requests"]
+    elif (code := indirect.requests(words, name, args, piped, allowlist, depth, cwd)) is not None:
+        found += code
     elif name == "git":
         found += git_requests(args)
     elif name in FETCH_AND_RUN:
@@ -531,7 +648,7 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
         found.append(http_request(name, args, allowlist))
     elif prints_environment(words, name, args):
         found.append(request("secret-read"))
-    elif name in PUBLISH and PUBLISH[name] in lowered[:2]:
+    elif (name in PUBLISH and PUBLISH[name] in lowered[:2]) or build_publishes(name, args):
         found.append(request("external-write", service="package-registry"))
     elif name in REMOTE_SHELL:
         found.append(request("external-write", service="remote-host"))
@@ -578,15 +695,19 @@ def analyze(command, allowlist=(), depth=0, cwd=None):
     if parts is None:
         found = [request("opaque")]
     else:
-        found, previous = [], ""
+        found, previous, per_segment, operators = [], "", [], [op for _, op in parts]
         for body in bodies:
             found += analyze(body, allowlist, depth + 1, cwd)["requests"]
         for words, operator in parts:
+            here = []
             for _ in [w for w in words if w.startswith("<<") and not w.startswith("<<<")]:
                 text, quoted = heredocs.pop(0) if heredocs else ("", True)
-                found += heredoc_requests(words, text, quoted, allowlist, depth, cwd)
-            found += segment_requests(words, previous in {"|", "|&"}, allowlist, depth, cwd)
+                here += heredoc_requests(words, text, quoted, allowlist, depth, cwd)
+            here += segment_requests(words, previous in {"|", "|&"}, allowlist, depth, cwd)
+            per_segment.append((words, here))
+            found += here
             previous = operator
+        found += indirect.rewritten(per_segment, operators, bodies, cwd)
     found = found or [request("read-only")]
     dominant = min(found, key=rank)
     return dict(

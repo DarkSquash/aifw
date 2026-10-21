@@ -1,0 +1,24 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: hook-indirect-code
+tasks:
+- id: TASK-HOOK-INDIRECT
+  title: Ler código indireto no hook, proteger .git e documentar
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-HOOK-SCRIPT-FILES
+  - REQ-HOOK-TASK-RUNNERS
+  - REQ-HOOK-UNREADABLE-CODE
+  - REQ-HOOK-GIT-EXEC
+  paths:
+  - python/aifw/indirect.py
+  - python/aifw/shell.py
+  - python/aifw/hooks.py
+  - tests_python/test_indirect_code.py
+  - tests_python/test_open_items.py
+  - docs/claude-code.md
+  - docs/decisions/ADR-0034-hook-indirect-code.md
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - CHANGELOG.md
+  - .claude/skills/aifw-workflow/SKILL.md

@@ -1,0 +1,54 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: hook-indirect-code
+capability: claude-hook
+title: Hook do Claude Code
+purpose: Decidir cada ação do agente pela política do projeto, lendo o código que ela executa, sem liberar o que não conseguir ler.
+operations:
+  added:
+  - id: REQ-HOOK-SCRIPT-FILES
+    strength: MUST
+    statement: O hook deve ler o arquivo de código que um shell, um interpretador ou a linha de comando executa e decidir pelo que ele faz.
+    scenarios:
+    - id: SCN-HOOK-SCRIPT-FILES
+      given:
+      - Um script de shell, PowerShell, Python ou JavaScript do projeto contém git push.
+      when:
+      - O agente o executa por bash, pwsh -File, ./script, uv run, python sem extensão ou python -m.
+      then:
+      - O hook pede confirmação; o mesmo script sem efeito externo roda sem pergunta.
+  - id: REQ-HOOK-TASK-RUNNERS
+    strength: MUST
+    statement: O hook deve ler os scripts do package.json e as receitas do Makefile que um comando executa.
+    scenarios:
+    - id: SCN-HOOK-TASK-RUNNERS
+      given:
+      - Um script do package.json, ou seu pre/post, ou uma receita do Makefile contém git push.
+      when:
+      - O agente roda npm, pnpm, yarn ou bun com esse script, ou make.
+      then:
+      - O hook pede confirmação, e npm test continua contando como verificação.
+  - id: REQ-HOOK-UNREADABLE-CODE
+    strength: MUST
+    statement: O hook deve tratar como código ilegível o arquivo que não sabe ler, o que ainda não existe e o que o mesmo comando altera.
+    scenarios:
+    - id: SCN-HOOK-UNREADABLE-CODE
+      given:
+      - Um arquivo Perl, Ruby ou binário do projeto, ou um script escrito no mesmo comando que o executa.
+      when:
+      - O agente o executa.
+      then:
+      - O hook classifica a ação como opaque e pede confirmação, salvo opaqueCode allow.
+  - id: REQ-HOOK-GIT-EXEC
+    strength: MUST
+    statement: O hook deve pedir confirmação para configurações do git que executam programas e para edições em .git/hooks e .git/config.
+    scenarios:
+    - id: SCN-HOOK-GIT-EXEC
+      given:
+      - O agente define alias, core.hooksPath ou outra configuração que executa programa, ou edita .git/hooks ou .git/config.
+      when:
+      - O hook avalia o comando ou a edição.
+      then:
+      - O hook pede confirmação; a leitura de configurações continua livre.
+  modified: []
+  removed: []
