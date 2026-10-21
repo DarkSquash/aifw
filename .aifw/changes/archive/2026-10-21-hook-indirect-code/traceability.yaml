@@ -4,11 +4,11 @@ changeId: hook-indirect-code
 artifacts:
 - id: TEST-HOOK-INDIRECT
   type: test
-  path: .aifw/changes/active/hook-indirect-code/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-21-hook-indirect-code/evidence/tests.txt
   status: passed
 - id: RED-HOOK-INDIRECT
   type: evidence
-  path: .aifw/changes/active/hook-indirect-code/evidence/red.txt
+  path: .aifw/changes/archive/2026-10-21-hook-indirect-code/evidence/red.txt
   status: passed
 - id: ADR-0034
   type: adr
