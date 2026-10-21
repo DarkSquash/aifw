@@ -1,0 +1,135 @@
+{
+  "status": "blocked",
+  "blockers": [
+    {
+      "gateId": "human-approval",
+      "enforcement": "human",
+      "status": "not-run",
+      "summary": "No command is configured; set one for this gate in .aifw/gates.yaml.",
+      "evidence": []
+    },
+    {
+      "gateId": "human-approval",
+      "enforcement": "human",
+      "status": "not-run",
+      "summary": "Valid human approval is required for L3",
+      "evidence": []
+    }
+  ],
+  "warnings": [],
+  "passed": [
+    {
+      "gateId": "build",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": [
+        "stdout:running egg_info\nwriting python\\aifw_cli.egg-info\\PKG-INFO\nwriting dependency_links to python\\aifw_cli.egg-info\\dependency_links.txt\nwriting entry points to python\\aifw_cli.egg-info\\entry_points.txt\nwriting requirements to python\\aifw_cli.egg-info\\requires.txt\nwriting top-level names to python\\aifw_cli.egg-info\\top_level.txt\nreading manifest file 'python\\aifw_cli.egg-info\\SOURCES.txt'\nreading manifest template 'MANIFEST.in'\nadding license file 'LICENSE'\nwriting manifest file 'python\\aifw_cli.egg-info\\SOURCES.txt'\nrunning sdist\nrunning egg_info\nwriting python\\aifw_cli.egg-info\\PKG-INFO\nwriting dependency_links to python\\aifw_cli.egg-info\\dependency_links.txt\nwriting entry points to python\\aifw_cli.egg-info\\entry_points.txt\nwriting requirements to python\\aifw_cli.egg-info\\requires.txt\nwriting top-level names to python\\aifw_cli.egg-info\\top_level.txt\nreading manifest file 'python\\aifw_cli.egg-info\\SOURCES.txt'\nreading manifest template 'MANIFEST.in'\nadding license file 'LICENSE'\nwriting manifest file 'python\\aifw_cli.egg-info\\SOURCES.txt'\nrunning check\ncreating aifw_cli-0.4.1\ncreating aifw_cli-0.4.1\\decision-catalogs\ncreating aifw_cli-0.4.1\\evals\\assessment\ncreating aifw_cli-0.4.1\\evals\\cases\ncreating aifw_cli-0.4.1\\evals\\reports\ncreating aifw_cli-0.4.1\\evals\\routing\ncreating aifw_cli-0.4.1\\evals\\traces\ncreating aifw_cli-0.4.1\\policies\ncreating aifw_cli-0.4.1\\principle-catalogs\ncreating aifw_cli-0.4.1\\profiles\\flutter-mobile\ncreating aifw_cli-0.4.1\\profiles\\flutter-mobile\\decisions\ncreating aifw_cli-0.4.1\\profiles\\python\ncreating aifw_cli-0.4.1\\profiles\\web-ts\ncreating aifw_cli-0.4.1\\python\\aifw\ncreating aifw_cli-0.4.1\\python\\aifw_cli.egg-info\ncreating aifw_cli-0.4.1\\schemas\ncreating aifw_cli-0.4.1\\templates\ncreating aifw_cli-0.4.1\\templates\\claude\\skills\\aifw\ncreating aifw_cli-0.4.1\\templates\\claude\\skills\\aifw-workflow\ncreating aifw_cli-0.4.1\\templates\\context\ncreating aifw_cli-0.4.1\\tests_python\ncreating aifw_cli-0.4.1\\tests_python\\fixtures\ncopying files to aifw_cli",
+        "stderr:* Getting build dependencies for sdist...\nwarning: no previously-included files found matching 'package.json'\nwarning: no previously-included files found matching 'package-lock.json'\nwarning: no previously-included files matching '__pycache__' found anywhere in distribution\nwarning: no previously-included files matching '*.pyc' found anywhere in distribution\n* Building sdist...\nwarning: no previously-included files found matching 'package.json'\nwarning: no previously-included files found matching 'package-lock.json'\nwarning: no previously-included files matching '__pycache__' found anywhere in distribution\nwarning: no previously-included files matching '*.pyc' found anywhere in distribution\n* Building wheel from sdist\n* Getting build dependencies for wheel...\nwarning: no previously-included files found matching 'package.json'\nwarning: no previously-included files found matching 'package-lock.json'\nwarning: no previously-included files matching '__pycache__' found anywhere in distribution\nwarning: no previously-included files matching '*.pyc' found anywhere in distribution\n* Building wheel...\nwarning: no previously-included files found matching 'package.json'\nwarning: no previously-included files found matching 'package-lock.json'\nwarning: no previously-included files matching '__pycache__' found anywhere in distribution\nwarning: no previously-included files matching '*.pyc' found anywhere in distribution\nwarning: BuildWithAssets: byte-compiling is disabled, skipping.\n\nwarning: install_lib: byte-compiling is disabled, skipping."
+      ]
+    },
+    {
+      "gateId": "cli-docs",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": []
+    },
+    {
+      "gateId": "conformance",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": [
+        "stdout:{\n  \"pass\": true,\n  \"passRate\": 1.0,\n  \"criticalFailures\": 0,\n  \"cases\": [\n    {\n      \"caseId\": \"impasse-escalation\",\n      \"pass\": true,\n      \"violations\": []\n    },\n    {\n      \"caseId\": \"permission-boundary\",\n      \"pass\": true,\n      \"violations\": []\n    },\n    {\n      \"caseId\": \"spec-before-code\",\n      \"pass\": true,\n      \"violations\": []\n    }\n  ],\n  \"activationReady\": false\n}"
+      ]
+    },
+    {
+      "gateId": "context-integrity",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Local documentation/instructions checked; semantic correctness is not certified.",
+      "evidence": [
+        ".aifw/context-index.json"
+      ]
+    },
+    {
+      "gateId": "independent-review",
+      "status": "pass",
+      "summary": "Independent review: aprovado com ressalvas.",
+      "evidence": [
+        ".aifw/changes/active/judge-opaque/independent-review.md"
+      ],
+      "enforcement": "hard"
+    },
+    {
+      "gateId": "lint",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": [
+        "stdout:All checks passed!"
+      ]
+    },
+    {
+      "gateId": "manifest",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Manifest aifw is valid and pinned.",
+      "evidence": [
+        "aifw.yaml"
+      ]
+    },
+    {
+      "gateId": "project-map",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "PROJECT_MAP is current.",
+      "evidence": [
+        "PROJECT_MAP.md",
+        "sha256:a387a7241e589f57c32d778e29f74942f9f5d30698904112b27030cf65289219"
+      ]
+    },
+    {
+      "gateId": "secret-scan",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": [
+        "stdout:{\n  \"status\": \"pass\",\n  \"findings\": []\n}"
+      ]
+    },
+    {
+      "gateId": "session-conformance",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": [
+        "stdout:[\n  {\n    \"session\": \"2194d416-9c7e-4662-92b8-5b5c2784c5a7\",\n    \"calls\": 272,\n    \"edits\": 59,\n    \"verifications\": 28,\n    \"failedVerifications\": 6,\n    \"findings\": [],\n    \"notes\": [\n      \"code changed after the last successful verification: tests_python/test_judge.py\",\n      \"AIFW control files edited: .claude/settings.json, .claude/skills/aifw-workflow/SKILL.md, aifw.yaml\"\n    ],\n    \"status\": \"pass\"\n  }\n]"
+      ]
+    },
+    {
+      "gateId": "tests",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": [
+        "stdout:........................................................................ [  2%]\n........................................................................ [  5%]\n........................................................................ [  8%]\n........................................................................ [ 11%]\n........................................................................ [ 14%]\n........................................................................ [ 17%]\n........................................................................ [ 20%]\n........................................................................ [ 23%]\n........................................................................ [ 26%]\n........................................................................ [ 29%]\n........................................................................ [ 32%]\n........................................................................ [ 35%]\n........................................................................ [ 38%]\n........................................................................ [ 41%]\n........................................................................ [ 44%]\n........................................................................ [ 47%]\n........................................................................ [ 50%]\n........................................................................ [ 53%]\n........................................................................ [ 56%]\n........................................................................ [ 59%]\n........................................................................ [ 62%]\n........................................................................ [ 65%]\n........................................................................ [ 68%]\n........................................................................ [ 71%]\n........................................................................ [ 74%]\n"
+      ]
+    },
+    {
+      "gateId": "typecheck",
+      "enforcement": "hard",
+      "status": "pass",
+      "summary": "Command passed.",
+      "evidence": []
+    }
+  ],
+  "changeId": "judge-opaque",
+  "missingArtifacts": [],
+  "validatedAt": "2026-10-21T11:54:50.826Z",
+  "inputs": {
+    "change": "565d374f2a86920539a8a19a4a9f66685e1409e27bae0372469051b0d3107eb3",
+    "workspace": "977ee4fc44554c5aba84696d04aa95c1b0ef7d374ce3b5e4cddf0748ddb20ce4"
+  }
+}

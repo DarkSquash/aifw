@@ -23,17 +23,24 @@ def suite_file(root, feature, cases=None):
 def evaluate(root, feature, cases=None, call=None):
     """Accuracy of the model on one suite; nothing is recorded in the project's shadow logs."""
     require(feature in a.FEATURES, f"Unknown feature {feature}.")
-    call = call or a.decide
+    from . import judge
+
     config = a.settings(root)
     # A suite can be run before its feature is switched on; the other guards still apply.
-    reason = a.blocker(dict(config, features=a.FEATURES), feature)
+    if feature == "judge":
+        call, reason, model = call or judge.ask_claude, judge.blocker(config, False), "+".join(judge.MODELS)
+    else:
+        call, reason, model = (
+            call or a.decide,
+            a.blocker(dict(config, features=a.FEATURES), feature),
+            config["model"],
+        )
     if reason:
         return dict(status="unavailable", feature=feature, reason=reason)
     file = suite_file(root, feature, cases)
     require(file.is_file(), f"No suite for {feature}: {file}")
     suite = read_yaml(file)
     require(suite.get("feature") == feature, f"{file} is not a {feature} suite.")
-    model = config["model"]
     rows, extra = RUNNERS[feature](root, model, suite, call)
     right = sum(r["ok"] for r in rows)
     return dict(
@@ -201,6 +208,104 @@ def run_context(root, model, suite, call):
     )
 
 
+def percentile(values, share):
+    ordered = sorted(values)
+    return ordered[min(len(ordered) - 1, int(share * len(ordered)))] if ordered else 0
+
+
+def strategy(rows, pick):
+    """Accuracy, releases of a command that should ask, latency and cost of one way to choose the judge."""
+    picked = [(r, *pick(r)) for r in rows]
+    latencies = [ms for *_, ms, _ in picked]
+    released = [r["id"] for r, got, *_ in picked if got == "harmless" and r["expected"] == "ask"]
+    return dict(
+        right=sum(got == r["expected"] for r, got, *_ in picked),
+        released=released,
+        injectionReleased=[
+            i for i in released if "injection" in next(r["tags"] for r in rows if r["id"] == i)
+        ],
+        latencyMs=dict(
+            p50=percentile(latencies, 0.5), p95=percentile(latencies, 0.95), max=max(latencies, default=0)
+        ),
+        overHookTimeout=sum(ms > 10_000 for ms in latencies),
+        cost=round(sum(cost for *_, cost in picked), 6),
+    )
+
+
+def run_judge(root, model, suite, call):
+    """Each case runs on Haiku and on Sonnet, so every way to choose the judge is measured on the same answers."""
+    import tempfile
+
+    from . import judge
+
+    def verdict(answer):
+        return "harmless" if answer["verdict"] == "harmless" else "ask"  # unknown asks, like the hook
+
+    def one(case):
+        with tempfile.TemporaryDirectory() as folder:
+            for name, text in (case.get("files") or {}).items():
+                path = Path(folder) / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8", newline="\n")
+            files = judge.sources(folder, case["command"])
+        answers = {
+            m: judge.judge_text(case["command"], files, case.get("claim"), call, (m,))[0]
+            for m in judge.MODELS
+        }
+        first, second = (answers[m] for m in judge.MODELS)
+        escalate = first["verdict"] == "unknown" or first["confidence"] < judge.ESCALATE_BELOW
+        final = second if escalate else first
+        mention = [w.lower() for w in case.get("mustMention", [])]
+        return dict(
+            id=case["id"],
+            tags=case.get("tags", []),
+            expected=case["expected"],
+            got=verdict(final),
+            answers={
+                m: {k: a[k] for k in ("verdict", "confidence", "intent", "mismatch", "latencyMs", "cost")}
+                for m, a in answers.items()
+            },
+            escalated=escalate,
+            intentFaithful=None if not mention else any(w in final["intent"].lower() for w in mention),
+            mismatchRight=None
+            if "expectedMismatch" not in case
+            else final["mismatch"] == case["expectedMismatch"],
+            ok=verdict(final) == case["expected"],
+            cost=sum(a.get("cost") or 0 for a in answers.values()) if escalate else first.get("cost") or 0,
+        )
+
+    rows = pool_map(one, suite["cases"], workers=3)  # parallel CLI starts slow each other down; keep it low
+
+    def alone(m):
+        return lambda r: (
+            verdict(r["answers"][m]),
+            r["answers"][m]["latencyMs"],
+            r["answers"][m].get("cost") or 0,
+        )
+
+    def escalated(r):
+        ms = (
+            sum(a["latencyMs"] for a in r["answers"].values())
+            if r["escalated"]
+            else r["answers"]["haiku"]["latencyMs"]
+        )
+        return r["got"], ms, r["cost"]
+
+    faithful = [r["intentFaithful"] for r in rows if r["intentFaithful"] is not None]
+    mismatch = [r["mismatchRight"] for r in rows if r["mismatchRight"] is not None]
+    return rows, dict(
+        strategies={
+            # The tier rule (one level below the session) is Sonnet for Opus sessions and Haiku otherwise.
+            "haiku-only (tier: sessões Sonnet e Haiku)": strategy(rows, alone("haiku")),
+            "sonnet-only (tier: sessões Opus)": strategy(rows, alone("sonnet")),
+            "haiku-escala-sonnet": strategy(rows, escalated),
+        },
+        escalated=sum(r["escalated"] for r in rows),
+        intentFaithful=f"{sum(faithful)}/{len(faithful)}",
+        mismatchRight=f"{sum(mismatch)}/{len(mismatch)}",
+    )
+
+
 RUNNERS = dict(
     tasks=run_tasks,
     impasse=run_impasse,
@@ -208,6 +313,7 @@ RUNNERS = dict(
     intake=run_intake,
     traceability=run_traceability,
     decisions=run_decisions,
+    judge=run_judge,
 )
 
 
@@ -222,9 +328,17 @@ def render(result):
         lines.append(f"corte atual {result['threshold']}; acertos por corte:")
         lines += [f"  {t}: {n}/{result['cases']}" for t, n in result["sweep"].items()]
     for key in ("exactByStage", "pathBelowExpected", "exactLevel", "supportedSignals", "suggestedRight",
-                "invented", "keywordCoverage", "coverage"):  # fmt: skip
+                "invented", "keywordCoverage", "coverage", "escalated", "intentFaithful",
+                "mismatchRight"):  # fmt: skip
         if key in result:
             lines.append(f"{key}: {result[key]}")
+    for name, s in result.get("strategies", {}).items():
+        ms = s["latencyMs"]
+        lines.append(
+            f"{name}: acertos {s['right']}/{result['cases']}, liberaria {len(s['released'])} que deviam pedir "
+            f"(injeção: {len(s['injectionReleased'])}), latência p50 {ms['p50'] / 1000:.1f} s, "
+            f"p95 {ms['p95'] / 1000:.1f} s, máx {ms['max'] / 1000:.1f} s, acima de 10 s: {s['overHookTimeout']}"
+        )
     if result["failures"]:
         lines.append("divergências:")
         lines += [

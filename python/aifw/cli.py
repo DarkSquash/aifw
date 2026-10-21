@@ -182,10 +182,14 @@ def create_parser():
         leaf,
         "--feature",
         required=True,
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions", "judge"],
     )
     option(leaf, "--cases")
     option(leaf, "--output")
+    leaf = command(
+        "assess judge", "shadow-judge a shell command the hook cannot read; it records, never decides"
+    )
+    option(leaf, "--hook", action="store_true")  # reads the PreToolUse payload on stdin, prints nothing
     leaf = command(
         "assess report", "report shadow assessments and your verdicts against the activation criteria"
     )
@@ -193,14 +197,14 @@ def create_parser():
         leaf,
         "--feature",
         default="tasks",
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions", "judge"],
     )
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
     option(
         leaf,
         "--feature",
         default="tasks",
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions", "judge"],
     )
     option(leaf, "--id", required=True)
     option(leaf, "--agree", action="store_true")
@@ -571,6 +575,11 @@ def execute(args, root):
         if args.output:
             write_json(args.output, value)
         return (value if args.json else render(value)), 0 if value["status"] == "evaluated" else 2
+    if action == "assess judge":
+        from .judge import hook_main
+
+        require(args.hook, "assess judge runs only as the async PreToolUse hook: pass --hook.")
+        return hook_main(), 0
     if action == "assess report":
         from .assessment import render_report, report
 
@@ -767,7 +776,8 @@ def main(argv=None):
             parser.print_help()
             return 0
         value, status = execute(args, Path.cwd())
-        print(value if isinstance(value, str) else json_text(value))
+        if value != "":  # an async hook's stdout reaches the session, so the judge prints nothing
+            print(value if isinstance(value, str) else json_text(value))
         return status
     except AifwError as error:
         print(f"{error.code}: {error}", file=sys.stderr)

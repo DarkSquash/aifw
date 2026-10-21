@@ -128,7 +128,9 @@ def test_claude_enable_is_per_project_and_idempotent(tmp_path):
     data = json.loads(settings.read_text())
     assert data["model"] == "opus"
     pre = [h["hooks"][0] for h in data["hooks"]["PreToolUse"]]
-    assert len(pre) == 1 and pre[0]["command"].startswith("aifw-hook ||") and pre[0]["onFailure"] == "block"
+    assert len(pre) == 2 and pre[0]["command"].startswith("aifw-hook ||") and pre[0]["onFailure"] == "block"
+    # The shadow judge (ADR-0035) runs as a second, asynchronous entry.
+    assert pre[1]["command"] == "aifw assess judge --hook || true" and pre[1]["async"]
     assert "name: aifw-workflow" in (tmp_path / ".claude/skills/aifw-workflow/SKILL.md").read_text("utf-8")
     home = tmp_path / "home"
     install_command(home)
@@ -276,7 +278,9 @@ def test_every_subprocess_gets_its_own_stdin():
 
     for file in (Path(__file__).parents[1] / "python/aifw").glob("*.py"):
         text = file.read_text(encoding="utf-8")
-        assert text.count("subprocess.run(") == text.count("stdin=subprocess.DEVNULL"), file.name
+        # `input=` also gives the child its own stdin, a pipe (judge.py sends the message that way).
+        own = text.count("stdin=subprocess.DEVNULL") + text.count("input=text")
+        assert text.count("subprocess.run(") == own, file.name
 
 
 def test_repeated_failures_reset_after_a_pass():

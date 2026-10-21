@@ -39,6 +39,10 @@
 
 ### Adicionado
 
+- Juiz do código opaco em modo sombra (ADR-0035): com o recurso `judge` ligado, um segundo hook `PreToolUse`, assíncrono (`aifw assess judge --hook`), pede ao Claude da assinatura, via `claude -p`, que julgue os comandos que o hook não consegue ler. Ele só registra, sem mudar nenhuma decisão do hook.
+  - O registro vai para `.aifw/assessments/judge.jsonl`, com veredito, a intenção provável em uma frase, a divergência entre a descrição do agente e o código, a decisão da regra fixa e a latência. A pessoa o revisa com `aifw assess report` e `aifw assess verdict --feature judge`.
+  - Haiku responde primeiro e o Sonnet entra quando a confiança fica baixa. O `claude -p` roda sem ferramentas, hooks, MCP, skills nem `CLAUDE.md`. Comando e código vão mascarados, entre marcadores com nonce, e arquivos de segredo, de dados, binários ou grandes ficam na máquina.
+  - `aifw assess eval --feature judge` mede Haiku, Sonnet e a escalada: acertos, liberações indevidas, latência e custo. `aifw claude enable` instala o novo hook.
 - Avaliador de tarefas em modo sombra (ADR-0023):
   - `aifw change assess` avalia risco, importância e complexidade com o `perplexity/pplx-decider-v1.2`, pelo OpenRouter, com piso de risco vindo do diff;
   - `aifw assess report` mostra as avaliações e os vereditos;

@@ -12,6 +12,18 @@
             "onFailure": "block"
           }
         ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "aifw assess judge --hook || true",
+            "shell": "bash",
+            "timeout": 120,
+            "async": true
+          }
+        ]
       }
     ],
     "PostToolUse": [

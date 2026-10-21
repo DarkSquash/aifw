@@ -1,0 +1,13 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: judge-opaque
+  title: Juiz por modelo do resíduo opaque, em modo sombra
+  level: L3
+  createdAt: '2026-10-20T16:03:30.831Z'
+summary: Um modelo julga, em segundo plano, os comandos que o hook marca como opaque e só registra o resultado; nenhuma decisão do hook muda.
+status: draft
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-21T12:07:15.173Z'
+  record: .aifw/changes/active/judge-opaque/approval.md

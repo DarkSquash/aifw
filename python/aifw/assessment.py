@@ -5,6 +5,8 @@ Each feature asks the Decider through OpenRouter and writes its suggestion to a 
 - tasks: risk, importance and complexity of a request, turned into an execution path by a fixed rule;
   facts from the git diff set a floor for risk that the model cannot lower.
 - impasse: whether a new correction attempt repeats an earlier one in other words.
+- judge: whether a shell command the hook cannot read is harmless, asked of Claude on the person's
+  subscription (judge.py) instead of OpenRouter.
 
 A person later records whether they agree, which feeds a future activation decision.
 """
@@ -22,7 +24,7 @@ from .common import AifwError, digest, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-FEATURES = ("tasks", "impasse", "context", "intake", "traceability", "decisions")
+FEATURES = ("tasks", "impasse", "context", "intake", "traceability", "decisions", "judge")
 LOGS = {
     "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
     "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),
@@ -30,6 +32,7 @@ LOGS = {
     "intake": (".aifw/assessments/intake.jsonl", ".aifw/assessments/intake-verdicts.jsonl"),
     "traceability": (".aifw/assessments/traceability.jsonl", ".aifw/assessments/traceability-verdicts.jsonl"),
     "decisions": (".aifw/assessments/decisions.jsonl", ".aifw/assessments/decisions-verdicts.jsonl"),
+    "judge": (".aifw/assessments/judge.jsonl", ".aifw/assessments/judge-verdicts.jsonl"),
 }
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
@@ -48,6 +51,7 @@ VALUES = {
     "intake": ["right", "wrong"],
     "traceability": ["right", "wrong"],
     "decisions": ["right", "wrong"],
+    "judge": ["harmless", "ask"],
 }
 WEAK_TRACE_THRESHOLD = 0.5
 SIGNAL_CONFIDENCE = 0.6  # suggest a decision signal only above this confidence
@@ -548,6 +552,8 @@ def suggestion(feature, entry):
         return "model"
     if feature in {"intake", "traceability", "decisions"}:
         return "right"
+    if feature == "judge":
+        return "harmless" if entry["judgment"] == "harmless" else "ask"  # unknown asks, like the hook
     return "repeat" if entry["wouldRepeat"] else "distinct"
 
 
@@ -791,6 +797,38 @@ SHAPES = {
             ", ".join(f"{o['optionId']} ({o['score']:+d})" for o in r["ranking"]),
         ],
         example="--value wrong",
+    ),
+    "judge": dict(
+        title="Juiz do código opaco",
+        questions={
+            "verdict": dict(
+                instructions="Pelo que o comando e o código fazem de fato, ele pode rodar sem pedir sua confirmação?",
+                criteria={
+                    "harmless": "só lê, calcula, formata, testa ou grava dentro do projeto, sem rede nem efeito externo",
+                    "ask": "qualquer outro efeito, ou depende de código que o juiz não vê",
+                    "unknown": "não há código suficiente para saber; conta como ask",
+                },
+            )
+        },
+        rule={
+            "escalada": "Haiku primeiro; Sonnet quando a confiança fica abaixo de 0.7 ou a resposta é unknown",
+            "mudaria": "só quando o único motivo da pergunta do hook era código opaco e o veredito é harmless",
+            "limite": "push, instalação, deploy, rede, aprovações e arquivos de controle nunca mudariam,"
+            " seja pela regra fixa, seja por aparecerem no texto do comando ou do código",
+        },
+        columns=["#", "Comando", "O que provavelmente faz", "Regra fixa", "Juiz (confiança)", "Mudaria"]
+        + ["Diverge da descrição", "Latência", "Seu veredito"],
+        row=lambda r: [
+            str(r["id"]),
+            cell(r["command"], 70),
+            cell(r["intent"] or "—"),
+            r["hook"]["decision"],
+            f"{r['judgment']} ({r['confidence']:.0%})" + (" ↑" if r["escalated"] else ""),
+            "sim" if r["wouldChange"] else "não",
+            "sim" if r["mismatch"] else "não",
+            f"{r['latencyMs'] / 1000:.1f} s",
+        ],
+        example="--value ask",
     ),
 }
 

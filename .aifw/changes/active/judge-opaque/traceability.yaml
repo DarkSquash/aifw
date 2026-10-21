@@ -1,0 +1,39 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: judge-opaque
+artifacts:
+- id: TEST-JUDGE
+  type: test
+  path: .aifw/changes/active/judge-opaque/evidence/tests.txt
+  status: passed
+- id: EVAL-JUDGE-1
+  type: evidence
+  path: .aifw/changes/active/judge-opaque/evidence/judge-eval-1.txt
+  status: passed
+- id: EVAL-JUDGE-2
+  type: evidence
+  path: .aifw/changes/active/judge-opaque/evidence/judge-eval-2.txt
+  status: passed
+- id: ADR-0035
+  type: adr
+  path: docs/decisions/ADR-0035-opaque-judge-shadow.md
+  status: passed
+links:
+- from: SCN-JUDGE-SHADOW
+  relation: verifiedBy
+  to: TEST-JUDGE
+- from: SCN-JUDGE-UNTRUSTED
+  relation: verifiedBy
+  to: TEST-JUDGE
+- from: SCN-JUDGE-GUARDS
+  relation: verifiedBy
+  to: TEST-JUDGE
+- from: SCN-JUDGE-SUITE
+  relation: verifiedBy
+  to: TEST-JUDGE
+- from: SCN-JUDGE-SUITE
+  relation: verifiedBy
+  to: EVAL-JUDGE-1
+- from: SCN-JUDGE-SUITE
+  relation: verifiedBy
+  to: EVAL-JUDGE-2

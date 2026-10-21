@@ -1,0 +1,32 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: judge-opaque
+tasks:
+- id: TASK-JUDGE-SHADOW
+  title: Juiz assíncrono do resíduo opaque, registro, relatório, suíte e ADR
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-JUDGE-SHADOW
+  - REQ-JUDGE-UNTRUSTED
+  - REQ-JUDGE-GUARDS
+  - REQ-JUDGE-SUITE
+  paths:
+  - python/aifw/judge.py
+  - python/aifw/assessment.py
+  - python/aifw/assessment_eval.py
+  - python/aifw/cli.py
+  - python/aifw/claude.py
+  - .claude/settings.json
+  - aifw.yaml
+  - tests_python/test_judge.py
+  - tests_python/test_audit_features.py
+  - evals/assessment/judge-cases.yaml
+  - docs/decisions/ADR-0035-opaque-judge-shadow.md
+  - schemas/project-manifest.schema.json
+  - docs/cli-reference.generated.md
+  - docs/claude-code.md
+  - CHANGELOG.md
+  - .claude/skills/aifw-workflow/SKILL.md
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - tests_python/test_hooks.py

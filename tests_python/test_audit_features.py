@@ -5,7 +5,7 @@ import sys
 import pytest
 
 from aifw import gates, intake, permissions, routing, specs, waiver
-from aifw.claude import HOOKS, check_project, enable_project
+from aifw.claude import HOOKS, JUDGE, check_project, enable_project
 from aifw.common import AifwError, read_yaml, write_yaml
 from aifw.hooks import handle, summarize_runs
 from test_workflows import AT, init
@@ -201,7 +201,7 @@ def test_enable_replaces_outdated_hooks_and_check_reports_gaps(tmp_path):
     assert check_project(tmp_path, tmp_path / "home")["status"] == "warning"
     enable_project(tmp_path)
     data = json.loads(settings.read_text())
-    assert data["hooks"]["PreToolUse"] == [HOOKS["PreToolUse"]]
+    assert data["hooks"]["PreToolUse"] == [HOOKS["PreToolUse"], JUDGE]
     findings = check_project(tmp_path, tmp_path / "home")["findings"]
     assert not any(f.startswith("hook ") or "aifw-workflow" in f for f in findings)
     assert any("grilling" in f for f in findings)

@@ -32,6 +32,18 @@ HOOKS = {
     # Plain text on stdout becomes session context, so Claude can tell the person what is missing.
     "SessionStart": dict(hooks=[dict(COMMAND, command=f"aifw-hook || echo '{MISSING}'")]),
 }
+# The shadow judge of opaque commands runs beside the PreToolUse check, never in it: an async hook adds
+# no latency and its output cannot change the decision (ADR-0035). Off unless aifw.yaml lists it.
+JUDGE = dict(
+    matcher="Bash|PowerShell",
+    hooks=[dict(COMMAND, command="aifw assess judge --hook || true", timeout=120, **{"async": True})],
+)
+
+
+def entries_for(event):
+    return [HOOKS[event], JUDGE] if event == "PreToolUse" else [HOOKS[event]]
+
+
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
 STAMP = "<!-- aifw-version: {} -->"
 
@@ -45,7 +57,10 @@ def install_command(home=None):
 
 
 def ours(entry):
-    return any("aifw-hook" in h.get("command", "") for h in entry.get("hooks", []))
+    return any(
+        "aifw-hook" in h.get("command", "") or "aifw assess judge" in h.get("command", "")
+        for h in entry.get("hooks", [])
+    )
 
 
 def enable_project(root):
@@ -57,11 +72,11 @@ def enable_project(root):
     settings = read_json(settings_file) if settings_file.is_file() else {}
     require(isinstance(settings, dict), "Invalid .claude/settings.json.", "POLICY_CONFLICT")
     hooks, changed = settings.setdefault("hooks", {}), []
-    for event, wanted in HOOKS.items():
-        entries = hooks.setdefault(event, [])
+    for event in HOOKS:
+        entries, wanted = hooks.setdefault(event, []), entries_for(event)
         current = [e for e in entries if ours(e)]
-        if current != [wanted]:
-            hooks[event] = [e for e in entries if not ours(e)] + [deepcopy(wanted)]
+        if current != wanted:
+            hooks[event] = [e for e in entries if not ours(e)] + deepcopy(wanted)
             changed.append(event)
     if changed:
         write_json(settings_file, settings)
@@ -94,8 +109,8 @@ def check_project(root, home=None):
     findings = []
     settings_file = root / ".claude/settings.json"
     settings = read_json(settings_file) if settings_file.is_file() else {}
-    for event, wanted in HOOKS.items():
-        if [e for e in settings.get("hooks", {}).get(event, []) if ours(e)] != [wanted]:
+    for event in HOOKS:
+        if [e for e in settings.get("hooks", {}).get(event, []) if ours(e)] != entries_for(event):
             findings.append(f"hook {event} missing or outdated: run `aifw claude enable`")
     skill = root / ".claude/skills/aifw-workflow/SKILL.md"
     if not skill.is_file():
