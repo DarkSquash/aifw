@@ -4,15 +4,15 @@ changeId: judge-opaque
 artifacts:
 - id: TEST-JUDGE
   type: test
-  path: .aifw/changes/active/judge-opaque/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-21-judge-opaque/evidence/tests.txt
   status: passed
 - id: EVAL-JUDGE-1
   type: evidence
-  path: .aifw/changes/active/judge-opaque/evidence/judge-eval-1.txt
+  path: .aifw/changes/archive/2026-10-21-judge-opaque/evidence/judge-eval-1.txt
   status: passed
 - id: EVAL-JUDGE-2
   type: evidence
-  path: .aifw/changes/active/judge-opaque/evidence/judge-eval-2.txt
+  path: .aifw/changes/archive/2026-10-21-judge-opaque/evidence/judge-eval-2.txt
   status: passed
 - id: ADR-0035
   type: adr
