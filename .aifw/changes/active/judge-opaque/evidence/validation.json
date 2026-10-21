@@ -1,21 +1,6 @@
 {
-  "status": "blocked",
-  "blockers": [
-    {
-      "gateId": "human-approval",
-      "enforcement": "human",
-      "status": "not-run",
-      "summary": "No command is configured; set one for this gate in .aifw/gates.yaml.",
-      "evidence": []
-    },
-    {
-      "gateId": "human-approval",
-      "enforcement": "human",
-      "status": "not-run",
-      "summary": "Valid human approval is required for L3",
-      "evidence": []
-    }
-  ],
+  "status": "pass",
+  "blockers": [],
   "warnings": [],
   "passed": [
     {
@@ -51,6 +36,15 @@
       "summary": "Local documentation/instructions checked; semantic correctness is not certified.",
       "evidence": [
         ".aifw/context-index.json"
+      ]
+    },
+    {
+      "gateId": "human-approval",
+      "enforcement": "human",
+      "status": "pass",
+      "summary": "Approved by human:DarkSquash.",
+      "evidence": [
+        "d1c505a559180158b310518ee8b87f28fa63b4f394541dcd784349deee188c06"
       ]
     },
     {
@@ -105,7 +99,7 @@
       "status": "pass",
       "summary": "Command passed.",
       "evidence": [
-        "stdout:[\n  {\n    \"session\": \"2194d416-9c7e-4662-92b8-5b5c2784c5a7\",\n    \"calls\": 272,\n    \"edits\": 59,\n    \"verifications\": 28,\n    \"failedVerifications\": 6,\n    \"findings\": [],\n    \"notes\": [\n      \"code changed after the last successful verification: tests_python/test_judge.py\",\n      \"AIFW control files edited: .claude/settings.json, .claude/skills/aifw-workflow/SKILL.md, aifw.yaml\"\n    ],\n    \"status\": \"pass\"\n  }\n]"
+        "stdout:[\n  {\n    \"session\": \"2194d416-9c7e-4662-92b8-5b5c2784c5a7\",\n    \"calls\": 279,\n    \"edits\": 59,\n    \"verifications\": 30,\n    \"failedVerifications\": 6,\n    \"findings\": [],\n    \"notes\": [\n      \"AIFW control files edited: .claude/settings.json, .claude/skills/aifw-workflow/SKILL.md, aifw.yaml\"\n    ],\n    \"status\": \"pass\"\n  }\n]"
       ]
     },
     {
@@ -127,9 +121,9 @@
   ],
   "changeId": "judge-opaque",
   "missingArtifacts": [],
-  "validatedAt": "2026-10-21T11:54:50.826Z",
+  "validatedAt": "2026-10-21T12:10:00.214Z",
   "inputs": {
-    "change": "565d374f2a86920539a8a19a4a9f66685e1409e27bae0372469051b0d3107eb3",
+    "change": "4838a4f358491887ba344e7997cda7cd79fc42c8c34017308a82e81e8b52a502",
     "workspace": "977ee4fc44554c5aba84696d04aa95c1b0ef7d374ce3b5e4cddf0748ddb20ce4"
   }
 }
