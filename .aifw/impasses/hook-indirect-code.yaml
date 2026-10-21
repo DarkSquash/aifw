@@ -1,6 +1,6 @@
 id: impasse:hook-indirect-code
 impact: L3
-state: HALF_OPEN
+state: RESOLVED
 attempts:
 - id: attempt-1
   hypothesis: Ler o arquivo de script executado (shell, python -m, npm run, make) basta para o hook ver o codigo indireto
@@ -19,8 +19,7 @@ attempts:
 attemptFingerprints:
 - 04730eca1c9e1a4c7a3cac490f2db6fb042c2754dd2aee3bdba315d42dfbb638
 - bcff893eecf23865531ba9c190da27f8ace58f8b83194fa42be4943abff63931
-stopDestructiveChanges: true
-openReason: distinct-attempt-limit
+stopDestructiveChanges: false
 proposal:
   suspectedRuleId: threat-model.md da mudança hook-indirect-code (revisão independente julga o hook como sandbox contra agente adversário)
   explanation: 'Duas revisões independentes reprovaram: cada rodada fecha os casos apontados e a seguinte acha novas formas de indireção (variáveis de ambiente, configs de ferramentas, regras implícitas do make). Ler texto não consegue garantir contenção contra um agente adversário.'
@@ -30,3 +29,14 @@ humanDecision:
   decisionRecord: .aifw/impasses/hook-indirect-code.yaml
   decidedBy: human:DarkSquash
   decidedAt: '2026-10-20T03:22:50.304Z'
+revalidation:
+  passed: true
+  evidence:
+  - .aifw/changes/active/hook-indirect-code/evidence/tests.txt
+  - .aifw/changes/active/hook-indirect-code/independent-review.md
+  updatedArtifacts:
+  - python/aifw/indirect.py
+  - python/aifw/shell.py
+  - python/aifw/hooks.py
+  - .aifw/changes/active/hook-indirect-code/threat-model.md
+  - docs/decisions/ADR-0034-hook-indirect-code.md
