@@ -6,7 +6,7 @@ metadata:
   level: L3
   createdAt: '2026-10-19T14:57:46.641Z'
 summary: O hook passa a ler scripts de shell e PowerShell, módulos locais, scripts do package.json, receitas do Makefile e configs do git que executam código, e protege .git/hooks e .git/config.
-status: draft
+status: ready
 approval:
   approvedBy: human:DarkSquash
   approvedAt: '2026-10-21T01:57:35.895Z'
