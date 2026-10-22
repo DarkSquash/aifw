@@ -2,7 +2,7 @@
 
 > Gerado por `python scripts/generate_cli_reference.py`. Guia: [HOW_TO_USE.md](../HOW_TO_USE.md).
 
-Esta referência contém 62 comandos finais e suas opções.
+Esta referência contém 63 comandos finais e suas opções.
 
 ## `aifw --help`
 
@@ -542,6 +542,22 @@ options:
   --json                emit stable machine-readable JSON
   --feature {tasks,impasse,context,intake,traceability,decisions,judge}
                         feature
+```
+
+## `aifw assess activate`
+
+```text
+usage: aifw assess activate [-h] [--json] [--feature {tasks}] --by BY
+                            [--at AT]
+
+turn the task assessor's active mode on once the shadow criteria hold (human)
+
+options:
+  -h, --help         show this help message and exit
+  --json             emit stable machine-readable JSON
+  --feature {tasks}  feature
+  --by BY            by
+  --at AT            at
 ```
 
 ## `aifw assess verdict`

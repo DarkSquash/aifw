@@ -50,6 +50,7 @@ CONTROL = (
     # git runs code from here by itself (hooks, aliases and helpers from config), unread by the hook.
     ".git/",
     ".husky/",  # husky points core.hooksPath here: git runs these hooks on commit
+    ".aifw/assessor.yaml",  # the person's activation of the task assessor (ADR-0036)
 )
 # Installed tools the hook runs without reading (ADR-0034): editing them with the edit tools asks.
 # Shell commands are not checked: `.venv/bin/ruff format .` names the folder without changing it.
@@ -222,6 +223,13 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         if "haiku" in model and risky:
             # The model table never runs L3 work on haiku; on L2 it is the agent's call (ADR-0030).
             findings.append(("ask", f"delegates to haiku while an active {max(risky)} change exists"))
+        elif "haiku" in model:
+            from .assessment import PLANNED_PATHS, active, last_path
+
+            path = last_path(root, item.get("session")) if active(root) else None
+            if path in PLANNED_PATHS:
+                # In active mode the assessor's path sets the model table (ADR-0036).
+                findings.append(("ask", f"delegates to haiku on a request the task assessor routed {path}"))
         if item.get("remote"):
             # Subagents on this machine inherit these hooks; a cloud session runs outside them.
             findings.append(("ask", "delegates to a cloud session, outside this machine's AIFW hooks"))
@@ -245,7 +253,7 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
     return findings
 
 
-def evaluate(root, tool_name, tool_input, cwd=None):
+def evaluate(root, tool_name, tool_input, cwd=None, session=None):
     """Return ("deny"|"ask", reasons) or None when AIFW has no objection."""
     policy = load_permission_policy(root)
     allowlist, classification = project_settings(root)
@@ -268,6 +276,7 @@ def evaluate(root, tool_name, tool_input, cwd=None):
     mixed = any(i["kind"] not in {"commit", "git-local", "read-only", "signing"} for i in items)
     for item in items:
         item = dict(item, mixed=True) if mixed and item["kind"] == "commit" else item
+        item = dict(item, session=session) if item["kind"] == "delegation" else item
         findings += item_findings(root, policy, item, allowlist, classification, tool_name, tool_input)
     control = control_target(
         root, tool_name, tool_input, request["mutation"], policy.get("protectedPaths", [])
@@ -290,7 +299,11 @@ def evaluate(root, tool_name, tool_input, cwd=None):
 def pre_tool_use(root, payload):
     try:
         result = evaluate(
-            root, payload.get("tool_name", ""), payload.get("tool_input") or {}, payload.get("cwd")
+            root,
+            payload.get("tool_name", ""),
+            payload.get("tool_input") or {},
+            payload.get("cwd"),
+            payload.get("session_id"),
         )
     except Exception as error:  # noqa: BLE001 - a broken policy must reach the human, not pass silently
         result = "ask", [f"AIFW hook could not evaluate the policy: {error}"]
@@ -515,8 +528,13 @@ def session_start(root, payload):
 
 
 def user_prompt(root, payload):
-    """Shadow-assess each request as the person sends it, in the background; never changes the session."""
-    from .assessment import assess, enabled, is_request
+    """Assess each request as the person sends it.
+
+    In shadow mode the hook runs in the background and only records. Once the person activated the
+    assessor (ADR-0036), it runs before the request and hands the agent the execution path; a
+    failure only says so, and the request goes on as usual.
+    """
+    from .assessment import active, assess, enabled, is_request, path_context
     from .context import redact
 
     prompt = (payload.get("prompt") or "").strip()
@@ -524,8 +542,16 @@ def user_prompt(root, payload):
     # tasks, and their text must not leave the machine.
     if not is_request(prompt) or not enabled(root, "tasks"):
         return None
-    assess(root, redact(prompt)[:4000], source="prompt")
-    return None
+    task, session = redact(prompt)[:4000], payload.get("session_id")
+    if not active(root):
+        assess(root, task, source="prompt", session=session)
+        return None
+    try:
+        result = assess(root, task, use_diff=True, source="prompt", session=session)
+    except Exception as error:  # noqa: BLE001 - the request goes on, with the reason, whatever failed
+        result = dict(status="unavailable", reason=str(error) or type(error).__name__)
+    context = path_context(result)
+    return dict(hookSpecificOutput=dict(hookEventName="UserPromptSubmit", additionalContext=context))
 
 
 HANDLERS = {

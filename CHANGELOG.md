@@ -4,6 +4,12 @@
 
 ### Alterado
 
+- Modo ativo do avaliador de tarefas (ADR-0036):
+  - `aifw assess activate --feature tasks --by human:<nome>` é uma aprovação humana e só passa com o critério atingido (50 pedidos com veredito, 90% de concordância, nenhum CRITICAL rebaixado). Ela grava `.aifw/assessor.yaml`, que só vale assinado quando `requireSignedCommit` está ligado.
+  - Com a ativação, cada pedido chega ao agente com o caminho de execução, e delegar a Haiku depois de um caminho PLANNED ou CRITICAL pede confirmação. Se o serviço falhar, o agente só recebe um aviso.
+  - `aifw claude enable` instala o hook de pedidos em primeiro plano só com a ativação válida.
+- O avaliador de tarefas ignora mensagens automáticas da sessão (relatórios de subagentes, avisos de outras sessões, notificações): elas não são avaliadas nem enviadas ao serviço, e o relatório deixa de contá-las.
+
 - O hook lê o código que um comando executa indiretamente, em `python/aifw/indirect.py` (ADR-0034). Antes, pôr um `git push` dentro de um script bastava para ele passar sem pergunta.
   - Scripts de shell, PowerShell e `.bat` (`bash x.sh`, `./x.sh`, `source x.sh`, `pwsh -File x.ps1`, `call x.bat`) são analisados como comandos; `uv run x.py`, `./x.py`, `python x` sem extensão e módulos do projeto em `python -m` seguem as regras do código inline.
   - Os scripts do `package.json` (`npm`, `pnpm`, `yarn`, `bun`, com `pre`, `post` e `--prefix`) e os comandos do `Makefile` (receitas, `;`, `$(shell ...)`, `!=`, variáveis expandidas, `-C` e `-f`) também são lidos.

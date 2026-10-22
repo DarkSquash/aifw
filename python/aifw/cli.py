@@ -199,6 +199,11 @@ def create_parser():
         default="tasks",
         choices=["tasks", "impasse", "context", "intake", "traceability", "decisions", "judge"],
     )
+    leaf = command(
+        "assess activate", "turn the task assessor's active mode on once the shadow criteria hold (human)"
+    )
+    option(leaf, "--feature", default="tasks", choices=["tasks"])
+    approval(leaf)
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
     option(
         leaf,
@@ -328,6 +333,7 @@ APPROVALS = {
     "waiver add",
     "break-glass grant",
     "assess verdict",
+    "assess activate",
 }
 
 
@@ -585,6 +591,15 @@ def execute(args, root):
 
         value = report(root, args.feature)
         return (value if args.json else render_report(value)), 0
+    if action == "assess activate":
+        from .assessment import activate
+
+        value = activate(root, args.feature, args.by, at)
+        value["nextAction"] = (
+            "Commit .aifw/assessor.yaml with your signature, then run `aifw claude enable` "
+            "and open a new Claude Code session so the prompt hook waits for the path."
+        )
+        return value, 0
     if action == "assess verdict":
         from .assessment import record_verdicts
 

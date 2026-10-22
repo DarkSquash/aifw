@@ -40,8 +40,19 @@ JUDGE = dict(
 )
 
 
-def entries_for(event):
-    return [HOOKS[event], JUDGE] if event == "PreToolUse" else [HOOKS[event]]
+# Once the person activated the task assessor, the prompt waits for its path (ADR-0036).
+# 60 s covers the three retries of the decision model, so its failure still reaches the agent.
+ACTIVE_PROMPT = dict(hooks=[{**COMMAND, "timeout": 60}])
+
+
+def entries_for(event, root=None):
+    if event == "PreToolUse":
+        return [HOOKS[event], JUDGE]
+    if event == "UserPromptSubmit" and root is not None:
+        from .assessment import active
+
+        return [ACTIVE_PROMPT if active(root) else HOOKS[event]]
+    return [HOOKS[event]]
 
 
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
@@ -73,7 +84,7 @@ def enable_project(root):
     require(isinstance(settings, dict), "Invalid .claude/settings.json.", "POLICY_CONFLICT")
     hooks, changed = settings.setdefault("hooks", {}), []
     for event in HOOKS:
-        entries, wanted = hooks.setdefault(event, []), entries_for(event)
+        entries, wanted = hooks.setdefault(event, []), entries_for(event, root)
         current = [e for e in entries if ours(e)]
         if current != wanted:
             hooks[event] = [e for e in entries if not ours(e)] + deepcopy(wanted)
@@ -110,7 +121,7 @@ def check_project(root, home=None):
     settings_file = root / ".claude/settings.json"
     settings = read_json(settings_file) if settings_file.is_file() else {}
     for event in HOOKS:
-        if [e for e in settings.get("hooks", {}).get(event, []) if ours(e)] != entries_for(event):
+        if [e for e in settings.get("hooks", {}).get(event, []) if ours(e)] != entries_for(event, root):
             findings.append(f"hook {event} missing or outdated: run `aifw claude enable`")
     skill = root / ".claude/skills/aifw-workflow/SKILL.md"
     if not skill.is_file():

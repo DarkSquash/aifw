@@ -1,4 +1,4 @@
-"""Assessments by a decision model, in shadow mode: they record what the model suggests and never decide.
+"""Assessments by a decision model: in shadow mode they only record what the model suggests.
 
 Each feature asks the Decider through OpenRouter and writes its suggestion to a local log:
 
@@ -8,7 +8,8 @@ Each feature asks the Decider through OpenRouter and writes its suggestion to a 
 - judge: whether a shell command the hook cannot read is harmless, asked of Claude on the person's
   subscription (judge.py) instead of OpenRouter.
 
-A person later records whether they agree, which feeds a future activation decision.
+A person later records whether they agree. Once the criteria hold, the person can activate the
+tasks assessor: each request then reaches the agent with its path (ADR-0036).
 """
 
 from concurrent.futures import ThreadPoolExecutor
@@ -235,7 +236,7 @@ def diff_floor(root, base=None):
     return classify_change(derived["signals"])["level"], derived["reasons"]
 
 
-def assess(root, task, use_diff=False, base=None, call=ask, source="manual"):
+def assess(root, task, use_diff=False, base=None, call=ask, source="manual", session=None):
     require(isinstance(task, str) and task.strip(), "Describe the task with --task.")
     config = settings(root)
     reason = blocker(config)
@@ -260,9 +261,101 @@ def assess(root, task, use_diff=False, base=None, call=ask, source="manual"):
         floor=dict(level=floor, reasons=floor_reasons),
         finalRisk=final_risk,
         cost=round(sum(cost for _, cost in results.values()), 8),
+        mode="active" if active(root) else "shadow",
     )
+    if session:
+        record["session"] = session  # the hook asks before delegating to haiku after a planned path
     record["path"] = path_for(final_risk, record["importance"]["value"], record["complexity"]["value"])
-    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "tasks", record))
+    return dict(status="recorded", recorded=True, **store(root, "tasks", record))
+
+
+ACTIVATION_FILE = ".aifw/assessor.yaml"
+ACTIVE_FEATURES = ("tasks",)  # the other assessments stay in shadow mode
+PLANNED_PATHS = {"PLANNED", "CRITICAL"}
+
+
+def activation(root, feature="tasks"):
+    """The person's activation of a feature's assessor, or None; unsigned it does not count."""
+    from . import signing
+
+    file = Path(root) / ACTIVATION_FILE
+    if feature not in ACTIVE_FEATURES or not file.is_file():
+        return None
+    try:
+        entry = (read_yaml(file).get("features") or {}).get(feature)
+    except (OSError, ValueError, AttributeError, AifwError):
+        return None
+    if not isinstance(entry, dict) or not str(entry.get("approvedBy", "")).startswith("human:"):
+        return None
+    if entry.get("model") != settings(root)["model"]:
+        return None  # verdicts were given on another model; a new one needs a new activation
+    return entry if signing.approved(root, file) else None
+
+
+def active(root, feature="tasks"):
+    """The assessor decides the path: activated by the person and still enabled in aifw.yaml."""
+    try:
+        return enabled(root, feature) and activation(root, feature) is not None
+    except (OSError, KeyError, TypeError, AifwError):
+        return False
+
+
+def activate(root, feature, by, at):
+    """Human approval that turns a feature's assessor on, only once the shadow criteria hold."""
+    from .common import write_yaml
+
+    require(by.startswith("human:"), "--by must name a person, such as human:ana.", "APPROVAL_REQUIRED")
+    require(feature in ACTIVE_FEATURES, f"Only {', '.join(ACTIVE_FEATURES)} has an active mode.")
+    require(enabled(root, feature), f"Turn the {feature} assessment on in aifw.yaml first.", "NOT_READY")
+    summary = report(root, feature)["summary"]
+    missing = []
+    if summary["judged"] < ACTIVATION["requests"]:
+        missing.append(f"{summary['judged']} requests with a verdict; {ACTIVATION['requests']} needed")
+    if summary["agreement"] < ACTIVATION["agreement"]:
+        missing.append(f"agreement {summary['agreement']:.0%}; {ACTIVATION['agreement']:.0%} needed")
+    if summary["criticalDemoted"]:
+        missing.append(f"CRITICAL paths demoted: {summary['criticalDemoted']}")
+    if not missing and not summary["criteriaMet"]:
+        missing.append("the report does not meet the criteria")  # the exact check, not a rounded one
+    require(not missing, "The activation criteria do not hold yet.", "APPROVAL_REQUIRED", missing)
+    file = Path(root) / ACTIVATION_FILE
+    data = (
+        read_yaml(file) if file.is_file() else dict(apiVersion="aifw.dev/v1alpha1", kind="AssessorActivation")
+    )
+    entry = dict(
+        approvedBy=by,
+        approvedAt=at,
+        model=settings(root)["model"],
+        report={k: summary[k] for k in ("judged", "agreement", "criticalDemoted")},
+    )
+    data.setdefault("features", {})[feature] = entry
+    write_yaml(file, data)
+    return dict(status="activated", feature=feature, path=ACTIVATION_FILE, **entry)
+
+
+def last_path(root, session):
+    """The path of this session's latest assessed request, or None."""
+    if not session:
+        return None
+    try:
+        entries = [e for e in read_lines(Path(root) / SHADOW_LOG) if e.get("session") == session]
+    except (OSError, ValueError):
+        return None  # an unreadable log only loses the hint, never blocks delegation
+    return entries[-1].get("path") if entries else None
+
+
+def path_context(result):
+    """What the agent reads with the request in active mode."""
+    if result.get("status") != "recorded":
+        return f"AIFW: avaliador de tarefas indisponível ({result.get('reason')}); siga a classificação de sempre."
+    risk = result["risk"]["value"]
+    floor = f", elevado pelo diff a {result['finalRisk']}" if result["finalRisk"] != risk else ""
+    return (
+        f"AIFW, avaliador de tarefas (modo ativo): caminho {result['path']}. Risco {risk}{floor}, "
+        f"importância {result['importance']['value']}, complexidade {result['complexity']['value']}. "
+        f"{PATH_RULE[result['path']]}. Siga esse caminho com a tabela de modelos da skill aifw-workflow; "
+        "subir de caminho é sempre permitido, descer nunca."
+    )
 
 
 def fingerprint(attempt):
@@ -624,6 +717,7 @@ def report(root, feature="tasks"):
             cost=round(sum(r.get("cost", 0) for r in rows), 6),
             criteria=dict(ACTIVATION, criticalDemoted=0),
             criteriaMet=ready,
+            active=active(root, feature),
         ),
     )
 
@@ -650,6 +744,7 @@ def render_report(value):
         )
     lines += [
         f"- Critério de ativação atingido: {'sim' if s['criteriaMet'] else 'não'}",
+        f"- Modo ativo: {'sim' if s.get('active') else 'não'}",
         f"- Custo total: US$ {s['cost']:.6f}",
         "",
         "## Perguntas",
@@ -863,9 +958,16 @@ def pending_notices(root):
     notices = []
     for feature in (f for f in FEATURES if f in config["features"]):
         summary = report(root, feature)["summary"]
-        if summary["assessments"] >= ACTIVATION["requests"] and summary["judged"] < summary["assessments"]:
+        if summary["criteriaMet"] and feature in ACTIVE_FEATURES and not summary["active"]:
+            notices.append(
+                f"{feature} assessor: the activation criteria hold. Tell the person they can turn the active "
+                f"mode on in their terminal with `aifw assess activate --feature {feature} --by human:<name>`."
+            )
+        elif summary["assessments"] >= ACTIVATION["requests"] and summary["judged"] < summary["assessments"]:
             notices.append(
                 f"{feature} assessor: {summary['assessments']} shadow assessments recorded. Run "
                 f"`aifw assess report --feature {feature}` and show it to the person so they can record verdicts."
             )
+        if summary["active"]:
+            notices.append(f"{feature} assessor is active: each request arrives with its execution path.")
     return notices

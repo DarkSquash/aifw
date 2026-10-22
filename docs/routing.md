@@ -50,4 +50,9 @@ Com `spec.assessment.mode: shadow` em `aifw.yaml`, cada pedido da pessoa com 5 p
   Sem isso, responde `unavailable` e não chama a API. Custo aproximado: US$ 0,00001 por pedido.
 - `aifw assess report` mostra as perguntas, as respostas de cada pedido e os seus vereditos.
 - `aifw assess verdict --id 1,2 --agree --by human:<nome>`, ou `--value <caminho>`, registra se você concorda. É uma aprovação humana, rodada só no seu terminal.
-- O critério para um futuro modo ativo é 50 pedidos com veredito, 90% de concordância e nenhum caso CRITICAL rebaixado. Ao atingir 50 avaliações, o início de sessão avisa que o relatório está pronto. Consulte o [ADR-0023](decisions/ADR-0023-task-assessor-shadow.md).
+- **Modo ativo (ADR-0036):**
+  - O critério é 50 pedidos com veredito, 90% de concordância e nenhum caso CRITICAL rebaixado, contando só os pedidos da pessoa.
+  - Atingido o critério, a pessoa roda `aifw assess activate --feature tasks --by human:<nome>` no próprio terminal, assina `.aifw/assessor.yaml` e roda `aifw claude enable`.
+  - A partir daí, cada pedido chega ao agente com o caminho (FAST, WORK, PLANNED ou CRITICAL), e delegar a Haiku depois de um caminho PLANNED ou CRITICAL pede confirmação.
+  - Se o serviço falhar, o agente só recebe um aviso e segue a classificação de sempre.
+  - Para desligar, apague `.aifw/assessor.yaml` e rode `aifw claude enable`. Ao atingir 50 avaliações, o início de sessão avisa que o relatório está pronto. Consulte o [ADR-0023](decisions/ADR-0023-task-assessor-shadow.md).
