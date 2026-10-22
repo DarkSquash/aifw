@@ -97,6 +97,13 @@ def test_verdicts_feed_the_report_and_the_activation_criteria(project):
         record_verdicts(project, [9], "human:me")
 
 
+def test_report_skips_automatic_messages_recorded_before_the_filter(project):
+    assess(project, '<agent-message from="a1"> relatório do subagente revisor', call=fake(), source="prompt")
+    assess(project, "Adicionar paginação na listagem de mudanças", call=fake(), source="prompt")
+    rows = report(project)["rows"]
+    assert [r["id"] for r in rows] == [2] and report(project)["summary"]["assessments"] == 1
+
+
 def test_criteria_met_after_fifty_agreeing_verdicts(project):
     for _ in range(50):
         assess(project, "tarefa", call=fake())
@@ -151,7 +158,15 @@ def test_each_request_is_assessed_in_the_background(project, monkeypatch):
     def prompt(text):
         return handle(dict(cwd=str(project), hook_event_name="UserPromptSubmit", session_id="s", prompt=text))
 
-    for text in ("pode subir", "/ponytail lite", "sim pode fazer isso"):
+    automatic = (
+        '<agent-message from="a1"> [Subagent hand-back] O relatório final da revisão',
+        "<system-reminder> The session you started finished a turn and reported",
+        "<task-notification> <task-id>b1</task-id> <status>completed</status> mais texto",
+        '<cross-session-message from="local_1"> Pronto, rodei o gerador da referência',
+        "Background (from the session that started this one): o AIFW é o framework",
+        "Stop hook feedback: AIFW: code changed after the last successful verification",
+    )
+    for text in ("pode subir", "/ponytail lite", "sim pode fazer isso", *automatic):
         assert prompt(text) is None
     assert not (project / assessment.SHADOW_LOG).exists()
     assert prompt("Reescrever a busca do app com api_key=abc123 para aceitar erros de digitação") is None

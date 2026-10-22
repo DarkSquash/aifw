@@ -516,12 +516,13 @@ def session_start(root, payload):
 
 def user_prompt(root, payload):
     """Shadow-assess each request as the person sends it, in the background; never changes the session."""
-    from .assessment import MIN_TASK_WORDS, assess, enabled
+    from .assessment import assess, enabled, is_request
     from .context import redact
 
     prompt = (payload.get("prompt") or "").strip()
-    # Slash commands and short replies ("pode", "sim, pode subir") are not tasks.
-    if prompt.startswith("/") or len(prompt.split()) < MIN_TASK_WORDS or not enabled(root, "tasks"):
+    # Slash commands, short replies and automatic messages (subagent reports, other sessions) are not
+    # tasks, and their text must not leave the machine.
+    if not is_request(prompt) or not enabled(root, "tasks"):
         return None
     assess(root, redact(prompt)[:4000], source="prompt")
     return None

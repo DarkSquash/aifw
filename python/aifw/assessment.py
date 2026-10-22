@@ -16,6 +16,7 @@ from hashlib import sha256
 import json
 import os
 from pathlib import Path
+import re
 import time
 import urllib.error
 import urllib.request
@@ -37,6 +38,19 @@ LOGS = {
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
 MIN_TASK_WORDS = 5  # shorter prompts are replies, not tasks, and are not assessed automatically
+# Messages the session receives without the person typing them: subagent reports, notices from
+# other sessions, background tasks and hooks, and the brief of a session another one started.
+AUTOMATIC_PROMPT = re.compile(r"\s*(<[a-z][\w-]*[\s>]|Background \(from the session|Stop hook feedback)")
+
+
+def is_request(prompt):
+    """A request the person typed: not a slash command, a short reply or an automatic message."""
+    text = prompt.strip()
+    return (
+        not text.startswith("/") and len(text.split()) >= MIN_TASK_WORDS and not AUTOMATIC_PROMPT.match(text)
+    )
+
+
 REPEAT_THRESHOLD = 0.7
 SUGGEST_THRESHOLD = 0.5  # add a document the keywords missed
 DOUBT_THRESHOLD = 0.1  # question a document chosen only by a shared word
@@ -584,7 +598,12 @@ def report(root, feature="tasks"):
     """Every assessment with the person's latest verdict, and whether the activation criteria hold."""
     require(feature in FEATURES, f"--feature must be one of {', '.join(FEATURES)}.")
     log, verdict_log = LOGS[feature]
-    entries = read_lines(Path(root) / log)
+    # Automatic messages recorded before the hook ignored them are not requests; ids stay as recorded.
+    entries = [
+        e
+        for e in read_lines(Path(root) / log)
+        if feature != "tasks" or e.get("source") != "prompt" or is_request(e.get("task", ""))
+    ]
     verdicts = {v["id"]: v for v in read_lines(Path(root) / verdict_log)}
     rows = [dict(e, suggestion=suggestion(feature, e), verdict=verdicts.get(e["id"])) for e in entries]
     judged = [r for r in rows if r["verdict"]]
