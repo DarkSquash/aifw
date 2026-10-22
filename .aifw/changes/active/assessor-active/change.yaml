@@ -6,7 +6,7 @@ metadata:
   level: L3
   createdAt: '2026-10-22T04:15:32.260Z'
 summary: Com a ativação humana assinada e o critério atingido, o hook UserPromptSubmit avalia cada pedido na hora e entrega ao agente o caminho de execução; delegar a Haiku pede confirmação depois de um caminho PLANNED ou CRITICAL.
-status: draft
+status: ready
 approval:
   approvedBy: human:DarkSquash
   approvedAt: '2026-10-22T12:24:19.573Z'
