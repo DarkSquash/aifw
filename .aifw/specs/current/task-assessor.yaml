@@ -1,0 +1,50 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilitySpec
+capability: task-assessor
+title: Avaliador de tarefas
+purpose: Avaliar cada pedido da pessoa e, depois da ativação humana, entregar ao agente o caminho de execução, sem nunca rebaixar a aprovação humana.
+requirements:
+- id: REQ-ASSESSOR-ACTIVATION
+  strength: MUST
+  statement: O modo ativo só pode ser ligado por aprovação humana no terminal da pessoa, com o critério atingido, e com requireSignedCommit só vale assinado.
+  scenarios:
+  - id: SCN-ASSESSOR-ACTIVATION
+    given:
+    - Um projeto com a avaliação de tarefas em modo sombra.
+    when:
+    - Alguém roda aifw assess activate.
+    then:
+    - O comando recusa abaixo de 50 vereditos, abaixo de 90% de concordância, com CRITICAL rebaixado ou no shell do agente; uma ativação sem assinatura não vale.
+- id: REQ-ASSESSOR-DELEGATION
+  strength: MUST
+  statement: Com o modo ativo, delegar a Haiku pede confirmação quando o último caminho da sessão for PLANNED ou CRITICAL.
+  scenarios:
+  - id: SCN-ASSESSOR-DELEGATION
+    given:
+    - Um pedido da sessão avaliado como PLANNED.
+    when:
+    - O agente delega a um subagente Haiku.
+    then:
+    - O hook pede confirmação nessa sessão e não em outra.
+- id: REQ-ASSESSOR-HOOK-INSTALL
+  strength: MUST
+  statement: O hook de pedidos só roda em primeiro plano com a ativação válida, e a checagem acusa a instalação desatualizada.
+  scenarios:
+  - id: SCN-ASSESSOR-HOOK-INSTALL
+    given:
+    - Um projeto com o Claude Code habilitado.
+    when:
+    - A ativação passa a valer e aifw claude enable roda de novo.
+    then:
+    - O hook de pedidos deixa de ser async, e aifw claude check só acusa diferença antes disso.
+- id: REQ-ASSESSOR-PATH
+  strength: MUST
+  statement: Com o modo ativo, cada pedido da pessoa chega ao agente com o caminho de execução, e uma falha do serviço não bloqueia o pedido.
+  scenarios:
+  - id: SCN-ASSESSOR-PATH
+    given:
+    - O avaliador de tarefas ativado.
+    when:
+    - A pessoa envia um pedido, ou o serviço de decisão está fora.
+    then:
+    - O hook entrega o caminho com risco, importância e complexidade, ou só um aviso de indisponível.

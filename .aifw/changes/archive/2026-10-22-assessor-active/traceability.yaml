@@ -4,11 +4,11 @@ changeId: assessor-active
 artifacts:
 - id: TEST-ASSESSOR-ACTIVE
   type: test
-  path: .aifw/changes/active/assessor-active/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-22-assessor-active/evidence/tests.txt
   status: passed
 - id: RED-ASSESSOR-ACTIVE
   type: evidence
-  path: .aifw/changes/active/assessor-active/evidence/red.txt
+  path: .aifw/changes/archive/2026-10-22-assessor-active/evidence/red.txt
   status: passed
 - id: ADR-0036
   type: adr
