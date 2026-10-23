@@ -23,16 +23,12 @@ def event(root, name, **payload):
     return handle(dict(payload, cwd=str(root), hook_event_name=name, session_id="s"))
 
 
-def test_delegation_reads_custom_agent_model_and_asks_for_cloud_sessions(tmp_path):
+def test_delegation_is_free_except_to_cloud_sessions(tmp_path):
     init(tmp_path)
-    agents = tmp_path / ".claude/agents"
-    agents.mkdir(parents=True)
-    (agents / "scout.md").write_text("---\nname: scout\nmodel: haiku\n---\nSearch.\n")
-    assert pre(tmp_path, "Agent", subagent_type="scout") is None
     specs.create_change(tmp_path, dict(id="risky", title="R", summary="S", level="L3", createdAt=AT))
-    assert pre(tmp_path, "Agent", subagent_type="scout") == "ask"
+    # The model table is the agent's call, L3 included (ADR-0037).
+    assert pre(tmp_path, "Agent", model="claude-haiku-5-5") is None
     assert pre(tmp_path, "Agent", subagent_type="general-purpose") is None
-    assert pre(tmp_path, "Agent", model="claude-haiku-5-5") == "ask"
     assert pre(tmp_path, "Agent", subagent_type="general-purpose", isolation="remote") == "ask"
 
 
@@ -108,15 +104,12 @@ def test_secret_scan_can_read_the_history(tmp_path):
     assert len(found[0]["commit"]) == 12
 
 
-def test_routing_activation_counts_only_when_signed_if_required(tmp_path):
+def test_routing_is_always_on_signed_or_not(tmp_path):
     init(tmp_path)
-    assert routing.routing_state(tmp_path) == (routing.ALIASES, False)
-    policy = read_yaml(tmp_path / ".aifw/routing.yaml")
-    write_yaml(tmp_path / ".aifw/routing.yaml", dict(policy, enabled=True, mode="automatic"))
-    assert routing.routing_state(tmp_path)[1]
+    assert routing.routing_state(tmp_path) == (routing.ALIASES, True)  # ADR-0037
     permissions = read_yaml(tmp_path / ".aifw/permissions.yaml")
     write_yaml(
         tmp_path / ".aifw/permissions.yaml", dict(permissions, approvals=dict(requireSignedCommit=True))
     )
     commit(tmp_path)
-    assert not routing.routing_state(tmp_path)[1]
+    assert routing.routing_state(tmp_path)[1]

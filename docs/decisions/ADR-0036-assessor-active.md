@@ -1,6 +1,6 @@
 # ADR-0036: modo ativo do avaliador de tarefas
 
-- Status: accepted
+- Status: superseded in part by ADR-0037 (avaliador sempre ativo, sem ativação)
 - Date: 2026-10-22
 - Impact: L3
 - Change: `assessor-active`

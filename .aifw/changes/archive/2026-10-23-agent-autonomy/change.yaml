@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: agent-autonomy
+  title: Mais autonomia para o agente
+  level: L3
+  createdAt: '2026-10-22T13:34:45.293Z'
+summary: Aprovação de L2/L3 pelo chat sem assinatura, roteamento e avaliador sempre ligados, push livre para branches de trabalho, publicação de pacote como tipo próprio, código opaco liberado e segredos negados.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-23T11:06:07.413Z'
+  record: .aifw/changes/active/agent-autonomy/approval.md
+archivedAt: '2026-10-23T11:10:01.629Z'

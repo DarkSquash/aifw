@@ -1,0 +1,79 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: agent-autonomy
+capability: agent-autonomy
+title: Autonomia do agente
+purpose: Deixar o agente trabalhar sem pedir confirmação no que fica registrado e é reversível, e manter a decisão humana só onde o efeito sai do projeto ou não volta atrás.
+operations:
+  added:
+  - id: REQ-AUTONOMY-CHAT-APPROVAL
+    strength: MUST
+    statement: A aprovação de uma mudança L2 ou L3 deve vir da resposta da pessoa ao plano no chat, gravada pelo hook de pedidos, sem assinatura, e nunca de uma mensagem automática nem do próprio agente.
+    scenarios:
+    - id: SCN-AUTONOMY-CHAT-APPROVAL
+      given:
+      - O agente apresentou o plano e rodou aifw spec request-approval para uma única mudança.
+      when:
+      - A pessoa responde "sim", "aprovo", "ok" ou "pode seguir", ou responde outra coisa, ou chega uma mensagem automática.
+      then:
+      - Só a resposta de aprovação sem pergunta grava approval.md com a mensagem citada e aprova a mudança, mesmo com requireSignedCommit; outra resposta cancela o pedido; a mensagem automática não aprova nem cancela; com dois pedidos pendentes nenhum é aprovado; uma resposta em outra sessão não aprova nem cancela.
+      - Enquanto o pedido espera, o hook nega qualquer ferramenta daquela sessão, e a resposta, qualquer que seja, a destrava.
+      - O agente não escreve approval.md nem change.yaml sem confirmação, nem por padrões de shell; rodar aifw-hook, python -m aifw.hooks, claude -p ou código que monta UserPromptSubmit é negado.
+  - id: REQ-AUTONOMY-BRANCH-PUSH
+    strength: MUST
+    statement: Com remoteMutation branches, push para branch de trabalho e PR devem rodar sem confirmação, e push para a branch padrão, tags, force push, apagar branch remota e merge de PR devem pedir.
+    scenarios:
+    - id: SCN-AUTONOMY-BRANCH-PUSH
+      given:
+      - Um repositório na branch feat/x com a branch padrão main.
+      when:
+      - O agente roda git push origin feat/x, git push, gh pr create, git push origin main, git push origin feat/x:main, git push --tags, git push --force, git push origin --delete ou gh pr merge.
+      then:
+      - Os três primeiros rodam; os outros pedem confirmação; git push saindo da main pede confirmação.
+      - Também pedem heads/main, refs/heads/*, --branches, tags por nome, git -c ... push, -fu, um push sem destino que a configuração leva à main, um remoto sem HEAD conhecido e escritas na API do GitHub fora de PR, issue e comentário.
+  - id: REQ-AUTONOMY-EXTERNAL-WRITES
+    strength: MUST
+    statement: Com externalServices.writes allowlist, escrever num serviço da allowlist deve rodar sem confirmação, fora dela deve pedir, e dados restricted devem negar.
+    scenarios:
+    - id: SCN-AUTONOMY-EXTERNAL-WRITES
+      given:
+      - spec.externalAllowlist com o domínio da API do projeto.
+      when:
+      - O agente faz um POST para esse domínio, para outro domínio, ou com dataClassification restricted.
+      then:
+      - O primeiro roda, o segundo pede confirmação e o terceiro é negado.
+  - id: REQ-AUTONOMY-PUBLISH
+    strength: MUST
+    statement: Publicar um pacote ou release deve sempre pedir confirmação, mesmo com o registro na allowlist, e deve ser negado com dados confidential ou restricted.
+    scenarios:
+    - id: SCN-AUTONOMY-PUBLISH
+      given:
+      - npm e pypi na allowlist.
+      when:
+      - O agente roda npm publish, twine upload ou gh release create, ou npm publish com dados confidential.
+      then:
+      - Os três pedem confirmação e o último é negado.
+  - id: REQ-AUTONOMY-SECRETS
+    strength: MUST
+    statement: A leitura de arquivos e variáveis que costumam guardar segredos deve ser negada, sem opção de confirmar.
+    scenarios:
+    - id: SCN-AUTONOMY-SECRETS
+      given:
+      - Um projeto com AIFW.
+      when:
+      - O agente lê .env ou roda printenv.
+      then:
+      - O hook nega as duas ações.
+  - id: REQ-AUTONOMY-ROUTING
+    strength: MUST
+    statement: O roteamento de modelos deve ficar sempre ligado, sem comando de ativação, e a escolha do modelo de um subagente local não deve pedir confirmação.
+    scenarios:
+    - id: SCN-AUTONOMY-ROUTING
+      given:
+      - Um projeto novo, ou uma mudança L3 ativa.
+      when:
+      - O agente roda aifw route explain, ou delega a um subagente haiku, ou alguém tenta aifw route activate ou aifw assess judge.
+      then:
+      - A rota vem com executionMode automatic, a delegação roda sem confirmação e os comandos removidos não existem.
+  modified: []
+  removed: []

@@ -62,7 +62,7 @@ aifw spec archive add-search
 
 Após instalar as specs e o arquivo da mudança, a transação está concluída. Se a limpeza dos backups falhar, o resultado preserva o commit e inclui `cleanupPending` com `path` e `reason`. O comando não tenta desfazer o commit com backups parcialmente removidos. Confira current e archive antes de remover o resíduo indicado; não execute novamente o archive da mesma mudança. Isso não promete recuperação automática após interrupção do processo ou coordenação entre archives concorrentes.
 
-Para L3, a mudança só pode ficar `ready` depois de aprovação humana vinculada a um registro existente dentro do projeto:
+Para L3, a mudança só pode ficar `ready` depois de aprovação humana vinculada a um registro existente dentro do projeto. O caminho normal é o chat (ADR-0037): o agente apresenta o plano e roda `aifw spec request-approval <id>`; se a resposta seguinte da pessoa for um "sim", o hook `UserPromptSubmit` grava `approval.md` na pasta da mudança e registra a aprovação. No terminal da pessoa também vale:
 
 ```powershell
 aifw spec approve change-core-policy `

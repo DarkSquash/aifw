@@ -1,6 +1,6 @@
 # ADR-0035 — Juiz por modelo do resíduo opaque, em modo sombra
 
-- Status: accepted
+- Status: superseded by ADR-0037 (juiz removido)
 - Date: 2026-10-20
 - Impact: L3
 - Change: judge-opaque (arquivada em 2026-10-21)

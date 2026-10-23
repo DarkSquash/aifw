@@ -22,7 +22,8 @@ TEST_RUNNERS = {
     "go": "test", "cargo": "test", "dotnet": "test", "mvn": "test", "gradle": "test", "gradlew": "test",
 }  # fmt: skip
 SECRET_FILE = re.compile(
-    r"(^|[\\/])(\.env(\.[\w.-]+)?|id_(rsa|dsa|ecdsa|ed25519)|[^\\/]+\.(pem|key|p12|pfx|keystore|jks))$", re.I
+    r"(^|[\\/:])(\.env(?!\.(example|sample|template|dist)$)(\.[\w.-]+)?|id_(rsa|dsa|ecdsa|ed25519)|[^\\/]+\.(pem|key|p12|pfx|keystore|jks))$",
+    re.I,
 )
 DESTRUCTIVE_SQL = re.compile(r"\b(drop\s+(table|database|schema)|truncate\s+table)\b", re.IGNORECASE)
 
@@ -78,7 +79,9 @@ EXEC_CONFIG = re.compile(
 CONFIG_VALUE_OPTIONS = {"--file", "-f", "--blob", "--type", "--default", "--comment", "--value"}
 PUBLISH = {
     "npm": "publish", "pnpm": "publish", "yarn": "publish", "twine": "upload", "docker": "push",
-    "podman": "push", "cargo": "publish", "gem": "push", "dart": "publish", "flutter": "publish", "bun": "publish",}  # fmt: skip
+    "podman": "push", "cargo": "publish", "gem": "push", "dart": "publish", "flutter": "publish", "bun": "publish",
+    "uv": "publish", "poetry": "publish", "hatch": "publish", "flit": "publish", "pdm": "publish",
+    "deno": "publish", "jsr": "publish", "vsce": "publish", "ovsx": "publish", "dotnet": "push", "nuget": "push",}  # fmt: skip
 REMOTE_SHELL = {"ssh", "scp", "sftp", "rsync"}
 # Installs of packages, programs or new projects always need the person (ADR-0025); `uv sync` only
 # restores what uv.lock already pins.
@@ -124,6 +127,48 @@ READ_ONLY = {
     "cut", "tr", "nl", "basename", "dirname", "realpath",
     "",  # only variable assignments (L=x); $(...) inside them is analyzed on its own
 }  # fmt: skip
+# Programs that put a file's content in front of the agent: on a secret file they are denied (ADR-0037).
+SHOWS_CONTENT = {
+    "cat", "type", "get-content", "gc", "less", "more", "head", "tail", "grep", "egrep", "fgrep", "rg",
+    "ag", "findstr", "select-string", "sls", "xxd", "od", "hexdump", "strings", "bat", "nl", "awk",
+    "gawk", "sed", "cut", "sort", "uniq", "tac", "rev", "base64", "certutil", "diff", "cmp", "comm",
+    "jq", "yq", "fold", "column", "iconv", "format-hex",
+}  # fmt: skip
+GIT_SHOWS = {"show", "diff", "log", "blame", "cat-file", "grep", "annotate"}
+SEARCHES = {"grep", "egrep", "fgrep", "rg", "ag", "findstr", "select-string", "sls"}
+PATTERN_OPTIONS = {"-e", "--regexp", "-f", "--file", "-pattern"}
+REDIRECTS = {">", ">>", ">|", "&>", "&>>", "1>", "2>", "1>>", "2>>"}
+
+
+def git_subcommand(args):
+    """The git subcommand after the global options: `git --no-pager -C . diff` is a diff."""
+    i = 0
+    while i < len(args) and args[i].startswith("-"):
+        i += 2 if args[i] in GIT_VALUE_OPTIONS else 1
+    return (args[i].lower(), i) if i < len(args) else ("", i)
+
+
+def secret_use(name, args):
+    """How the command uses a file that usually holds secrets: "read" when it shows the content,
+    "mention" when it only names or writes it, None when it names none. A search pattern and a
+    redirect target are not reads: `grep .env .gitignore`, `cat .env.example > .env`."""
+    lowered = [a.lower() for a in args]
+    sub, at = git_subcommand(args) if name == "git" else ("", -1)
+    operands = list(range(at + 1, len(args))) if name == "git" else list(range(len(args)))
+    if name in SEARCHES or sub == "grep":
+        given = [i + 1 for i in operands if lowered[i] in PATTERN_OPTIONS]
+        positional = [i for i in operands if not args[i].startswith("-") and args[i] not in REDIRECTS]
+        operands = [i for i in operands if i not in (given or positional[:1])]  # the pattern is no file
+    written = {i + 1 for i in operands if args[i] in REDIRECTS} | {
+        i for i in operands if args[i].startswith(">") and args[i] not in REDIRECTS
+    }
+    named = [i for i in operands if SECRET_FILE.search(args[i].lstrip(">&|"))]
+    if not named:
+        return None
+    shows = name in SHOWS_CONTENT or sub in GIT_SHOWS
+    return "read" if shows and any(i not in written for i in named) else "mention"
+
+
 GIT_VALUE_OPTIONS = {"-C", "-c", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--config-env"}
 GIT_READ = {
     "status", "diff", "log", "show", "rev-parse", "ls-files", "ls-tree", "blame", "grep", "describe",
@@ -132,7 +177,8 @@ GIT_READ = {
 GIT_LISTING = {"branch", "tag", "remote", "stash", "config", "worktree", "submodule"}
 LIST_ARGS = {"-a", "-r", "-v", "-vv", "-l", "--list", "list", "show", "--show-current", "--get", "--get-all"}
 SEVERITY = [
-    "opaque", "destructive", "deploy", "git-remote", "external-write", "install", "secret-read", "signing",
+    "opaque", "destructive", "deploy", "publish", "git-remote", "external-write", "install", "secret-read",
+    "signing",
     "commit", "git-local", "filesystem-write", "external-read", "read-only",
 ]  # fmt: skip
 
@@ -478,10 +524,25 @@ def git_requests(args):
     )
     if sub == "push":
         force = any(
-            a.startswith(("--force", "+", ":")) or a in {"-f", "--mirror", "--delete", "-d", "--prune"}
+            a.startswith(("--force", "+", ":"))
+            or a in {"--mirror", "--delete", "--prune"}
+            or (a.startswith("-") and not a.startswith("--") and set(a[1:]) & {"f", "d"})  # -fu, -df
             for a in rest
         )
-        return [request("git-remote")] + ([request("filesystem-write", destructive=True)] if force else [])
+        targets, flags, j = [], [], 0
+        while j < len(rest):
+            if rest[j] in {"-o", "--push-option", "--repo", "--receive-pack", "--exec"}:
+                j += 2
+                continue
+            (flags if rest[j].startswith("-") else targets).append(rest[j])
+            j += 1
+        # The hook checks where it lands: a work branch runs on its own, the default branch asks (ADR-0037).
+        push = request("git-remote", push=dict(targets=targets, flags=flags))
+        if configs:  # -c remote.origin.push=HEAD:main and friends redirect the push
+            push["protected"] = True
+        return [push] + ([request("filesystem-write", destructive=True)] if force else [])
+    if sub == "send-pack":  # a push by its plumbing name
+        return [request("git-remote", protected=True)]
     if sub == "clone":
         return [request("install")] + signing
     if sub in COMMITS:
@@ -505,7 +566,61 @@ def http_request(name, args, allowlist):
         for a in args
     )
     kind = "external-write" if write else "external-read"
-    return request(kind, service=service_of(" ".join(args), allowlist))
+    url = next(
+        (
+            a
+            for a in args
+            if re.match(r"https?://([^/@\s]+@)?(api|uploads)\.github\.com(:\d+)?/", a, re.IGNORECASE)
+        ),
+        None,
+    )
+    if write and url:
+        return github_write(re.sub(r"^https?://[^/]+", "", url))
+    return [request(kind, service=service_of(" ".join(args), allowlist))]
+
+
+# The GitHub API writes that stay discussion: pull requests, issues, reviews and comments.
+GITHUB_DISCUSSION = re.compile(
+    r"^/?repos/[^/]+/[^/]+/(pulls|issues)(/\d+(/(comments|reviews(/\d+/events)?|requested_reviewers|labels))?)?/?"
+    r"([?#].*)?$|^/?repos/[^/]+/[^/]+/(pulls|issues)/comments/\d+/?$",
+    re.IGNORECASE,
+)
+
+
+def github_write(path):
+    """A GitHub API write: discussion is an external write; anything else can also reach the default branch."""
+    if GITHUB_DISCUSSION.match(path):
+        return [request("external-write", service="github", discussion=True)]
+    return [
+        request("external-write", service="github"),
+        request("git-remote", service="github", protected=True),
+    ]
+
+
+def gh_api(args):
+    lowered = [a.lower() for a in args]
+    method = next((args[i + 1].upper() for i, a in enumerate(lowered[:-1]) if a in {"-x", "--method"}), "")
+    method = method or next((a.split("=", 1)[1].upper() for a in lowered if a.startswith("--method=")), "")
+    method = method or next((a[2:].upper() for a in args if a.startswith("-X") and len(a) > 2), "")
+    fields = any(a in {"-f", "-F", "--field", "--raw-field", "--input"} for a in args) or any(
+        a.startswith(("--field=", "--raw-field=", "--input=")) for a in lowered
+    )
+    valued = {"-q", "--jq", "-t", "--template", "-H", "--header", "-p", "--preview", "--hostname", "--cache"}
+    valued |= {"-x", "-X", "--method", "-f", "-F", "--field", "--raw-field", "--input"}
+    path, i = "", 1
+    while i < len(args):
+        if args[i] in valued:
+            i += 2
+            continue
+        if not args[i].startswith("-"):
+            path = re.sub(r"^https?://[^/]+", "", args[i])
+            break
+        i += 1
+    # A GraphQL query reads; only a mutation writes, and it can reach anything (merge, refs).
+    query = path.strip("/").lower() == "graphql" and not any("mutation" in a for a in lowered)
+    if method in {"GET", "HEAD"} or not (method or fields) or query:  # gh api posts when given fields
+        return [request("external-read", service="github")]
+    return github_write(path)
 
 
 def deletion(name, args):
@@ -582,9 +697,34 @@ def inline_script(name, code):
         found.append(request("filesystem-write", destructive=bool(DELETES.search(code))))
     found = found or [request("read-only")]
     # Approvals belong to the person, so they are flagged even inside code that also runs programs.
-    if re.search(r"\baifw\b", code) and re.search(r"approve|activate|decide|grant|add_waiver|verdict", code):
+    if re.search(r"\baifw\b", code) and (
+        re.search(r"approve|activate|decide|grant|add_waiver|verdict|record_chat", code)
+        or FORGES.search(code)
+    ):
         found = [dict(r, approval=True) for r in found]
     return found
+
+
+# Feeding the hooks a made-up message would record it as the person's reply (ADR-0037).
+FORGES = re.compile(r"UserPromptSubmit|aifw[.-]hooks?\b|from\s+aifw\s+import[^\n;]*\bhooks\b")
+
+
+def forges_prompt(name, args, text):
+    """Running the hook, or a new Claude session, with a message of the agent's choosing."""
+    lowered = [a.lower() for a in args]
+    # xargs, find -exec and friends run their arguments; other programs only mention the name.
+    runs_hook = name in RUNNERS and any(re.search(r"(^|[\s\\/])aifw-hook(\.exe)?(\s|$)", a) for a in lowered)
+    module = name.startswith("aifw.hooks") or (  # python -m aifw.hooks arrives as the module
+        name in INTERPRETERS and any(a.startswith("aifw.hooks") for a in lowered)
+    )
+    claude = name == "claude" and bool({"-p", "--print"} & set(lowered))  # a session with a prompt
+    return name == "aifw-hook" or runs_hook or module or claude
+
+
+RUNNERS = {
+    "xargs", "find", "busybox", "parallel", "env", "nohup", "timeout", "watch", "nice", "sudo", "doas",
+    "time", "start", "stdbuf", "setsid", "exec", "command", "builtin", "strace", "chroot",
+}  # fmt: skip
 
 
 def package_name(args):
@@ -638,18 +778,35 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
         found.append(request("install"))
     elif name == "gh":
         if lowered[:1] == ["api"]:
-            found.append(dict(http_request(name, args, allowlist), service="github"))
+            found += gh_api(args)
         elif lowered[:1] in (["pr"], ["release"], ["repo"], ["workflow"], ["issue"]) and len(lowered) > 1:
-            read = lowered[1] in {"list", "view", "status", "checks", "diff"}
-            found.append(request("external-read" if read else "git-remote", service="github"))
+            read = lowered[1] in {"list", "view", "status", "checks", "diff", "download", "checkout"}
+            # Opening and discussing pull requests and issues is how branch work reaches the person.
+            discuss = lowered[0] in {"pr", "issue"} and lowered[1] in {
+                "create", "edit", "comment", "review", "ready", "close", "reopen",
+            }  # fmt: skip
+            if read:
+                found.append(
+                    request("external-read", service="github", discussion=lowered[0] in {"pr", "issue"})
+                )
+            elif discuss:
+                found.append(request("external-write", service="github", discussion=True))
+            elif lowered[0] == "release":  # create, upload, edit and delete change what users download
+                found.append(request("publish", service="github"))
+            else:  # merging, repository and workflow changes reach the default branch or settings
+                found.append(request("git-remote", service="github", protected=True))
         else:
             found.append(request("read-only"))
     elif name in {"curl", "wget", "invoke-webrequest", "invoke-restmethod", "iwr", "irm"}:
-        found.append(http_request(name, args, allowlist))
+        found += http_request(name, args, allowlist)
     elif prints_environment(words, name, args):
         found.append(request("secret-read"))
-    elif (name in PUBLISH and PUBLISH[name] in lowered[:2]) or build_publishes(name, args):
-        found.append(request("external-write", service="package-registry"))
+    elif (
+        (name in PUBLISH and PUBLISH[name] in lowered[:2])
+        or build_publishes(name, args)
+        or (name in {"docker", "podman"} and "--push" in lowered)  # docker buildx build --push
+    ):
+        found.append(request("publish", service="package-registry"))  # always asks, allowlist or not
     elif name in REMOTE_SHELL:
         found.append(request("external-write", service="remote-host"))
     elif name in INSTALL and lowered[:1] and lowered[0] in INSTALL[name]:
@@ -670,11 +827,18 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
         found.append(request("filesystem-write", destructive=True))
     if any(">" in w and set(w) <= set(">&|") for w in words):
         found.append(request("filesystem-write", destructive=False))
-    if any(SECRET_FILE.search(w) for w in args):
+    if secret := secret_use(name, args):
+        # Showing the content is denied; naming the file (.gitignore, cp .env.example .env) only asks.
+        found.append(request("secret-read", mention=secret == "mention"))
+    if name == "gh" and lowered[:2] == ["auth", "token"]:  # prints the GitHub token
         found.append(request("secret-read"))
-    if name == "aifw" and (
-        set(lowered) & {"approve", "activate", "decide", "grant", "verdict"}
-        or lowered[:2] == ["waiver", "add"]
+    if (
+        name == "aifw"
+        and (
+            set(lowered) & {"approve", "activate", "decide", "grant", "verdict"}
+            or lowered[:2] == ["waiver", "add"]
+        )
+        or forges_prompt(name, args, text)
     ):
         found = [dict(r, approval=True) for r in found]
     return found

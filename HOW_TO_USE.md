@@ -222,7 +222,7 @@ Para descobrir a sintaxe atual:
 ```powershell
 aifw --help
 aifw init --help
-aifw route activate --help
+aifw route explain --help
 ```
 
 A referência literal gerada de todos os comandos e opções está em [docs/cli-reference.generated.md](docs/cli-reference.generated.md).
@@ -448,36 +448,21 @@ Operações: `single-read`, `discovery`, `documentation`, `implementation`, `rev
 
 ### `aifw route status`
 
-Mostra a policy persistida, aliases, modelos-alvo, modo e evidência de ativação do projeto atual.
+Mostra a policy persistida, aliases, modelos-alvo e modo do projeto atual. O roteamento fica sempre ligado (ADR-0037).
 
 ```powershell
 aifw route status --json
 ```
 
-Projetos novos começam em `recommendation-only`.
-
 ### `aifw route eval`
 
-Executa os casos determinísticos de roteamento e calcula se o relatório atende aos mínimos para ativação.
+Executa os casos determinísticos de roteamento. Mudar a tabela de modelos exige pelo menos 30 casos, 95% de aprovação e nenhuma falha crítica.
 
 ```powershell
 aifw route eval --output .aifw/routing-report.json --json
 ```
 
 `--cases` permite fornecer outra fixture revisável. Falhas retornam código 2.
-
-### `aifw route activate`
-
-Ativa o roteamento automático somente depois de relatório aprovado e registro humano persistido.
-
-```powershell
-aifw route activate `
-  --report .aifw/routing-report.json `
-  --by "human:proprietario" `
-  --record docs/adr/ADR-0008-routing.md
-```
-
-Não execute isso apenas para “ligar uma opção”: a ativação exige pelo menos 30 casos, 95% de aprovação, nenhuma falha crítica e evidência humana.
 
 ### `aifw intake set`
 

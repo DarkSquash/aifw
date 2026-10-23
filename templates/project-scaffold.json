@@ -157,10 +157,12 @@
     "apiVersion": "aifw.dev/v1alpha1",
     "kind": "PermissionPolicy",
     "localGit": "autonomous",
-    "remoteMutation": "human-approval",
+    "remoteMutation": "branches",
     "previewDeployment": "autonomous",
     "productionDeployment": "human-approval",
     "destructiveChanges": "human-approval",
+    "commits": "allow",
+    "opaqueCode": "allow",
     "childAgents": {
       "capabilityCeiling": "parent"
     },
@@ -171,14 +173,14 @@
       "expires": true
     },
     "externalServices": {
-      "writes": "human-approval"
+      "writes": "allowlist"
     }
   },
   ".aifw/routing.yaml": {
     "apiVersion": "aifw.dev/v1alpha1",
     "kind": "RoutingPolicy",
-    "enabled": false,
-    "mode": "recommendation-only",
+    "enabled": true,
+    "mode": "automatic",
     "aliases": {
       "FAST": "haiku",
       "WORK": "sonnet",
@@ -197,12 +199,6 @@
         "provider": "anthropic",
         "model": "claude-opus-5-5"
       }
-    },
-    "activation": {
-      "minimumCases": 30,
-      "minimumPassRate": 0.95,
-      "criticalFailures": 0,
-      "humanApprovalRequired": true
     }
   },
   ".aifw/specs/current/README.md": "# Current capability specs\n\nAccepted, executable capability specifications are the current product truth. Active proposals never modify this directory directly.\n",

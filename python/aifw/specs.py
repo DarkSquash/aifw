@@ -4,11 +4,11 @@ from collections import Counter
 from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
+import re
 import shutil
 import subprocess
 from uuid import uuid4
 
-from . import signing
 from .common import (
     API,
     AifwError,
@@ -379,7 +379,8 @@ def preview_sync(root, change_id):
         plan["changes"].append(
             dict(
                 capability=delta["capability"],
-                action="update" if current else "create",
+                # A capability left with no requirements is retired: archive deletes its spec.
+                action="remove" if not requirements else "update" if current else "create",
                 outputPath=output,
                 **{
                     op: sorted(r["id"] for r in delta["operations"][op])
@@ -399,9 +400,8 @@ def assert_approval(root, change):
     try:
         human(approval.get("approvedBy"))
         timestamp(approval.get("approvedAt"))
+        # The record is the person's own reply, kept by the prompt hook; no signed commit (ADR-0037).
         require(file_state(root, approval.get("record")) == "valid", "Missing approval record.")
-        change_file = change_dir(root, change["metadata"]["id"]) / "change.yaml"
-        require(signing.approved(root, change_file), "The approval is not in a signed commit.")
     except AifwError as error:
         raise AifwError(
             "APPROVAL_REQUIRED",
@@ -422,6 +422,90 @@ def approve_change(root, change_id, approval):
     change["approval"] = dict(approval, record=record)
     write_yaml(change_dir(root, change_id) / "change.yaml", change)
     return change
+
+
+APPROVAL_REQUEST = "approval-request.yaml"
+# Replies that approve the plan just presented (ADR-0037); "pode" approves alone or with a go-ahead verb,
+# never as the start of a request such as "pode me explicar".
+APPROVING = re.compile(
+    r"^((perfeito|beleza|[óo]timo|show)[\s,.!]+(?=\S))?"  # a courtesy word before the answer
+    r"((sim|aprovo|aprovado|aprovada|ok|okay|yes|bora|manda ver|fechado|t[áa] bom|go ahead)\b"
+    r"|pode(\s+(sim|seguir|fazer|ir|come[cç]ar|implementar|mandar|executar)\b|[\s.!]*$))",
+    re.IGNORECASE,
+)
+
+
+def request_approval(root, change_id, at):
+    """Mark a change as waiting for the person's reply to the plan just presented in the chat."""
+    load_change(root, change_id)
+    write_yaml(change_dir(root, change_id) / APPROVAL_REQUEST, dict(changeId=change_id, requestedAt=at))
+    return dict(status="awaiting-approval", changeId=change_id)
+
+
+# After the approving word, these turn the reply into a condition or a delay: ambiguous cancels.
+# A plain "não" is no hold ("sim, não tenho objeções"); "não faça", "ainda não" are.
+HOLDING = re.compile(
+    r"\b(mas|por[ée]m|espera|calma|antes|depois\s+que|s[óo]\s+depois|ainda\s+n[ãa]o"
+    r"|n[ãa]o\s+(agora|ainda|fa[çc]a|comece|siga|prossiga|implemente|mexa|execute|rode|mude|altere|continue)"
+    r"|but|wait|hold\s+on|don'?t|not\s+yet)\b",
+    re.IGNORECASE,
+)
+
+
+def approving(prompt):
+    """The person's reply approves when it starts with an approving word, asks nothing back and holds
+    nothing back ("ok, mas não faça nada ainda" cancels)."""
+    text = prompt.strip().lstrip("\"'“").strip()
+    return "?" not in text and bool(APPROVING.match(text)) and not HOLDING.search(text)
+
+
+def person(root):
+    """The approving person's identity: git's user.name, as human:<name>."""
+    try:
+        name = subprocess.run(
+            ["git", "config", "user.name"], cwd=root, stdin=subprocess.DEVNULL, capture_output=True, text=True
+        ).stdout.strip()
+    except OSError:
+        name = ""
+    return "human:" + (re.sub(r"\s+", "-", name) or "owner")
+
+
+def record_chat_approval(root, prompt, at, requested=lambda change_id: True):
+    """Called by the prompt hook with the person's own message, never by the agent.
+
+    A pending request is consumed by the next message: an approving reply records the approval with
+    the message as evidence; anything else drops the request, so a later "sim" cannot approve a plan
+    the person moved on from. `requested` keeps only the requests made in this chat session, so a
+    reply in another session leaves them alone. Returns {"approved": id}, {"dropped": [ids]} or None.
+    """
+    requests = sorted((Path(root) / ".aifw/changes/active").glob(f"*/{APPROVAL_REQUEST}"))
+    requests = [r for r in requests if requested(r.parent.name)]
+    if not requests:
+        return None
+    for request in requests:
+        request.unlink()
+    if len(requests) != 1 or not approving(prompt):
+        return dict(dropped=[r.parent.name for r in requests])
+    change_id = requests[0].parent.name
+    who = person(root)
+    record = change_dir(root, change_id) / "approval.md"
+    quoted = "\n".join("> " + line for line in prompt.strip().splitlines())
+    record.write_text(
+        f"# Aprovação — {change_id}\n\n"
+        f"- Aprovado por: {who}, no chat do Claude Code, em {at}.\n"
+        "- Gravado pelo hook `UserPromptSubmit` a partir da mensagem da pessoa (ADR-0037).\n\n"
+        f"## Mensagem da pessoa, na íntegra\n\n{quoted}\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    try:
+        approve_change(
+            root, change_id, dict(approvedBy=who, approvedAt=at, record=record.relative_to(root).as_posix())
+        )
+    except AifwError:
+        record.unlink(missing_ok=True)  # no record without the approval it proves
+        raise
+    return dict(approved=change_id)
 
 
 def update_status(root, change_id, status):
@@ -486,7 +570,11 @@ def archive_change(root, change_id, archived_at):
     else:
         next_current.mkdir()
     for output in plan["outputs"]:
-        write_yaml(next_current / f"{output['spec']['capability']}.yaml", output["spec"])
+        target = next_current / f"{output['spec']['capability']}.yaml"
+        if output["spec"]["requirements"]:
+            write_yaml(target, output["spec"])
+        else:
+            target.unlink(missing_ok=True)
     shutil.copytree(active, next_archive, symlinks=True)
     write_yaml(next_archive / "change.yaml", dict(change, status="archived", archivedAt=archived_at))
     trace_file = next_archive / "traceability.yaml"
@@ -527,7 +615,7 @@ def archive_change(root, change_id, archived_at):
     result = dict(
         changeId=change_id,
         archivePath=archived_relative,
-        currentSpecs=sorted(o["relativePath"] for o in plan["outputs"]),
+        currentSpecs=sorted(o["relativePath"] for o in plan["outputs"] if o["spec"]["requirements"]),
     )
     try:
         remove_tree(transaction)

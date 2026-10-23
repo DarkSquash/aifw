@@ -25,13 +25,13 @@ Revisão não substitui testes e gates, que rodam em toda classe. Trabalho trivi
 
 ## Ativação
 
-Projetos nascem com `enabled: false` e `mode: recommendation-only`. `aifw route activate` aceita relatório de conformidade e exige identidade + ADR/registro. O core recusa ativação com menos de 30 casos, pass rate abaixo de 95%, falha crítica ou aprovação ausente. Ativação escreve evidência na routing policy; não fica em conversa. `route explain` usa os aliases e o estado gravados na policy; com `approvals.requireSignedCommit`, a ativação só vale num commit assinado.
+O roteamento fica sempre ligado (ADR-0037): `route explain` responde `executionMode: automatic` e o agente escolhe o modelo pela tabela, sem pedir confirmação. Não há comando de ativação.
 
-`aifw route eval --output <report.json>` executa a suíte determinística revisável em `evals/routing/cases.yaml`. Troca de modelo-alvo exige nova avaliação e nova aprovação (ADR-0003).
+`aifw route eval --output <report.json>` executa a suíte determinística revisável em `evals/routing/cases.yaml`. Mudar a tabela ou o modelo-alvo exige a suíte com pelo menos 30 casos, 95% de aprovação e nenhuma falha crítica.
 
-## Avaliador de tarefas (modo sombra)
+## Avaliador de tarefas
 
-Com `spec.assessment.mode: shadow` em `aifw.yaml`, cada pedido da pessoa com 5 palavras ou mais é avaliado automaticamente, em segundo plano, pelo hook `UserPromptSubmit` (ADR-0031); segredos reconhecidos são mascarados antes do envio. `aifw change assess --task "<pedido>"` faz o mesmo à mão. A avaliação manda três perguntas independentes ao `perplexity/pplx-decider-v1.2`, pelo OpenRouter: risco (L0–L3), importância e complexidade. Uma regra fixa transforma as respostas no caminho:
+Com `spec.assessment.mode: shadow` em `aifw.yaml` e o recurso `tasks` ligado, cada pedido da pessoa com 5 palavras ou mais é avaliado automaticamente pelo hook `UserPromptSubmit` (ADR-0031), antes de o agente ler a mensagem; segredos reconhecidos são mascarados antes do envio. `aifw change assess --task "<pedido>"` faz o mesmo à mão. A avaliação manda três perguntas independentes ao `perplexity/pplx-decider-v1.2`, pelo OpenRouter: risco (L0–L3), importância e complexidade. Uma regra fixa transforma as respostas no caminho:
 
 | Caminho | Quando | Planeja | Executa | Revisa |
 | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Com `spec.assessment.mode: shadow` em `aifw.yaml`, cada pedido da pessoa com 5 p
 | CRITICAL | risco L3 | opus | opus | revisor independente e humano |
 
 - Com `--diff`, os fatos verificáveis do diff (autenticação, deploy, contratos, arquivos de controle) formam um piso: o risco final nunca fica abaixo dele.
-- Em modo sombra nada muda no fluxo: cada avaliação é gravada em `.aifw/assessments/shadow.jsonl`.
+- Cada avaliação é gravada em `.aifw/assessments/shadow.jsonl`. Os outros recursos (`impasse`, `context`, `intake`, `traceability`, `decisions`) continuam em modo sombra: só registram.
 - Só o texto do pedido sai da máquina, nunca código ou diff. O comando exige:
   - `openrouter` em `spec.externalAllowlist`;
   - a chave em `OPENROUTER_API_KEY`;
@@ -50,9 +50,7 @@ Com `spec.assessment.mode: shadow` em `aifw.yaml`, cada pedido da pessoa com 5 p
   Sem isso, responde `unavailable` e não chama a API. Custo aproximado: US$ 0,00001 por pedido.
 - `aifw assess report` mostra as perguntas, as respostas de cada pedido e os seus vereditos.
 - `aifw assess verdict --id 1,2 --agree --by human:<nome>`, ou `--value <caminho>`, registra se você concorda. É uma aprovação humana, rodada só no seu terminal.
-- **Modo ativo (ADR-0036):**
-  - O critério é 50 pedidos com veredito, 90% de concordância e nenhum caso CRITICAL rebaixado, contando só os pedidos da pessoa.
-  - Atingido o critério, a pessoa roda `aifw assess activate --feature tasks --by human:<nome>` no próprio terminal, assina `.aifw/assessor.yaml` e roda `aifw claude enable`.
-  - A partir daí, cada pedido chega ao agente com o caminho (FAST, WORK, PLANNED ou CRITICAL), e delegar a Haiku depois de um caminho PLANNED ou CRITICAL pede confirmação.
+- **Modo ativo (ADR-0036, ADR-0037):**
+  - O recurso `tasks` é sempre ativo, sem comando de ativação: cada pedido chega ao agente com o caminho (FAST, WORK, PLANNED ou CRITICAL), que ele segue na tabela de modelos. Subir é permitido, descer nunca; a escolha do modelo não pede confirmação.
   - Se o serviço falhar, o agente só recebe um aviso e segue a classificação de sempre.
-  - Para desligar, apague `.aifw/assessor.yaml` e rode `aifw claude enable`. Ao atingir 50 avaliações, o início de sessão avisa que o relatório está pronto. Consulte o [ADR-0023](decisions/ADR-0023-task-assessor-shadow.md).
+  - Para desligar, tire `tasks` de `spec.assessment.features`. Consulte o [ADR-0023](decisions/ADR-0023-task-assessor-shadow.md).

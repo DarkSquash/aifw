@@ -7,6 +7,7 @@ Outside an AIFW project every event is a no-op.
 """
 
 from hashlib import sha256
+from itertools import islice
 import json
 from pathlib import Path
 import re
@@ -15,7 +16,7 @@ import sys
 import time
 
 from . import signing
-from .common import now, read_yaml
+from .common import AifwError, now, read_yaml
 from .impasse import case_file, load_cases, mutation_allowed
 from .permissions import decide_action, load_permission_policy, validate_break_glass
 from .shell import SECRET_FILE, analyze, domains_for, runs_tests, service_of, verification_visible
@@ -50,8 +51,15 @@ CONTROL = (
     # git runs code from here by itself (hooks, aliases and helpers from config), unread by the hook.
     ".git/",
     ".husky/",  # husky points core.hooksPath here: git runs these hooks on commit
-    ".aifw/assessor.yaml",  # the person's activation of the task assessor (ADR-0036)
 )
+# What a commit must not carry without asking: files a signature turns into an approval (Charter,
+# adoption, impasse, waiver, break-glass) and the policy itself. Generated files, evidence and change
+# approvals are left out (ADR-0037).
+SIGNED_OR_POLICY = (
+    "aifw.yaml", ".aifw/charter.yaml", ".aifw/adoption/status.yaml", ".aifw/impasses/", ".aifw/waivers/",
+    ".aifw/break-glass/", ".aifw/permissions.yaml", ".aifw/routing.yaml", ".aifw/gates.yaml",
+    ".aifw/project-rules.yaml", ".claude/settings.json", ".claude/settings.local.json",
+)  # fmt: skip
 # Installed tools the hook runs without reading (ADR-0034): editing them with the edit tools asks.
 # Shell commands are not checked: `.venv/bin/ruff format .` names the folder without changing it.
 INSTALLED = re.compile(r"(^|[\s'\"=:/])(\.venv|node_modules|\.tox)/")
@@ -64,7 +72,39 @@ def find_root(cwd):
     return None
 
 
-def control_target(root, tool_name, tool_input, mutation, protected=()):
+PATTERN_WORD = re.compile(r"[^\s'\"<>|;&()=]*[*?\[{][^\s'\"<>|;&()=]*")
+BRACES = re.compile(r"\{([^{}]*,[^{}]*)\}")
+
+
+def pattern_files(root, cwd, word):
+    """The project files a shell pattern names: `chang?.yaml`, `approval.m[d]`, `approval.{md,x}`."""
+    words, found = [word], []
+    while len(words) < 64 and any(BRACES.search(w) for w in words):  # innermost braces first
+        expanded = []
+        for w in words:
+            m = BRACES.search(w)
+            expanded += [w[: m.start()] + p + w[m.end() :] for p in m.group(1).split(",")] if m else [w]
+        words = expanded
+    base, top = Path(cwd or root), Path(root).resolve()
+    for pattern in words:
+        if pattern.lstrip("./").startswith("**"):
+            continue  # shortcut: a pattern recursive from the top is not expanded, it would walk node_modules
+        path = Path(pattern)
+        if path.is_absolute() and not path.is_relative_to(top):
+            continue
+        parent, name = (top, path.relative_to(top).as_posix()) if path.is_absolute() else (base, pattern)
+        try:  # bounded: a pattern like **/* must not stall every command
+            matches = list(islice(parent.glob(name), 200))
+        except (OSError, ValueError, NotImplementedError):
+            matches = []
+        for match in matches:
+            match = match.resolve()
+            if match.is_relative_to(top):
+                found.append(match.relative_to(top).as_posix().lower())
+    return found
+
+
+def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None):
     """The AIFW control file this call would change, if any."""
     if tool_name in EDIT_TOOLS:
         target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
@@ -82,14 +122,18 @@ def control_target(root, tool_name, tool_input, mutation, protected=()):
         ]
         if "/.git/" in "/" + text:
             matches.append(".git/")  # a nested repository or a submodule
-        if text.startswith(".aifw/changes/") and text.endswith("/change.yaml"):
-            matches.append("change.yaml")  # holds the spec approval
+        # Also inside a worktree or a copy of the tree, from where a merge or a copy brings it in.
+        if "/.aifw/changes/" in "/" + text and text.endswith(("/change.yaml", "/approval.md")):
+            matches.append(text.rsplit("/", 1)[1])  # the approval and its record, kept by the prompt hook
         if INSTALLED.search(text):
             matches.append(INSTALLED.search(text).group(2) + "/")
     elif tool_name in SHELL_TOOLS and mutation:
         text = tool_input.get("command", "").replace("\\", "/").lower()
-        controls = (*CONTROL, *protected, "change.yaml", ".claude/settings")
+        controls = (*CONTROL, *protected, "change.yaml", "approval.md", ".claude/settings")
         matches = [c for c in controls if c.lower() in text]
+        # A pattern can name a control file without spelling it (chang?.yaml, approval.m[d]).
+        for word in PATTERN_WORD.findall(tool_input.get("command", "").replace("\\", "/")):
+            matches += [c for f in pattern_files(root, cwd, word) for c in controls if c.lower() in "/" + f]
     else:
         return None
     return matches[0] if matches else None
@@ -139,11 +183,65 @@ def service_domains(policy, allowlist):
     return {name: custom.get(name) or domains_for([name])[name] for name in allowlist}
 
 
-def active_levels(root):
-    return {
-        read_yaml(f).get("metadata", {}).get("level")
-        for f in (Path(root) / ".aifw/changes/active").glob("*/change.yaml")
-    }
+def git_output(root, *args):
+    try:
+        done = subprocess.run(
+            ["git", *args], cwd=root, stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=5
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+    return done.stdout.strip() if done.returncode == 0 else ""
+
+
+PROTECTED_PUSH = "changes the default branch or the remote history; work goes through a branch"
+
+
+def protected_push(root, item):
+    """Why a push asks: it reaches the default branch, all branches or tags, or the hook cannot place it.
+
+    "" for a push to a work branch, which runs on its own (ADR-0037); forced pushes and deletions are
+    destructive and ask through destructiveChanges. A gh write that is not a pull request arrives as
+    protected.
+    """
+    if item.get("protected"):
+        return PROTECTED_PUSH
+    if "push" not in item:
+        return ""
+    targets, flags = item["push"]["targets"], {f.split("=", 1)[0] for f in item["push"]["flags"]}
+    if flags & {"--all", "--branches", "--mirror", "--tags", "--follow-tags", "--prune"}:
+        return PROTECTED_PUSH
+    remote, specs = (targets[0], targets[1:]) if targets else ("origin", [])
+    current = git_output(root, "rev-parse", "--abbrev-ref", "HEAD")
+    # Without the remote's HEAD (a URL, or a remote added by hand) the default branch is unknown: ask.
+    head = git_output(root, "symbolic-ref", "--short", f"refs/remotes/{remote}/HEAD").split("/", 1)[-1]
+    if not head and re.search(r"[:/@\\]", remote):
+        return "pushes to a URL, whose default branch the hook cannot tell; push through a named remote"
+    if not head:
+        return (
+            f"the default branch of {remote} is unknown (no refs/remotes/{remote}/HEAD); run "
+            f"`git remote set-head {remote} --auto` once and pushes to work branches run on their own"
+        )
+    if current in {"", "HEAD"} or "tag" in specs:
+        return PROTECTED_PUSH
+    if not specs:
+        # Configuration decides where a bare push lands: a push refspec, or the branch's upstream.
+        configured = git_output(root, "config", "--get-regexp", r"^remote\..*\.push$")
+        upstream = git_output(root, "rev-parse", "--abbrev-ref", "@{upstream}").split("/", 1)[-1]
+        if configured or git_output(root, "config", "push.default") == "matching" or upstream == head:
+            return PROTECTED_PUSH
+        specs = [current]
+    for spec in specs:
+        source, _, destination = spec.lstrip("+").rpartition(":")
+        source = source or destination
+        destination = current if destination in {"HEAD", "@"} else destination
+        if "*" in spec or not destination or source.startswith(("refs/tags/", "tags/")):
+            return PROTECTED_PUSH
+        if git_output(root, "show-ref", "--verify", f"refs/tags/{source}"):
+            return PROTECTED_PUSH  # a tag pushed by its short name
+        branch = destination.removeprefix("refs/").removeprefix("heads/")
+        if (destination.startswith("refs/") and not destination.startswith("refs/heads/")) or branch == head:
+            return PROTECTED_PUSH
+    return ""
 
 
 def active_grants(root, policy):
@@ -168,18 +266,6 @@ def log_break_glass(file, kind, tool_name, tool_input):
         stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
-def agent_model(root, name):
-    """The model a custom subagent definition names, from the project's or the user's .claude/agents."""
-    if not name or not re.fullmatch(r"[\w.-]+", name):
-        return None
-    for folder in (Path(root) / ".claude/agents", Path.home() / ".claude/agents"):
-        file = folder / f"{name}.md"
-        if file.is_file():
-            match = re.search(r"^model:\s*['\"]?([\w.-]+)", file.read_text(encoding="utf-8")[:4000], re.M)
-            return match and match.group(1)
-    return None
-
-
 def item_findings(root, policy, item, allowlist, classification, tool_name="", tool_input=None):
     """Policy findings for one action of a tool call."""
     kind, findings = item["kind"], []
@@ -193,8 +279,17 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
                 " write it to a .py or .js file and run that file so the hook can read it",
             )
         )
+    elif kind == "secret-read" and item.get("mention"):
+        findings.append(("ask", "names a file that usually holds secrets"))
     elif kind == "secret-read":
-        findings.append(("ask", "reads files or variables that usually hold secrets"))
+        # The person reads secrets; the agent never does (ADR-0037).
+        findings.append(("deny", "reads files or variables that usually hold secrets"))
+    elif kind == "publish" and classification in {"confidential", "restricted"}:
+        findings.append(("deny", f"publishes the project's code outside the machine ({classification} data)"))
+    elif kind == "publish":
+        findings.append(
+            ("ask", "publishes a package to a registry; a published version cannot be taken back")
+        )
     elif kind == "signing":
         findings.append(("ask", "signs a commit; signed commits are the proof of human approval"))
     elif kind == "install" and item.get("package") in policy.get("trustedPackages", []):
@@ -209,7 +304,8 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         if control is None:
             findings.append(("ask", "creates or rewrites a commit; the person reviews every commit"))
         elif control:
-            # A commit carrying a control file can turn into an approval once signed.
+            # A commit carrying a control file can turn into an approval once signed (Charter, adoption,
+            # impasse, waiver, break-glass); change approvals no longer depend on signing (ADR-0037).
             findings.append(("ask", f"commits with the AIFW control file {control} changed"))
     elif kind == "mcp":
         servers = policy.get("mcpServers", {})
@@ -218,21 +314,24 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         elif item["server"] in servers.get("ask", []):
             findings.append(("ask", f"MCP server {item['server']} requires confirmation"))
     elif kind == "delegation":
-        risky = active_levels(root) & {"L3"}
-        model = item.get("model") or agent_model(root, item.get("agent")) or ""
-        if "haiku" in model and risky:
-            # The model table never runs L3 work on haiku; on L2 it is the agent's call (ADR-0030).
-            findings.append(("ask", f"delegates to haiku while an active {max(risky)} change exists"))
-        elif "haiku" in model:
-            from .assessment import PLANNED_PATHS, active, last_path
-
-            path = last_path(root, item.get("session")) if active(root) else None
-            if path in PLANNED_PATHS:
-                # In active mode the assessor's path sets the model table (ADR-0036).
-                findings.append(("ask", f"delegates to haiku on a request the task assessor routed {path}"))
+        # Which model takes the work is the agent's call, by the model table (ADR-0037).
         if item.get("remote"):
             # Subagents on this machine inherit these hooks; a cloud session runs outside them.
             findings.append(("ask", "delegates to a cloud session, outside this machine's AIFW hooks"))
+    elif kind == "git-remote" and policy.get("remoteMutation") == "branches":
+        reason = protected_push(root, item)
+        grants = active_grants(root, policy) if reason else {}
+        if reason and kind in grants:
+            log_break_glass(grants[kind], kind, tool_name, tool_input or {})
+        elif reason:
+            findings.append(("ask", reason))
+    elif (
+        kind in {"external-write", "external-read"}
+        and item.get("discussion")
+        and policy.get("remoteMutation") == "branches"
+        and classification not in {"confidential", "restricted"}
+    ):
+        pass  # opening and discussing pull requests is how branch work reaches the person (ADR-0037)
     else:
         decision = decide_action(item, policy, allowlist)
         grants = active_grants(root, policy) if decision["decision"] != "allow" else {}
@@ -253,7 +352,7 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
     return findings
 
 
-def evaluate(root, tool_name, tool_input, cwd=None, session=None):
+def evaluate(root, tool_name, tool_input, cwd=None):
     """Return ("deny"|"ask", reasons) or None when AIFW has no objection."""
     policy = load_permission_policy(root)
     allowlist, classification = project_settings(root)
@@ -273,13 +372,13 @@ def evaluate(root, tool_name, tool_input, cwd=None, session=None):
             )
     items = request.get("requests", [request])
     # The control-file check reads git status before the command runs, so a commit beside other writes asks.
-    mixed = any(i["kind"] not in {"commit", "git-local", "read-only", "signing"} for i in items)
+    # A push is judged on its own, so `git commit -am x && git push` is not a commit beside other writes.
+    mixed = any(i["kind"] not in {"commit", "git-local", "read-only", "signing", "git-remote"} for i in items)
     for item in items:
         item = dict(item, mixed=True) if mixed and item["kind"] == "commit" else item
-        item = dict(item, session=session) if item["kind"] == "delegation" else item
         findings += item_findings(root, policy, item, allowlist, classification, tool_name, tool_input)
     control = control_target(
-        root, tool_name, tool_input, request["mutation"], policy.get("protectedPaths", [])
+        root, tool_name, tool_input, request["mutation"], policy.get("protectedPaths", []), cwd
     )
     if control:
         findings.append(("ask", f"changes the AIFW control file {control}"))
@@ -296,17 +395,60 @@ def evaluate(root, tool_name, tool_input, cwd=None, session=None):
     return level, [reason for _, reason in findings]
 
 
+# The command itself, at the start of a command line, not a grep or a commit message that names it.
+REQUEST_APPROVAL = re.compile(
+    r"(?:^|[;&|(\n])\s*(?:\w+=\S*\s+)*(?:\S*[\\/])?"
+    r"(?:aifw(?:\.exe)?|(?:\S*[\\/])?(?:python3?|py)(?:\.exe)?\s+-m\s+aifw|uv\s+run\s+(?:python\s+-m\s+)?aifw|uvx\s+aifw)"
+    r"\s+spec\s+request-approval\s+(?:-\S+\s+)*([a-z][a-z0-9-]*)",
+    re.IGNORECASE,
+)
+
+
+def approval_owner(root, change_id):
+    """Where the hook keeps which chat session asked for the change's approval (ADR-0037)."""
+    return Path(root) / ".aifw/runs/approvals" / f"{change_id}.session"
+
+
+def session_name(payload):
+    return re.sub(r"[^A-Za-z0-9_-]", "", str(payload.get("session_id") or ""))[:80] or "unknown"
+
+
+def awaiting_reply(root, payload):
+    """The change whose plan this session put to the person and that still waits for the reply."""
+    from .specs import APPROVAL_REQUEST
+
+    pending = sorted((Path(root) / ".aifw/changes/active").glob(f"*/{APPROVAL_REQUEST}"))
+    asked = requested_here(root, payload) if pending else None  # nothing to read without a request
+    return next((p.parent.name for p in pending if asked(p.parent.name)), None)
+
+
 def pre_tool_use(root, payload):
+    # The agent stays frozen until the person answers the plan, so the next message is that answer.
+    waiting = awaiting_reply(root, payload)
+    if waiting:
+        return dict(
+            hookSpecificOutput=dict(
+                hookEventName="PreToolUse",
+                permissionDecision="deny",
+                permissionDecisionReason=(
+                    f"AIFW: o plano da mudança {waiting} aguarda a resposta da pessoa; pare aqui e "
+                    "espere, nenhuma ferramenta roda até ela responder (ADR-0037)"
+                ),
+            )
+        )
     try:
         result = evaluate(
-            root,
-            payload.get("tool_name", ""),
-            payload.get("tool_input") or {},
-            payload.get("cwd"),
-            payload.get("session_id"),
+            root, payload.get("tool_name", ""), payload.get("tool_input") or {}, payload.get("cwd")
         )
     except Exception as error:  # noqa: BLE001 - a broken policy must reach the human, not pass silently
         result = "ask", [f"AIFW hook could not evaluate the policy: {error}"]
+    command = str((payload.get("tool_input") or {}).get("command") or "")
+    asking = REQUEST_APPROVAL.search(command) if payload.get("tool_name") in SHELL_TOOLS else None
+    if asking and (result is None or result[0] != "deny"):
+        # Kept now, not by the async PostToolUse, so the freeze holds from the very next call.
+        owner = approval_owner(root, asking.group(1))
+        owner.parent.mkdir(parents=True, exist_ok=True)
+        owner.write_text(session_name(payload), encoding="utf-8")
     if result is None:
         return None
     level, reasons = result
@@ -328,8 +470,7 @@ def pre_tool_use(root, payload):
 
 
 def run_log(root, payload):
-    session = re.sub(r"[^A-Za-z0-9_-]", "", str(payload.get("session_id") or ""))[:80] or "unknown"
-    return Path(root) / ".aifw/runs" / f"{session}.jsonl"
+    return Path(root) / ".aifw/runs" / f"{session_name(payload)}.jsonl"
 
 
 def failed(payload):
@@ -385,10 +526,11 @@ def dirty_control(root):
         ).stdout
     except (OSError, subprocess.CalledProcessError):
         return None
-    for control in (*CONTROL, "/change.yaml"):
-        # Session and assessment logs are written by the hook itself and never hold an approval.
-        if control in listed and control not in {".aifw/runs/", ".aifw/assessments/"}:
-            return control
+    for line in listed.splitlines():
+        path = line[3:].split(" -> ")[-1].strip().strip('"').lower()
+        for control in SIGNED_OR_POLICY:
+            if path == control or (control.endswith("/") and path.startswith(control)):
+                return control
     return ""
 
 
@@ -527,31 +669,60 @@ def session_start(root, payload):
     return dict(hookSpecificOutput=dict(hookEventName="SessionStart", additionalContext="\n".join(lines)))
 
 
-def user_prompt(root, payload):
-    """Assess each request as the person sends it.
+def requested_here(root, payload):
+    """Whether this chat session is the last one that asked for the change's approval."""
+    session = session_name(payload)
 
-    In shadow mode the hook runs in the background and only records. Once the person activated the
-    assessor (ADR-0036), it runs before the request and hands the agent the execution path; a
+    def asked(change_id):
+        try:
+            return approval_owner(root, change_id).read_text(encoding="utf-8").strip() == session
+        except (OSError, ValueError):  # a missing or garbled owner file is no request of this session
+            return False
+
+    return asked
+
+
+def user_prompt(root, payload):
+    """The person's message, before the agent sees it.
+
+    It records the approval of a plan awaiting it (ADR-0037): only this hook writes it, from the
+    person's own words. With the task assessment on, it hands the agent the execution path; a
     failure only says so, and the request goes on as usual.
     """
-    from .assessment import active, assess, enabled, is_request, path_context
+    from .assessment import AUTOMATIC_PROMPT, assess, enabled, is_request, path_context
     from .context import redact
+    from .specs import record_chat_approval
 
     prompt = (payload.get("prompt") or "").strip()
+    context = []
+    if not AUTOMATIC_PROMPT.match(prompt):  # only the person's own messages approve
+        try:
+            reply = record_chat_approval(root, prompt, now(), requested_here(root, payload))
+        except AifwError as error:
+            context.append(f"AIFW: a aprovação não foi registrada: {error}")
+        else:
+            if reply and reply.get("approved"):
+                context.append(
+                    f"AIFW: aprovação da mudança {reply['approved']} registrada a partir da mensagem da pessoa."
+                )
+            elif reply:
+                context.append(
+                    f"AIFW: a resposta não aprovou o plano de {', '.join(reply['dropped'])}; o pedido foi "
+                    "cancelado. Ajuste o plano se for o caso e peça de novo com `aifw spec request-approval`."
+                )
     # Slash commands, short replies and automatic messages (subagent reports, other sessions) are not
     # tasks, and their text must not leave the machine.
-    if not is_request(prompt) or not enabled(root, "tasks"):
+    if is_request(prompt) and enabled(root, "tasks"):
+        try:
+            result = assess(root, redact(prompt)[:4000], use_diff=True, source="prompt")
+        except Exception as error:  # noqa: BLE001 - the request goes on, with the reason, whatever failed
+            result = dict(status="unavailable", reason=str(error) or type(error).__name__)
+        context.append(path_context(result))
+    if not context:
         return None
-    task, session = redact(prompt)[:4000], payload.get("session_id")
-    if not active(root):
-        assess(root, task, source="prompt", session=session)
-        return None
-    try:
-        result = assess(root, task, use_diff=True, source="prompt", session=session)
-    except Exception as error:  # noqa: BLE001 - the request goes on, with the reason, whatever failed
-        result = dict(status="unavailable", reason=str(error) or type(error).__name__)
-    context = path_context(result)
-    return dict(hookSpecificOutput=dict(hookEventName="UserPromptSubmit", additionalContext=context))
+    return dict(
+        hookSpecificOutput=dict(hookEventName="UserPromptSubmit", additionalContext="\n".join(context))
+    )
 
 
 HANDLERS = {

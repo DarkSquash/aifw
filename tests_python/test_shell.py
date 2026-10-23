@@ -3,7 +3,7 @@ import io
 import pytest
 
 from aifw import cli
-from aifw.common import AifwError
+from aifw.common import AifwError, read_yaml, write_yaml
 from aifw.hooks import handle
 from aifw.shell import analyze, verification_visible
 from test_workflows import init
@@ -85,10 +85,13 @@ def test_masked_test_run_does_not_count_as_verification(tmp_path):
     assert event("Stop") is None
 
 
-def test_opaque_commands_ask(tmp_path):
+def test_opaque_commands_ask_when_the_project_asks_for_them(tmp_path):
     init(tmp_path)
-    output = handle(dict(cwd=str(tmp_path), tool_name="Bash", tool_input=dict(command='eval "$X"')))
-    assert output["hookSpecificOutput"]["permissionDecision"] == "ask"
+    payload = dict(cwd=str(tmp_path), tool_name="Bash", tool_input=dict(command='eval "$X"'))
+    assert handle(payload) is None  # new projects allow code the hook cannot read (ADR-0037)
+    policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
+    write_yaml(tmp_path / ".aifw/permissions.yaml", dict(policy, opaqueCode="ask"))
+    assert handle(payload)["hookSpecificOutput"]["permissionDecision"] == "ask"
 
 
 def test_approvals_refuse_the_agent_shell(monkeypatch):

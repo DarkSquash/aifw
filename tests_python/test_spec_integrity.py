@@ -292,6 +292,28 @@ def test_merge_updates_removes_and_preserves_unaffected_requirements(fixture):
     assert current_path.read_bytes() == before
 
 
+def test_removing_every_requirement_retires_the_capability(fixture):
+    root, base, delta, _ = fixture
+    old = deepcopy(delta["operations"]["added"][0])
+    old["id"], old["scenarios"][0]["id"] = "REQ-OLD", "SCN-OLD"
+    spec = dict(
+        apiVersion=API, kind="CapabilitySpec", capability="old", title="Old", purpose="P", requirements=[old]
+    )
+    write_yaml(root / ".aifw/specs/current/old.yaml", spec)
+    retire = dict(delta, capability="old", title="Old")
+    retire["operations"] = dict(added=[], modified=[], removed=[dict(id="REQ-OLD", reason="Gone")])
+    write_yaml(base / "specs/old.delta.yaml", retire)
+    tasks = read_yaml(base / "tasks.yaml")
+    tasks["tasks"][0]["requirementIds"].append("REQ-OLD")
+    write_yaml(base / "tasks.yaml", tasks)
+    assert [c["action"] for c in specs.preview_sync(root, ID)["changes"]] == ["remove", "create"]
+    specs.update_status(root, ID, "ready")
+    validated(root)
+    result = specs.archive_change(root, ID, AT)
+    assert not (root / ".aifw/specs/current/old.yaml").exists()
+    assert result["currentSpecs"] == [".aifw/specs/current/search.yaml"]
+
+
 def test_missing_precondition_and_dangling_link_block_readiness(fixture):
     root, base, delta, trace = fixture
     delta["operations"]["modified"] = delta["operations"].pop("added")

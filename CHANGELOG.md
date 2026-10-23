@@ -4,10 +4,23 @@
 
 ### Alterado
 
-- Modo ativo do avaliador de tarefas (ADR-0036):
-  - `aifw assess activate --feature tasks --by human:<nome>` é uma aprovação humana e só passa com o critério atingido (50 pedidos com veredito, 90% de concordância, nenhum CRITICAL rebaixado). Ela grava `.aifw/assessor.yaml`, que só vale assinado quando `requireSignedCommit` está ligado.
-  - Com a ativação, cada pedido chega ao agente com o caminho de execução, e delegar a Haiku depois de um caminho PLANNED ou CRITICAL pede confirmação. Se o serviço falhar, o agente só recebe um aviso.
-  - `aifw claude enable` instala o hook de pedidos em primeiro plano só com a ativação válida.
+- Mais autonomia para o agente (ADR-0037):
+  - Mudanças L2/L3 são aprovadas no chat: o agente apresenta o plano e roda `aifw spec request-approval <id>`, e o hook `UserPromptSubmit` grava a resposta "sim" da pessoa em `approval.md`. Qualquer outra resposta cancela o pedido, e só vale o pedido da mesma sessão. A aprovação de mudança não exige mais commit assinado. Enquanto o pedido está pendente, o agente fica congelado: o hook nega qualquer ferramenta até a resposta da pessoa.
+  - O hook nega rodar `aifw-hook`, `python -m aifw.hooks` ou `claude -p` pelo shell, e editar `change.yaml`/`approval.md` (também por padrão de shell ou em outra árvore) pede confirmação. A proteção mira erro do agente, não um agente decidido a forjar a aprovação.
+  - Publicação com `uv`, `poetry`, `hatch`, `flit`, `pdm`, `deno`, `dotnet nuget push`, `vsce` e `docker buildx build --push` passa a pedir confirmação, e `git send-pack` conta como push protegido.
+  - Uma resposta com ressalva ("ok, mas não faça nada ainda") cancela o pedido de aprovação, e o hook avisa o agente; um "não" solto ("sim, não tenho objeções") não é ressalva, e "Pode sim" ou "Perfeito, pode seguir" aprovam. O pedido aceita opções antes do id (`--json`), outros lançadores (`py -m aifw`, `uv run`) e linhas novas; só o comando de verdade, não um `grep` que o cite, marca a sessão que pediu.
+  - O commit só pede confirmação com um arquivo que, assinado, valeria como aprovação (Charter, adoção, impasse, waiver, break-glass) ou com a política alterada; o `change.yaml` aprovado, a evidência de `validate --write` e as specs do archive não pedem. `git commit && git push` de uma branch de trabalho roda numa linha só.
+  - PR e comentário em PR, e ver o PR e os checks, rodam mesmo sem `github` na allowlist (com dados confidential o GitHub precisa estar nela; com restricted a escrita é negada). `gh api graphql` de leitura roda; uma mutation pede. Sem o HEAD do remoto, o motivo do pedido diz para rodar `git remote set-head origin --auto`.
+  - Só ler o conteúdo de um arquivo de segredo é negado (inclusive `git --no-pager diff .env` e `git show HEAD:.env`); um comando que apenas cita ou escreve o arquivo (`echo .env >> .gitignore`, `cat .env.example > .env`) pede confirmação, e procurar o nome (`grep .env .gitignore`) roda.
+  - `aifw secrets scan` deixa de apontar `.env.sample`, `.env.template` e `.env.dist`, que são modelos.
+  - Roteamento e avaliador de tarefas sempre ligados: saem `aifw route activate`, `aifw assess activate` e `.aifw/assessor.yaml`.
+  - `remoteMutation: branches`: push para branch de trabalho e PR sem confirmação; branch padrão, tags, force push, apagar branch remota e merge de PR pedem.
+  - `externalServices.writes: allowlist`: escrita em serviço da allowlist sem confirmação.
+  - Publicação de pacote sempre pede e é negada com dados confidential/restricted; leitura de segredos é negada; delegação a subagentes locais não pede.
+  - O juiz do código opaco (ADR-0035) foi removido: `aifw assess judge`, o recurso `judge` e o hook assíncrono. Rode `aifw claude enable` para limpar o hook.
+  - `spec archive` apaga a spec de uma capability que perde todos os requisitos.
+  - Neste repositório: `opaqueCode: allow`, `remoteMutation: branches`, `writes: allowlist`.
+- Modo ativo do avaliador de tarefas (ADR-0036; a ativação e a confirmação para Haiku saíram no ADR-0037): cada pedido chega ao agente com o caminho de execução, e se o serviço falhar o agente só recebe um aviso. `aifw claude enable` instala o hook de pedidos em primeiro plano.
 - O avaliador de tarefas ignora mensagens automáticas da sessão (relatórios de subagentes, avisos de outras sessões, notificações): elas não são avaliadas nem enviadas ao serviço, e o relatório deixa de contá-las.
 
 - O hook lê o código que um comando executa indiretamente, em `python/aifw/indirect.py` (ADR-0034). Antes, pôr um `git push` dentro de um script bastava para ele passar sem pergunta.
@@ -33,11 +46,11 @@
   - os gates com `python` chamam o interpretador real por trás de atalhos como o `bin\python.exe` do instalador do Python. O atalho, rodando sem console, repassava entradas inválidas aos testes.
 - Mais autonomia (ADR-0030):
   - opção `commits: allow` em `permissions.yaml`: criar e reescrever commits deixa de pedir confirmação, exceto com algum arquivo de controle alterado; push e commit com `-S` continuam pedindo. Ligada neste repositório;
-  - delegar para o `haiku` só pede confirmação com mudança L3 ativa;
+  - delegar para o `haiku` só pede confirmação com mudança L3 ativa (depois, no ADR-0037, a delegação local deixou de pedir);
   - a mensagem sobre código ilegível sugere gravá-lo num arquivo `.py` ou `.js`, que o hook lê.
 - `aifw assess eval --feature <recurso>` roda as suítes de `evals/assessment/` contra o modelo de decisão, com acertos, divergências e acertos por corte (ADR-0033). As perguntas são as mesmas do modo sombra.
 - Gate `independent-review` (ADR-0033): lê a linha `Resultado:` do `independent-review.md` e falha sem ela ou com `reprovado`; no `validate --level`, sem mudança, aponta as mudanças L2/L3 ativas em vez de avisar que não há comando. Neste repositório o gate passou a ser hard.
-- Avaliação automática das tarefas (ADR-0031): com o recurso `tasks` ligado, o hook `UserPromptSubmit` avalia em segundo plano cada pedido com 5 palavras ou mais, sem atrasar a sessão; o registro marca `source: prompt`. `aifw claude enable` instala o novo hook.
+- Avaliação automática das tarefas (ADR-0031): com o recurso `tasks` ligado, o hook `UserPromptSubmit` avalia cada pedido com 5 palavras ou mais (em segundo plano até o ADR-0037, que o pôs em primeiro plano); o registro marca `source: prompt`. `aifw claude enable` instala o novo hook.
 - `aifw init` e `aifw claude enable` colocam `.aifw/runs/` e `.aifw/assessments/` no `.gitignore` do projeto. Antes, os registros de sessão, com os comandos rodados, podiam ir para o git.
 - Menos confirmações falsas: `cut`, `tr`, `nl`, `basename`, `dirname` e `realpath` são leitura, e uma linha só com atribuição de variável (`L=x`) também. Cada confirmação pedida pelo hook fica registrada em `.aifw/runs/` (`tool: Ask`), para achar as que podem sair. Os registros de sessão e de avaliação não contam mais como arquivo de controle alterado num commit.
 - Os testes deixam de falhar ao acaso no Windows com WinError 6: o pytest troca a entrada padrão e o identificador do Windows ficava apontando para a antiga, já fechada (`tests_python/conftest.py`).
@@ -45,10 +58,6 @@
 
 ### Adicionado
 
-- Juiz do código opaco em modo sombra (ADR-0035): com o recurso `judge` ligado, um segundo hook `PreToolUse`, assíncrono (`aifw assess judge --hook`), pede ao Claude da assinatura, via `claude -p`, que julgue os comandos que o hook não consegue ler. Ele só registra, sem mudar nenhuma decisão do hook.
-  - O registro vai para `.aifw/assessments/judge.jsonl`, com veredito, a intenção provável em uma frase, a divergência entre a descrição do agente e o código, a decisão da regra fixa e a latência. A pessoa o revisa com `aifw assess report` e `aifw assess verdict --feature judge`.
-  - Haiku responde primeiro e o Sonnet entra quando a confiança fica baixa. O `claude -p` roda sem ferramentas, hooks, MCP, skills nem `CLAUDE.md`. Comando e código vão mascarados, entre marcadores com nonce, e arquivos de segredo, de dados, binários ou grandes ficam na máquina.
-  - `aifw assess eval --feature judge` mede Haiku, Sonnet e a escalada: acertos, liberações indevidas, latência e custo. `aifw claude enable` instala o novo hook.
 - Avaliador de tarefas em modo sombra (ADR-0023):
   - `aifw change assess` avalia risco, importância e complexidade com o `perplexity/pplx-decider-v1.2`, pelo OpenRouter, com piso de risco vindo do diff;
   - `aifw assess report` mostra as avaliações e os vereditos;

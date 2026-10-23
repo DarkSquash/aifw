@@ -5,7 +5,7 @@ import sys
 import pytest
 
 from aifw import gates, intake, permissions, routing, specs, waiver
-from aifw.claude import HOOKS, JUDGE, check_project, enable_project
+from aifw.claude import HOOKS, check_project, enable_project
 from aifw.common import AifwError, read_yaml, write_yaml
 from aifw.hooks import handle, summarize_runs
 from test_workflows import AT, init
@@ -56,9 +56,9 @@ def test_mcp_delegation_and_data_classification(tmp_path):
     assert pre(tmp_path, "mcp__markitdown__convert") == "ask"
     assert pre(tmp_path, "mcp__other__tool") is None
     specs.create_change(tmp_path, dict(id="routine", title="Routine", summary="S", level="L2", createdAt=AT))
-    assert pre(tmp_path, "Agent", model="haiku") is None  # L2 is the agent's call
+    assert pre(tmp_path, "Agent", model="haiku") is None
     specs.create_change(tmp_path, dict(id="risky", title="Risky", summary="S", level="L3", createdAt=AT))
-    assert pre(tmp_path, "Agent", model="haiku") == "ask"
+    assert pre(tmp_path, "Agent", model="haiku") is None  # the model table is the agent's call (ADR-0037)
     assert pre(tmp_path, "Agent", model="sonnet") is None
     set_spec(tmp_path, externalAllowlist=["github"])
     assert pre(tmp_path, "WebFetch", url="https://api.github.com/x") is None
@@ -201,7 +201,7 @@ def test_enable_replaces_outdated_hooks_and_check_reports_gaps(tmp_path):
     assert check_project(tmp_path, tmp_path / "home")["status"] == "warning"
     enable_project(tmp_path)
     data = json.loads(settings.read_text())
-    assert data["hooks"]["PreToolUse"] == [HOOKS["PreToolUse"], JUDGE]
+    assert data["hooks"]["PreToolUse"] == [HOOKS["PreToolUse"]]
     findings = check_project(tmp_path, tmp_path / "home")["findings"]
     assert not any(f.startswith("hook ") or "aifw-workflow" in f for f in findings)
     assert any("grilling" in f for f in findings)

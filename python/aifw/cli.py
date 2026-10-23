@@ -15,7 +15,6 @@ from .common import (
     now,
     parse_yaml,
     project_path,
-    read_json,
     require,
     timestamp,
     write_json,
@@ -134,7 +133,8 @@ def create_parser():
         ("validate", "validate delta preconditions"),
         ("analyze", "analyze requirement-to-evidence traceability"),
         ("sync", "preview the capability merge without writing"),
-        ("approve", "persist human approval for a change"),
+        ("approve", "persist human approval for a change, from the approver's terminal"),
+        ("request-approval", "mark a change as awaiting the person's reply to the plan in the chat"),
         ("archive", "commit validated specs and archive context"),
     ]:
         leaf = command("spec " + name, description)
@@ -182,14 +182,10 @@ def create_parser():
         leaf,
         "--feature",
         required=True,
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions", "judge"],
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
     )
     option(leaf, "--cases")
     option(leaf, "--output")
-    leaf = command(
-        "assess judge", "shadow-judge a shell command the hook cannot read; it records, never decides"
-    )
-    option(leaf, "--hook", action="store_true")  # reads the PreToolUse payload on stdin, prints nothing
     leaf = command(
         "assess report", "report shadow assessments and your verdicts against the activation criteria"
     )
@@ -197,19 +193,14 @@ def create_parser():
         leaf,
         "--feature",
         default="tasks",
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions", "judge"],
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
     )
-    leaf = command(
-        "assess activate", "turn the task assessor's active mode on once the shadow criteria hold (human)"
-    )
-    option(leaf, "--feature", default="tasks", choices=["tasks"])
-    approval(leaf)
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
     option(
         leaf,
         "--feature",
         default="tasks",
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions", "judge"],
+        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
     )
     option(leaf, "--id", required=True)
     option(leaf, "--agree", action="store_true")
@@ -242,9 +233,6 @@ def create_parser():
     leaf = command("route eval", "evaluate routing against reviewable cases")
     option(leaf, "--cases")
     option(leaf, "--output")
-    leaf = command("route activate", "activate routing after evals and human approval")
-    for flag in ("--report", "--by", "--record"):
-        option(leaf, flag, required=True)
     leaf = command("waiver add", "record a time-bounded human exception for a gate or overridable rule")
     for flag in ("--rule", "--scope", "--reason", "--expires"):
         option(leaf, flag, required=True)
@@ -327,13 +315,11 @@ APPROVALS = {
     "intake approve",
     "adopt approve",
     "decision approve",
-    "spec approve",
-    "route activate",
+    "spec approve",  # from a terminal; in Claude Code the prompt hook records the reply (ADR-0037)
     "impasse decide",
     "waiver add",
     "break-glass grant",
     "assess verdict",
-    "assess activate",
 }
 
 
@@ -519,6 +505,8 @@ def execute(args, root):
                 root, args.id, dict(approvedBy=args.by, approvedAt=at, record=args.record)
             ),
         ), 0
+    if action == "spec request-approval":
+        return specs.request_approval(root, args.id, at), 0
     if action == "spec archive":
         return dict(status="archived", **specs.archive_change(root, args.id, at)), 0
     if action == "decision list":
@@ -581,25 +569,11 @@ def execute(args, root):
         if args.output:
             write_json(args.output, value)
         return (value if args.json else render(value)), 0 if value["status"] == "evaluated" else 2
-    if action == "assess judge":
-        from .judge import hook_main
-
-        require(args.hook, "assess judge runs only as the async PreToolUse hook: pass --hook.")
-        return hook_main(), 0
     if action == "assess report":
         from .assessment import render_report, report
 
         value = report(root, args.feature)
         return (value if args.json else render_report(value)), 0
-    if action == "assess activate":
-        from .assessment import activate
-
-        value = activate(root, args.feature, args.by, at)
-        value["nextAction"] = (
-            "Commit .aifw/assessor.yaml with your signature, then run `aifw claude enable` "
-            "and open a new Claude Code session so the prompt hook waits for the path."
-        )
-        return value, 0
     if action == "assess verdict":
         from .assessment import record_verdicts
 
@@ -642,23 +616,11 @@ def execute(args, root):
         ), 0
     if action == "route status":
         return routing.load_routing(root), 0
-    if action == "route activate":
-        report = read_json(args.report)
-        if isinstance(report.get("cases"), list):
-            report["cases"] = len(report["cases"])
-        return routing.activate_routing(
-            root, {k: report[k] for k in ("cases", "passRate", "criticalFailures")}, args.by, args.record
-        ), 0
     if action == "route eval":
         value = conformance.evaluate_routing_cases(args.cases or assets() / "evals/routing/cases.yaml")
         if args.output:
             write_json(args.output, value)
-        return dict(
-            value,
-            activationReady=value["cases"] >= 30
-            and value["passRate"] >= 0.95
-            and value["criticalFailures"] == 0,
-        ), 2 if value["failures"] else 0
+        return value, 2 if value["failures"] else 0  # a check of the rules; routing is always on (ADR-0037)
     if action.startswith(("waiver ", "break-glass ")):
         from . import permissions, waiver
 
@@ -762,12 +724,7 @@ def execute(args, root):
         value = conformance.run_conformance(
             args.cases or assets() / "evals/cases", args.traces or assets() / "evals/traces"
         )
-        return dict(
-            value,
-            activationReady=len(value["cases"]) >= 30
-            and value["passRate"] >= 0.95
-            and value["criticalFailures"] == 0,
-        ), 0 if value["pass"] else 2
+        return value, 0 if value["pass"] else 2
     if action == "validate":
         require(bool(args.level) != bool(args.change), "Use either --level or --change.")
         require(not args.write or args.change, "--write records evidence for a --change.")
@@ -791,7 +748,7 @@ def main(argv=None):
             parser.print_help()
             return 0
         value, status = execute(args, Path.cwd())
-        if value != "":  # an async hook's stdout reaches the session, so the judge prints nothing
+        if value != "":
             print(value if isinstance(value, str) else json_text(value))
         return status
     except AifwError as error:

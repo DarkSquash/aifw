@@ -48,10 +48,10 @@ def test_decision_files_cannot_be_written_silently(tmp_path, path):
     assert pre(tmp_path, "Write", file_path=path, content="x") == "ask"
 
 
-def test_secret_files_ask_before_reading(tmp_path):
+def test_secret_files_are_never_read_by_the_agent(tmp_path):
     init(tmp_path)
-    assert pre(tmp_path, "Read", file_path=".env") == "ask"
-    assert pre(tmp_path, "Bash", command="cat config/server.pem") == "ask"
+    assert pre(tmp_path, "Read", file_path=".env") == "deny"  # ADR-0037
+    assert pre(tmp_path, "Bash", command="cat config/server.pem") == "deny"
     assert pre(tmp_path, "Read", file_path="README.md") is None
 
 
@@ -65,8 +65,8 @@ def test_secret_files_ask_before_reading(tmp_path):
         ("git p", "opaque"),
         ('python -c "import os"', "read-only"),
         ('python -c "import subprocess; subprocess.run([1])"', "opaque"),
-        ("npm publish", "external-write"),
-        ("flutter pub publish", "external-write"),
+        ("npm publish", "publish"),
+        ("flutter pub publish", "publish"),
         ("flutter pub get", "install"),
         ("scp dump.sql host:/tmp", "external-write"),
         ("pip install requests", "install"),

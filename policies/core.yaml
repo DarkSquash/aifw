@@ -65,15 +65,15 @@ rules:
     source: policies/core.yaml
     overridable: false
   - id: routing.eval-before-automation
-    version: 1.0.0
+    version: 2.0.0
     keyword: MUST
-    statement: Keep model routing recommendation-only until conformance thresholds and explicit human activation are recorded.
+    statement: Route models automatically only through a routing table whose conformance eval passes; delegated agents never exceed the parent's capabilities.
     scope: [framework, adapter]
-    rationale: Cost and capability routing must be proven before it can autonomously select models.
+    rationale: Routing is always on (ADR-0037), so the eval, not a one-time human activation, keeps cost and capability routing honest.
     owner: framework:governance
     enforcement:
       mode: hard
-      evidence: [routing-eval, approval-record]
+      evidence: [routing-eval]
     source: policies/core.yaml
     overridable: false
   - id: quality.evidence-before-completion
