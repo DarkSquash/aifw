@@ -31,6 +31,7 @@ Mantidos: instalações, deploy de produção, ações destrutivas e o que já e
 ## Consequências
 
 - O agente trabalha sem interrupção numa mudança aprovada, faz commit, push da branch e abre PR. O merge na branch padrão continua da pessoa.
+- Neste repositório, o hook `pre-push` local do ADR-0030 passa a exigir commits assinados só no push para a `main`/`master`; push de branch de trabalho vai sem assinatura, e a pessoa assina quando o trabalho chega à `main`.
 - A prova da aprovação é a mensagem da pessoa citada em `approval.md`, gravada pelo hook. Ela protege contra erro do agente e caminhos óbvios, não contra um agente decidido a forjá-la (ADR-0034).
 - **Decisão da pessoa em 2026-10-23:** seis revisões independentes, instruídas a achar qualquer jeito de forjar a aprovação, acharam sempre um caminho novo (cópia de pasta, `git merge` de outra worktree, leitura da pasta pessoal...). Um selo HMAC com chave em `~/.aifw`, um piso de nível pelo diff, a exigência de aprovação em L2 e bloqueios de cópia, patch e extração chegaram a ser feitos, mas quebravam o uso normal (aprovação presa a uma máquina, falsos positivos em `cp`, `claude --model`, `grep`) e foram retirados. O hook não persegue um agente malicioso. Se essa proteção for desejada, ela vem de uma barreira estrutural (sandbox de arquivos do Claude Code ou commit assinado), não de listas de comandos.
 - Dados podem ir sem confirmação para os domínios da allowlist; a pessoa controla a lista.
