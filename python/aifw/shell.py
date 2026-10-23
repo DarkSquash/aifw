@@ -124,9 +124,13 @@ READ_ONLY = {
     "find", "pwd", "echo", "printf", "wc", "which", "where", "get-childitem", "get-content",
     "select-string", "get-command", "get-location", "less", "more", "stat", "file", "sort", "uniq",
     "diff", "tree", "test", "true", "false", "du", "df", "date", "whoami", "aifw", "write-output",
-    "cut", "tr", "nl", "basename", "dirname", "realpath",
+    "cut", "tr", "nl", "basename", "dirname", "realpath", "sed", "awk", "gawk",  # see edits_files
     "",  # only variable assignments (L=x); $(...) inside them is analyzed on its own
 }  # fmt: skip
+AWK_INPLACE = re.compile(r"(-i|--include)[ =]?inplace\b")
+# An unparenthesized > or | after print/printf is a redirect or a pipe (NR>=310 is a comparison, not one);
+# `|&` and system() run commands.
+AWK_WRITES = re.compile(r"\bprintf?\b(?:\"[^\"]*\"|[^;}\"])*[>|]|\|&|\bsystem\s*\(")
 # Programs that put a file's content in front of the agent: on a secret file they are denied (ADR-0037).
 SHOWS_CONTENT = {
     "cat", "type", "get-content", "gc", "less", "more", "head", "tail", "grep", "egrep", "fgrep", "rg",
@@ -637,6 +641,20 @@ def deletion(name, args):
     return name in {"shred", "mkfs", "format", "dd"}
 
 
+def edits_files(name, args):
+    """sed and awk only read, unless sed edits in place (-i, -Ei, --in-place) or an awk program
+    edits in place, writes to a file or runs a command.
+
+    shortcut: sed's w and e commands and `cmd | getline` stay reads; upgrade if a script file needs reading.
+    """
+    if name == "sed":
+        return any(a.startswith("--in-place") or (re.match(r"-[^-]", a) and "i" in a) for a in args)
+    if name in {"awk", "gawk"}:
+        text = " ".join(args)
+        return bool(AWK_INPLACE.search(text) or AWK_WRITES.search(text))
+    return False
+
+
 def deploy(name, args):
     lowered = [a.lower() for a in args]
     if name in {"vercel", "netlify"}:
@@ -818,7 +836,9 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
     elif name == "find" and "-delete" in lowered:
         found.append(request("filesystem-write", destructive=True))
     elif is_test(words) or (
-        name in READ_ONLY and not (name == "find" and {"-exec", "-execdir"} & set(lowered))
+        name in READ_ONLY
+        and not (name == "find" and {"-exec", "-execdir"} & set(lowered))
+        and not edits_files(name, args)
     ):
         found.append(request("read-only"))
     else:

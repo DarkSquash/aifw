@@ -44,6 +44,53 @@ def test_shell_reader(command, kind, destructive):
     assert result["kind"] == kind and bool(result.get("destructive")) == destructive
 
 
+@pytest.mark.parametrize(
+    ("command", "kind"),
+    [
+        ("sed -n 305,335p hooks.py", "read-only"),
+        ("sed -E -n 's/a/b/p' x.txt", "read-only"),
+        ("sed --silent --expression=1p x.txt", "read-only"),
+        ("sed -i s/a/b/ x.txt", "filesystem-write"),
+        ("sed -i.bak s/a/b/ x.txt", "filesystem-write"),
+        ("sed -Ei s/a/b/ x.txt", "filesystem-write"),
+        ("sed -ni 1p x.txt", "filesystem-write"),
+        ("sed --in-place s/a/b/ x.txt", "filesystem-write"),
+        ("sed --in-place=.bak s/a/b/ x.txt", "filesystem-write"),
+        ("awk 'NR>=310 && NR<=335' x.txt", "read-only"),
+        ("awk 'NR>=310 {print $1}' x.txt", "read-only"),
+        ("gawk '$1 > 5 {print}' x.txt", "read-only"),
+        ("awk '{print \"a;b>c\"}' x.txt", "read-only"),
+        ("awk -i inplace '{print}' x.txt", "filesystem-write"),
+        ("gawk --include=inplace '{print}' x.txt", "filesystem-write"),
+        ("awk '{print > \"x\"}' x.txt", "filesystem-write"),
+        ("awk '{print $1 >> \"x\"}' x.txt", "filesystem-write"),
+        ("awk '{print > $1\".txt\"}' x.txt", "filesystem-write"),
+        ("awk '{printf(\"%s\n\", $1) > \"x\"}' x.txt", "filesystem-write"),
+        ("awk '{print \"a;b\" > \"x\"}' x.txt", "filesystem-write"),
+        ("awk '{print | \"sort\"}' x.txt", "filesystem-write"),
+        ("awk '{print |& \"sort\"}' x.txt", "filesystem-write"),
+        ("awk '{system(\"touch x\")}' x.txt", "filesystem-write"),
+    ],
+)
+def test_sed_and_awk_read_unless_they_write(command, kind):
+    assert analyze(command)["kind"] == kind
+
+
+def test_sed_and_awk_reading_a_control_file_do_not_ask(tmp_path):
+    init(tmp_path)
+
+    def decision(command):
+        output = handle(dict(cwd=str(tmp_path), tool_name="Bash", tool_input=dict(command=command)))
+        return output and output["hookSpecificOutput"]["permissionDecision"]
+
+    reads = "sed -n 305,335p python/aifw/hooks.py; cat .aifw/specs/current/task-assessor.yaml"
+    assert decision(reads) is None
+    assert decision("awk 'NR>=310' .aifw/gates.yaml") is None
+    assert decision("sed -i 's/a/b/' .aifw/permissions.yaml") == "ask"
+    assert decision("""awk '{print > "x"}' .aifw/gates.yaml""") == "ask"
+    assert decision("sed -n 1p .env") == "deny"
+
+
 def test_force_push_is_both_remote_and_destructive():
     kinds = {r["kind"] for r in analyze("git push --force")["requests"]}
     assert kinds == {"git-remote", "filesystem-write"}
