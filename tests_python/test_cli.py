@@ -76,7 +76,7 @@ def test_framework_changes_remain_l3_and_brain(tmp_path):
         "low",
     )
     assert route["route"] == "BRAIN"
-    assert route["executionMode"] == "recommendation-only"
+    assert route["executionMode"] == "automatic"  # routing is always on (ADR-0037)
 
 
 def test_invalid_inputs_never_downgrade_risk(tmp_path):

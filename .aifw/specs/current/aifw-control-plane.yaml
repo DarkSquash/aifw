@@ -132,6 +132,17 @@ requirements:
     - o agente solicita o preview de sincronização
     then:
     - as alterações propostas são exibidas sem mutar as specs atuais
+- id: REQ-AIFW-SPEC-RETIRE
+  strength: MUST
+  statement: Um delta que remove todos os requisitos de uma capability deve apagar a spec aceita dela no archive, na mesma transação.
+  scenarios:
+  - id: SCN-AIFW-SPEC-RETIRE
+    given:
+    - Uma capability aceita com um requisito e uma mudança que o remove.
+    when:
+    - A mudança é sincronizada e arquivada.
+    then:
+    - O preview mostra a ação remove, o arquivo some de .aifw/specs/current e não aparece em currentSpecs.
 - id: REQ-AIFW-TRACEABILITY
   strength: MUST
   statement: O framework deve detectar requisitos órfãos, cenários sem verificação, links quebrados e evidências ausentes.

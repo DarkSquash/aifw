@@ -71,6 +71,10 @@
   ],
   [
     "spec",
+    "request-approval"
+  ],
+  [
+    "spec",
     "archive"
   ],
   [
@@ -112,10 +116,6 @@
   [
     "route",
     "eval"
-  ],
-  [
-    "route",
-    "activate"
   ],
   [
     "claude",

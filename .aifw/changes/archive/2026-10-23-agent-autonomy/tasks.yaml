@@ -1,0 +1,90 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: agent-autonomy
+tasks:
+- id: TASK-AUTONOMY-APPROVAL
+  title: Aprovação de L2/L3 pelo chat, sem assinatura, gravada pelo hook de pedidos
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AUTONOMY-CHAT-APPROVAL
+  - REQ-ASSESSOR-HOOK-INSTALL
+  paths:
+  - python/aifw/specs.py
+  - python/aifw/hooks.py
+  - python/aifw/claude.py
+  - python/aifw/cli.py
+  - tests_python/test_agent_autonomy.py
+  - tests_python/test_assessor_active.py
+- id: TASK-AUTONOMY-PERMISSIONS
+  title: Push por branch, escrita na allowlist, publicação, segredos e delegação
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AUTONOMY-BRANCH-PUSH
+  - REQ-AUTONOMY-EXTERNAL-WRITES
+  - REQ-AUTONOMY-PUBLISH
+  - REQ-AUTONOMY-SECRETS
+  paths:
+  - python/aifw/shell.py
+  - python/aifw/hooks.py
+  - python/aifw/permissions.py
+  - schemas/permissions.schema.json
+  - templates/project-scaffold.json
+  - .aifw/permissions.yaml
+  - tests_python/test_agent_autonomy.py
+- id: TASK-AUTONOMY-ALWAYS-ON
+  title: Roteamento e avaliador sempre ligados, sem comandos de ativação, e remoção do juiz
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AUTONOMY-ROUTING
+  - REQ-ASSESSOR-PATH
+  - REQ-ASSESSOR-ACTIVATION
+  - REQ-ASSESSOR-DELEGATION
+  - REQ-JUDGE-GUARDS
+  - REQ-JUDGE-SHADOW
+  - REQ-JUDGE-SUITE
+  - REQ-JUDGE-UNTRUSTED
+  paths:
+  - python/aifw/routing.py
+  - python/aifw/assessment.py
+  - python/aifw/assessment_eval.py
+  - python/aifw/judge.py
+  - policies/core.yaml
+  - CONSTITUTION.md
+  - aifw.yaml
+  - .claude/settings.json
+  - tests_python/test_assessor_active.py
+- id: TASK-AUTONOMY-RETIRE
+  title: Archive apaga a spec de capability sem requisitos
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AIFW-SPEC-RETIRE
+  paths:
+  - python/aifw/specs.py
+  - tests_python/test_spec_integrity.py
+- id: TASK-AUTONOMY-DOCS
+  title: Skill, docs, README, ADR-0037, CHANGELOG e referência da CLI
+  status: done
+  dependsOn:
+  - TASK-AUTONOMY-APPROVAL
+  - TASK-AUTONOMY-PERMISSIONS
+  - TASK-AUTONOMY-ALWAYS-ON
+  requirementIds:
+  - REQ-AUTONOMY-CHAT-APPROVAL
+  paths:
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - .claude/skills/aifw-workflow/SKILL.md
+  - docs/claude-code.md
+  - docs/routing.md
+  - docs/cli.md
+  - docs/spec-lifecycle.md
+  - docs/tooling-and-mcps.md
+  - docs/runbooks/routing-regression.md
+  - docs/cli-reference.generated.md
+  - docs/decisions/ADR-0037-agent-autonomy.md
+  - HOW_TO_USE.md
+  - README.md
+  - CHANGELOG.md

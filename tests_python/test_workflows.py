@@ -96,21 +96,12 @@ def test_complete_charter_approval(tmp_path):
     assert intake.assess_intake(tmp_path)["complete"]
 
 
-def test_routing_activation_requires_evidence_thresholds(tmp_path):
+def test_new_projects_route_automatically_and_the_eval_stays_a_check(tmp_path):
     init(tmp_path)
-    assert not routing.load_routing(tmp_path)["enabled"]
-    for report in [
-        dict(cases=29, passRate=1, criticalFailures=0),
-        dict(cases=30, passRate=0.94, criticalFailures=0),
-        dict(cases=30, passRate=1, criticalFailures=1),
-        dict(cases=30, passRate=float("nan"), criticalFailures=0),
-    ]:
-        with pytest.raises(AifwError):
-            routing.activate_routing(tmp_path, report, "human:test", "adr.md")
+    policy = routing.load_routing(tmp_path)
+    assert policy["enabled"] and policy["mode"] == "automatic" and "activation" not in policy  # ADR-0037
     report = conformance.evaluate_routing_cases(assets() / "evals/routing/cases.yaml")
-    metrics = {k: report[k] for k in ("cases", "passRate", "criticalFailures")}
-    routing.activate_routing(tmp_path, metrics, "human:test", "adr.md")
-    assert routing.load_routing(tmp_path)["mode"] == "automatic"
+    assert report["passRate"] == 1 and report["criticalFailures"] == 0
 
 
 def test_context_redacts_secrets():

@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: assessor-active
+  title: Modo ativo do avaliador de tarefas
+  level: L3
+  createdAt: '2026-10-22T04:15:32.260Z'
+summary: Com a ativação humana assinada e o critério atingido, o hook UserPromptSubmit avalia cada pedido na hora e entrega ao agente o caminho de execução; delegar a Haiku pede confirmação depois de um caminho PLANNED ou CRITICAL.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-22T12:24:19.573Z'
+  record: .aifw/changes/active/assessor-active/approval.md
+archivedAt: '2026-10-22T13:34:51.781Z'

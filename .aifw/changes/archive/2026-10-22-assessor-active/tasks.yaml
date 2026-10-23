@@ -1,0 +1,26 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: assessor-active
+tasks:
+- id: TASK-ASSESSOR-ACTIVE
+  title: Ativação humana, caminho no hook de pedidos, delegação e instalação do hook
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-ASSESSOR-ACTIVATION
+  - REQ-ASSESSOR-PATH
+  - REQ-ASSESSOR-DELEGATION
+  - REQ-ASSESSOR-HOOK-INSTALL
+  paths:
+  - python/aifw/assessment.py
+  - python/aifw/hooks.py
+  - python/aifw/claude.py
+  - python/aifw/cli.py
+  - tests_python/test_assessor_active.py
+  - docs/cli-reference.generated.md
+  - docs/decisions/ADR-0036-assessor-active.md
+  - docs/routing.md
+  - docs/claude-code.md
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - .claude/skills/aifw-workflow/SKILL.md
+  - CHANGELOG.md

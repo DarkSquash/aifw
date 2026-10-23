@@ -1,11 +1,10 @@
 """Impact classification and deterministic cognitive routing."""
 
 from pathlib import Path
-import math
 import re
 import subprocess
 
-from .common import AifwError, human, now, read_yaml, require, write_yaml
+from .common import AifwError, read_yaml
 
 ALIASES = {"FAST": "haiku", "WORK": "sonnet", "BRAIN": "opus"}
 
@@ -97,20 +96,6 @@ def route_task(task, aliases=None, enabled=False):
     )
 
 
-def evaluate_routing_activation(data):
-    blockers, report = [], data["report"]
-    if not data.get("humanApproved"):
-        blockers.append("human-approval")
-    minimum_cases, minimum_rate = data.get("minimumCases", 30), data.get("minimumPassRate", 0.95)
-    if report["cases"] < minimum_cases:
-        blockers.append(f"minimum-cases:{minimum_cases}")
-    if report["passRate"] < minimum_rate:
-        blockers.append(f"minimum-pass-rate:{minimum_rate}")
-    if report["criticalFailures"] > 0:
-        blockers.append("critical-failures:0")
-    return {"enabled": not blockers, "blockers": blockers}
-
-
 def load_routing(root):
     from .common import validate
 
@@ -118,59 +103,9 @@ def load_routing(root):
 
 
 def routing_state(root):
-    """Persisted aliases and whether automatic routing is on; with signing required, only a signed activation counts."""
-    from . import signing
-
+    """Persisted aliases, and routing is always on (ADR-0037): no activation step."""
     file = Path(root) / ".aifw/routing.yaml"
-    if not file.is_file():
-        return ALIASES, False
-    policy = load_routing(root)
-    return policy["aliases"], bool(policy["enabled"]) and signing.approved(root, file)
-
-
-def activate_routing(root, report, by, record):
-    human(by)
-    require(
-        isinstance(record, str) and record.strip(),
-        "Routing requires an approval record.",
-        "APPROVAL_REQUIRED",
-    )
-    require(
-        all(
-            isinstance(report.get(k), (int, float))
-            and not isinstance(report.get(k), bool)
-            and math.isfinite(report[k])
-            for k in ("cases", "passRate", "criticalFailures")
-        ),
-        "Invalid routing metrics.",
-    )
-    require(
-        report["cases"] >= 0
-        and report["cases"] % 1 == 0
-        and 0 <= report["passRate"] <= 1
-        and report["criticalFailures"] >= 0
-        and report["criticalFailures"] % 1 == 0,
-        "Invalid routing metrics.",
-    )
-    policy = load_routing(root)
-    activation = evaluate_routing_activation(
-        dict(
-            humanApproved=True,
-            report=report,
-            minimumCases=policy["activation"]["minimumCases"],
-            minimumPassRate=policy["activation"]["minimumPassRate"],
-        )
-    )
-    require(
-        activation["enabled"], "Routing activation is blocked.", "APPROVAL_REQUIRED", activation["blockers"]
-    )
-    policy.update(
-        enabled=True,
-        mode="automatic",
-        approval=dict(approvedBy=by, record=record, activatedAt=now(), report=dict(report)),
-    )
-    write_yaml(Path(root) / ".aifw/routing.yaml", policy)
-    return policy
+    return (load_routing(root)["aliases"] if file.is_file() else ALIASES), True
 
 
 AUTH_PATH = re.compile(

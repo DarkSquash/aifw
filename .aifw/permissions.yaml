@@ -1,19 +1,24 @@
 apiVersion: aifw.dev/v1alpha1
 kind: PermissionPolicy
 localGit: autonomous
-remoteMutation: human-approval
+# Work branches push on their own; the default branch, tags and remote history ask (ADR-0037).
+remoteMutation: branches
 previewDeployment: autonomous
 productionDeployment: human-approval
 destructiveChanges: human-approval
 externalServices:
-  writes: human-approval
-# Approvals count only in a signed, unchanged commit: an agent cannot sign with the person's key.
+  # Writes to services in spec.externalAllowlist run on their own; others ask (ADR-0037).
+  writes: allowlist
+# Opaque code (scripts, eval) runs; the commands inside it keep their own rules (ADR-0037).
+opaqueCode: allow
+# Impasse, waiver, break-glass, Charter and adoption count only in a signed, unchanged commit.
+# Change approvals come from the person's reply in the chat instead (ADR-0037).
 approvals:
   requireSignedCommit: true
 # Packages that npx/uvx may download and run without asking (ADR-0025).
 trustedPackages:
   - ctx7
-# Commits run without asking, except with a control file changed; pushes still ask (ADR-0030).
+# Commits run without asking, except with a control file changed (ADR-0030).
 commits: allow
 childAgents:
   capabilityCeiling: parent

@@ -31,9 +31,11 @@
     "remoteMutation": {
       "enum": [
         "autonomous",
+        "branches",
         "human-approval",
         "denied"
-      ]
+      ],
+      "description": "branches: pushes to work branches run on their own; the default branch, tags and remote history ask (ADR-0037)."
     },
     "previewDeployment": {
       "enum": [
@@ -72,9 +74,11 @@
         },
         "writes": {
           "enum": [
+            "allowlist",
             "human-approval",
             "denied"
-          ]
+          ],
+          "description": "allowlist: writes to services in spec.externalAllowlist run on their own; others ask (ADR-0037)."
         }
       }
     },

@@ -91,7 +91,8 @@ def decide_action(request, data, allowlist=None):
             externalAllowlist=external["allowlist"] if allowlist is None else allowlist,
             approveRemoteMutations=data["remoteMutation"] != "autonomous",
             approveProduction=True,
-            approveExternalWrites=True,
+            # "allowlist": writes to allowlisted services run on their own; others ask (ADR-0037).
+            approveExternalWrites=external["writes"] != "allowlist",
             approveDestructiveWrites=True,
         ),
     )
@@ -101,7 +102,7 @@ def decide_action(request, data, allowlist=None):
         "git-local": data["localGit"],
         "git-remote": data["remoteMutation"],
         "deploy": data["productionDeployment" if production else "previewDeployment"],
-        "external-write": external["writes"],
+        "external-write": None if external["writes"] == "allowlist" else external["writes"],
         "filesystem-write": data["destructiveChanges"] if request.get("destructive") else None,
     }.get(kind)
     if setting == "denied" and decision["decision"] != "deny":

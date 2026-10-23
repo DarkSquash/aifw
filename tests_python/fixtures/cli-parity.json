@@ -820,8 +820,8 @@
     "output": {
       "apiVersion": "aifw.dev/v1alpha1",
       "kind": "RoutingPolicy",
-      "enabled": false,
-      "mode": "recommendation-only",
+      "enabled": true,
+      "mode": "automatic",
       "aliases": {
         "FAST": "haiku",
         "WORK": "sonnet",
@@ -840,12 +840,6 @@
           "provider": "anthropic",
           "model": "claude-opus-5-5"
         }
-      },
-      "activation": {
-        "minimumCases": 30,
-        "minimumPassRate": 0.95,
-        "criticalFailures": 0,
-        "humanApprovalRequired": true
       }
     }
   },
@@ -860,8 +854,7 @@
       "passed": 32,
       "passRate": 1,
       "criticalFailures": 0,
-      "failures": [],
-      "activationReady": true
+      "failures": []
     }
   },
   {
@@ -889,8 +882,7 @@
           "pass": true,
           "violations": []
         }
-      ],
-      "activationReady": false
+      ]
     }
   },
   {

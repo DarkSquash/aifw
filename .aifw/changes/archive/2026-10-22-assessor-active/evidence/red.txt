@@ -1,0 +1,17 @@
+
+=================================== ERRORS ====================================
+____________ ERROR collecting tests_python/test_assessor_active.py ____________
+ImportError while importing test module 'C:\Users\DarkSquash\Documents\Projetos\aifw\tests_python\test_assessor_active.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\AppData\Local\Python\pythoncore-3.14-64\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests_python\test_assessor_active.py:6: in <module>
+    from aifw.assessment import activate, active, assess, record_verdicts, report
+E   ImportError: cannot import name 'activate' from 'aifw.assessment' (C:\Users\DARKSQ~1\AppData\Local\Temp\claude\C--Users-DarkSquash-Documents-Projetos-aifw\31451809-735d-4dd2-985a-991c20809a6a\scratchpad\tmpm9r1z1za\aifw\assessment.py)
+=========================== short test summary info ===========================
+ERROR tests_python/test_assessor_active.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.37s
+exit 2

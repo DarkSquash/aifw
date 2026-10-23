@@ -27,21 +27,16 @@ HOOKS = {
     "PostToolUse": dict(matcher=TOOLS, hooks=[{**COMMAND, "async": True}]),
     "PostToolUseFailure": dict(matcher=TOOLS, hooks=[COMMAND]),
     "Stop": dict(hooks=[COMMAND]),
-    # The shadow task assessor calls the decision model; in the background the prompt never waits.
-    "UserPromptSubmit": dict(hooks=[{**COMMAND, "async": True, "timeout": 60}]),
+    # Before the agent reads a message, the hook records a plan approval and hands over the task path
+    # (ADR-0037); 60 s covers the three retries of the decision model, so its failure still arrives.
+    "UserPromptSubmit": dict(hooks=[{**COMMAND, "timeout": 60}]),
     # Plain text on stdout becomes session context, so Claude can tell the person what is missing.
     "SessionStart": dict(hooks=[dict(COMMAND, command=f"aifw-hook || echo '{MISSING}'")]),
 }
-# The shadow judge of opaque commands runs beside the PreToolUse check, never in it: an async hook adds
-# no latency and its output cannot change the decision (ADR-0035). Off unless aifw.yaml lists it.
-JUDGE = dict(
-    matcher="Bash|PowerShell",
-    hooks=[dict(COMMAND, command="aifw assess judge --hook || true", timeout=120, **{"async": True})],
-)
 
 
 def entries_for(event):
-    return [HOOKS[event], JUDGE] if event == "PreToolUse" else [HOOKS[event]]
+    return [HOOKS[event]]
 
 
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
@@ -57,6 +52,7 @@ def install_command(home=None):
 
 
 def ours(entry):
+    # The removed shadow judge (ADR-0035, ADR-0037) still counts as ours, so `enable` cleans it up.
     return any(
         "aifw-hook" in h.get("command", "") or "aifw assess judge" in h.get("command", "")
         for h in entry.get("hooks", [])

@@ -1,0 +1,29 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: assessor-active
+artifacts:
+- id: TEST-ASSESSOR-ACTIVE
+  type: test
+  path: .aifw/changes/archive/2026-10-22-assessor-active/evidence/tests.txt
+  status: passed
+- id: RED-ASSESSOR-ACTIVE
+  type: evidence
+  path: .aifw/changes/archive/2026-10-22-assessor-active/evidence/red.txt
+  status: passed
+- id: ADR-0036
+  type: adr
+  path: docs/decisions/ADR-0036-assessor-active.md
+  status: passed
+links:
+- from: SCN-ASSESSOR-ACTIVATION
+  relation: verifiedBy
+  to: TEST-ASSESSOR-ACTIVE
+- from: SCN-ASSESSOR-PATH
+  relation: verifiedBy
+  to: TEST-ASSESSOR-ACTIVE
+- from: SCN-ASSESSOR-DELEGATION
+  relation: verifiedBy
+  to: TEST-ASSESSOR-ACTIVE
+- from: SCN-ASSESSOR-HOOK-INSTALL
+  relation: verifiedBy
+  to: TEST-ASSESSOR-ACTIVE

@@ -1,0 +1,40 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: agent-autonomy
+artifacts:
+- id: TEST-AGENT-AUTONOMY
+  type: test
+  path: .aifw/changes/archive/2026-10-23-agent-autonomy/evidence/tests.txt
+  status: passed
+- id: ADR-0037
+  type: adr
+  path: docs/decisions/ADR-0037-agent-autonomy.md
+  status: passed
+links:
+- from: SCN-AUTONOMY-CHAT-APPROVAL
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-AUTONOMY-BRANCH-PUSH
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-AUTONOMY-EXTERNAL-WRITES
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-AUTONOMY-PUBLISH
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-AUTONOMY-SECRETS
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-AUTONOMY-ROUTING
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-ASSESSOR-HOOK-INSTALL
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-ASSESSOR-PATH
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY
+- from: SCN-AIFW-SPEC-RETIRE
+  relation: verifiedBy
+  to: TEST-AGENT-AUTONOMY

@@ -27,7 +27,7 @@ def decision(root, tool, **tool_input):
         ('git commit -m "x"', "commit"),
         ("rm -rf build", "filesystem-write"),
         ("vercel deploy --prod", "deploy"),
-        ("curl -X POST https://api.github.com/repos", "external-write"),
+        ("curl -X POST https://api.github.com/repos", "git-remote"),  # beyond discussion (ADR-0037)
         ("echo hi > notes.txt", "filesystem-write"),
     ],
 )
@@ -128,9 +128,7 @@ def test_claude_enable_is_per_project_and_idempotent(tmp_path):
     data = json.loads(settings.read_text())
     assert data["model"] == "opus"
     pre = [h["hooks"][0] for h in data["hooks"]["PreToolUse"]]
-    assert len(pre) == 2 and pre[0]["command"].startswith("aifw-hook ||") and pre[0]["onFailure"] == "block"
-    # The shadow judge (ADR-0035) runs as a second, asynchronous entry.
-    assert pre[1]["command"] == "aifw assess judge --hook || true" and pre[1]["async"]
+    assert len(pre) == 1 and pre[0]["command"].startswith("aifw-hook ||") and pre[0]["onFailure"] == "block"
     assert "name: aifw-workflow" in (tmp_path / ".claude/skills/aifw-workflow/SKILL.md").read_text("utf-8")
     home = tmp_path / "home"
     install_command(home)
@@ -190,13 +188,14 @@ def test_installs_and_commits_need_the_person(tmp_path, command, expected):
     assert decision(tmp_path, "Bash", command=command) == expected
 
 
-def test_opaque_code_asks_unless_the_project_allows_it(tmp_path):
-    init(tmp_path)
+def test_opaque_code_runs_unless_the_project_asks_for_it(tmp_path):
+    init(tmp_path)  # new projects allow code the hook cannot read (ADR-0037)
     command = "python -c \"import subprocess; subprocess.run(['x'])\""
-    assert decision(tmp_path, "Bash", command=command) == "ask"
-    policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
-    write_yaml(tmp_path / ".aifw/permissions.yaml", dict(policy, opaqueCode="allow"))
     assert decision(tmp_path, "Bash", command=command) is None
+    policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
+    write_yaml(tmp_path / ".aifw/permissions.yaml", dict(policy, opaqueCode="ask"))
+    assert decision(tmp_path, "Bash", command=command) == "ask"
+    write_yaml(tmp_path / ".aifw/permissions.yaml", dict(policy, opaqueCode="allow"))
     assert decision(tmp_path, "Bash", command="pip install x") == "ask"
     hidden = "python -c \"import os; os.system('aifw intake approve --by human:me')\""
     assert decision(tmp_path, "Bash", command=hidden) == "deny"
@@ -278,7 +277,7 @@ def test_every_subprocess_gets_its_own_stdin():
 
     for file in (Path(__file__).parents[1] / "python/aifw").glob("*.py"):
         text = file.read_text(encoding="utf-8")
-        # `input=` also gives the child its own stdin, a pipe (judge.py sends the message that way).
+        # `input=` also gives the child its own stdin, a pipe.
         own = text.count("stdin=subprocess.DEVNULL") + text.count("input=text")
         assert text.count("subprocess.run(") == own, file.name
 

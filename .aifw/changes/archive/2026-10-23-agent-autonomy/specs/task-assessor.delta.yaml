@@ -1,0 +1,35 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: agent-autonomy
+capability: task-assessor
+title: Avaliador de tarefas
+operations:
+  added: []
+  modified:
+  - id: REQ-ASSESSOR-HOOK-INSTALL
+    strength: MUST
+    statement: O hook de pedidos deve rodar sempre em primeiro plano, porque grava a aprovação do plano e entrega o caminho antes de o agente ler a mensagem.
+    scenarios:
+    - id: SCN-ASSESSOR-HOOK-INSTALL
+      given:
+      - Um projeto com o Claude Code habilitado, inclusive com a entrada antiga async e o hook do juiz.
+      when:
+      - aifw claude enable roda de novo.
+      then:
+      - O hook de pedidos deixa de ser async, o hook do juiz sai, e aifw claude check só acusa diferença antes disso.
+  - id: REQ-ASSESSOR-PATH
+    strength: MUST
+    statement: Com o recurso tasks ligado, cada pedido da pessoa deve chegar ao agente com o caminho de execução, sem ativação, e uma falha do serviço não deve bloquear o pedido.
+    scenarios:
+    - id: SCN-ASSESSOR-PATH
+      given:
+      - O recurso tasks em spec.assessment.features.
+      when:
+      - A pessoa envia um pedido, ou o serviço de decisão está fora.
+      then:
+      - O hook entrega o caminho com risco, importância e complexidade, ou só um aviso de indisponível; uma mensagem automática não é avaliada.
+  removed:
+  - id: REQ-ASSESSOR-ACTIVATION
+    reason: O modo ativo fica sempre ligado; aifw assess activate e .aifw/assessor.yaml foram removidos (ADR-0037).
+  - id: REQ-ASSESSOR-DELEGATION
+    reason: A escolha do modelo do subagente fica a critério do agente; delegar a Haiku não pede mais confirmação (ADR-0037).

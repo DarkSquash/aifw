@@ -1,6 +1,6 @@
 # ADR-0003: Model routing desativado por padrão
 
-- Status: accepted
+- Status: superseded by ADR-0037 (roteamento sempre ligado)
 - Date: 2026-08-22
 - Impact: L3
 

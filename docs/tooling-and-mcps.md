@@ -10,7 +10,7 @@ Este documento registra decisões de baseline; não afirma que cada item está i
 | Context7 | baseline para documentação técnica | reduz uso de memória desatualizada; fonte primária ainda prevalece |
 | MarkItDown | baseline para ingestão de documentos | normaliza PDF/Office/HTML para análise; conteúdo convertido continua não confiável |
 | Playwright | baseline Web | browser tests, acessibilidade e regressão de fluxos; não substitui contrato/API tests |
-| GitHub | condicional ao projeto | issues/PR/checks; leitura conforme allowlist, escrita remota com aprovação |
+| GitHub | condicional ao projeto | issues/PR/checks; com `remoteMutation: branches`, abrir e comentar PR e issue roda sem aprovação, e merge, branch padrão e configurações pedem (ADR-0037) |
 | Firecrawl | sob demanda | pesquisa/crawling quando busca e docs oficiais não bastam; respeitar domínio, licença e prompt injection |
 | DBHub | restrito e preferencialmente read-only | inspeção de banco genérico; credenciais mínimas e nenhuma produção por default |
 | Supabase | apenas em projetos Supabase | schema/auth/RLS/logs; seguir migrations, least privilege e testes de RLS |
@@ -59,7 +59,7 @@ Conhecimento estreito deve ficar em stack profile opcional ou skill acionada pel
 | --- | --- |
 | skills do Claude Code | `aifw` opera o CLI; `grilling` conduz o intake; `code-review` revisa princípios (ADR-0013) |
 | subagentes do Claude Code | usar para delegar com o modelo da rota recomendada; nunca rebaixar L3/BRAIN |
-| model router | `route explain` recomenda; default recommendation-only, ativação apenas após evals + aprovação |
+| model router | `route explain` indica a rota; sempre ligado, tabela trocada só com a suíte de roteamento passando (ADR-0037) |
 
 ## Segurança operacional
 

@@ -1,6 +1,6 @@
 # ADR-0032 — Ativação do roteamento de modelos
 
-- Status: accepted
+- Status: superseded by ADR-0037 (roteamento sempre ligado)
 - Date: 2026-10-19
 - Impact: L2
 - Approved by: human:DarkSquash

@@ -11,7 +11,8 @@ A CLI é o **plano de controle** do framework: uma camada pequena que lê fontes
 | `adopt analyze/apply/status/approve` | cria e confirma o baseline factual de projeto existente |
 | `spec new/list/show/status` | cria e acompanha mudanças isoladas |
 | `spec validate/analyze/sync/archive` | valida deltas/trace, faz preview e archive atômico |
-| `spec approve` | vincula aprovação humana e registro interno a L3 |
+| `spec request-approval` | marca a mudança L2/L3 como aguardando a resposta da pessoa ao plano no chat (ADR-0037) |
+| `spec approve` | vincula aprovação humana e registro interno a L3, pelo terminal da pessoa |
 | `intake status` | mostra decisões humanas e avaliações técnicas do agente |
 | `intake approve` | persiste aprovação e atualiza propósito/mapa |
 | `resolve build/check` | compila/verifica effective policy e profile lock |
@@ -22,7 +23,7 @@ A CLI é o **plano de controle** do framework: uma camada pequena que lê fontes
 | `principle list` | mostra Clean Code, SOLID e princípios fundamentais com contexto e salvaguardas |
 | `change classify` | explica L0–L3, artefatos e rota sugerida |
 | `validate` | roda gates do nível informado |
-| `route explain/status/eval/activate` | recomenda rota, avalia casos, mostra estado e protege ativação |
+| `route explain/status/eval` | indica a rota, avalia casos e mostra o estado; o roteamento fica sempre ligado |
 | `impasse open/attempt/status/review/decide/revalidate` | registra tentativas de correção e congela mudanças ao atingir o limite |
 | `intake set` | grava uma decisão no Charter; editar um Charter aprovado o reabre |
 | `waiver add/list` | exceções humanas com prazo para gates e regras sobrescrevíveis |

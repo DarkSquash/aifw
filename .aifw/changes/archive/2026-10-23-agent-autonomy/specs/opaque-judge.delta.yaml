@@ -1,0 +1,17 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: agent-autonomy
+capability: opaque-judge
+title: Juiz do código opaco
+operations:
+  added: []
+  modified: []
+  removed:
+  - id: REQ-JUDGE-GUARDS
+    reason: Com opaqueCode allow, o código opaco roda sem confirmação e o juiz não tem o que poupar; a pessoa pediu a remoção (ADR-0037).
+  - id: REQ-JUDGE-SHADOW
+    reason: Juiz removido junto com o hook assíncrono aifw assess judge (ADR-0037).
+  - id: REQ-JUDGE-SUITE
+    reason: A suíte do juiz e o recurso judge saíram de aifw assess eval (ADR-0037).
+  - id: REQ-JUDGE-UNTRUSTED
+    reason: Sem juiz, não há mensagem ao modelo a proteger (ADR-0037).

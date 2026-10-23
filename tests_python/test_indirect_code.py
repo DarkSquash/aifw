@@ -7,6 +7,7 @@ import time
 
 import pytest
 
+from aifw.common import read_yaml, write_yaml
 from aifw.hooks import handle
 from aifw.shell import analyze, runs_tests
 from test_workflows import init
@@ -40,6 +41,12 @@ def decision(root, command):
     return output and output["hookSpecificOutput"]["permissionDecision"]
 
 
+def strict(root):
+    """A project that asks for code the hook cannot read; new projects allow it (ADR-0037)."""
+    policy = read_yaml(root / ".aifw/permissions.yaml")
+    write_yaml(root / ".aifw/permissions.yaml", dict(policy, opaqueCode="ask"))
+
+
 VECTORS = [
     "bash run.sh",
     "sh ./run.sh",
@@ -63,6 +70,7 @@ VECTORS = [
 @pytest.mark.parametrize("command", VECTORS)
 def test_indirect_code_that_pushes_asks(tmp_path, command):
     init(tmp_path)
+    strict(tmp_path)
     assert decision(project(tmp_path), command) == "ask"
 
 
@@ -399,7 +407,7 @@ def test_second_review_forms_ask(tmp_path, command):
 @pytest.mark.parametrize("command", ["yarn publish", "pnpm publish"])
 def test_publish_builtins_keep_their_rule_with_a_same_named_script(tmp_path, command):
     (tmp_path / "package.json").write_text(json.dumps({"scripts": {"publish": "echo hi"}}))
-    assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+    assert analyze(command, cwd=tmp_path)["kind"] == "publish"
 
 
 def test_npmrc_script_shell_is_opaque(tmp_path):
@@ -524,7 +532,7 @@ def test_fourth_review_regressions_ask(tmp_path):
     git(tmp_path, "init", "-q")
     git(tmp_path, "add", "gradlew")
     git(tmp_path, "commit", "-qm", "wrapper")
-    assert analyze("./gradlew publish", cwd=tmp_path)["kind"] == "external-write"
+    assert analyze("./gradlew publish", cwd=tmp_path)["kind"] == "publish"
 
 
 @pytest.mark.parametrize(
@@ -544,7 +552,7 @@ def test_build_tool_publishing_asks(tmp_path, command):
     git(tmp_path, "init", "-q")
     git(tmp_path, "add", "gradlew", "mvnw")
     git(tmp_path, "commit", "-qm", "wrappers")
-    assert analyze(command, cwd=tmp_path)["kind"] == "external-write"
+    assert analyze(command, cwd=tmp_path)["kind"] == "publish"
 
 
 @pytest.mark.parametrize(
@@ -601,7 +609,7 @@ def test_make_sixth_review_cases_ask(tmp_path, makefile):
     ],
 )
 def test_build_publishing_edges(command, publishes):
-    assert (analyze(command)["kind"] == "external-write") == publishes
+    assert (analyze(command)["kind"] == "publish") == publishes
 
 
 @pytest.mark.parametrize(
@@ -619,7 +627,7 @@ def test_build_publishing_edges(command, publishes):
     ],
 )
 def test_build_flags_do_not_hide_publishing(command):
-    assert analyze(command)["kind"] == "external-write"
+    assert analyze(command)["kind"] == "publish"
 
 
 def test_layers_of_make_variables_stay_fast(tmp_path):
@@ -686,7 +694,7 @@ def test_sourcing_from_home_stays_quiet(tmp_path, monkeypatch):
 
 
 def test_bun_publish_and_husky_hooks_ask(tmp_path):
-    assert analyze("bun publish", cwd=tmp_path)["kind"] == "external-write"
+    assert analyze("bun publish", cwd=tmp_path)["kind"] == "publish"
     init(tmp_path)
     output = handle(
         dict(cwd=str(tmp_path), tool_name="Write", tool_input=dict(file_path=".husky/pre-commit"))

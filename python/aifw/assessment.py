@@ -1,14 +1,13 @@
-"""Assessments by a decision model, in shadow mode: they record what the model suggests and never decide.
+"""Assessments by a decision model: in shadow mode they only record what the model suggests.
 
 Each feature asks the Decider through OpenRouter and writes its suggestion to a local log:
 
 - tasks: risk, importance and complexity of a request, turned into an execution path by a fixed rule;
   facts from the git diff set a floor for risk that the model cannot lower.
 - impasse: whether a new correction attempt repeats an earlier one in other words.
-- judge: whether a shell command the hook cannot read is harmless, asked of Claude on the person's
-  subscription (judge.py) instead of OpenRouter.
 
-A person later records whether they agree, which feeds a future activation decision.
+With the tasks feature on, each request reaches the agent with its path (ADR-0036, ADR-0037). The
+other features stay in shadow mode; a person may record whether they agree with any of them.
 """
 
 from concurrent.futures import ThreadPoolExecutor
@@ -16,6 +15,7 @@ from hashlib import sha256
 import json
 import os
 from pathlib import Path
+import re
 import time
 import urllib.error
 import urllib.request
@@ -24,7 +24,7 @@ from .common import AifwError, digest, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-FEATURES = ("tasks", "impasse", "context", "intake", "traceability", "decisions", "judge")
+FEATURES = ("tasks", "impasse", "context", "intake", "traceability", "decisions")
 LOGS = {
     "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
     "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),
@@ -32,11 +32,23 @@ LOGS = {
     "intake": (".aifw/assessments/intake.jsonl", ".aifw/assessments/intake-verdicts.jsonl"),
     "traceability": (".aifw/assessments/traceability.jsonl", ".aifw/assessments/traceability-verdicts.jsonl"),
     "decisions": (".aifw/assessments/decisions.jsonl", ".aifw/assessments/decisions-verdicts.jsonl"),
-    "judge": (".aifw/assessments/judge.jsonl", ".aifw/assessments/judge-verdicts.jsonl"),
 }
 SHADOW_LOG, VERDICTS = LOGS["tasks"]
 ACTIVATION = dict(requests=50, agreement=0.9)
 MIN_TASK_WORDS = 5  # shorter prompts are replies, not tasks, and are not assessed automatically
+# Messages the session receives without the person typing them: subagent reports, notices from
+# other sessions, background tasks and hooks, and the brief of a session another one started.
+AUTOMATIC_PROMPT = re.compile(r"\s*(<[a-z][\w-]*[\s>]|Background \(from the session|Stop hook feedback)")
+
+
+def is_request(prompt):
+    """A request the person typed: not a slash command, a short reply or an automatic message."""
+    text = prompt.strip()
+    return (
+        not text.startswith("/") and len(text.split()) >= MIN_TASK_WORDS and not AUTOMATIC_PROMPT.match(text)
+    )
+
+
 REPEAT_THRESHOLD = 0.7
 SUGGEST_THRESHOLD = 0.5  # add a document the keywords missed
 DOUBT_THRESHOLD = 0.1  # question a document chosen only by a shared word
@@ -51,7 +63,6 @@ VALUES = {
     "intake": ["right", "wrong"],
     "traceability": ["right", "wrong"],
     "decisions": ["right", "wrong"],
-    "judge": ["harmless", "ask"],
 }
 WEAK_TRACE_THRESHOLD = 0.5
 SIGNAL_CONFIDENCE = 0.6  # suggest a decision signal only above this confidence
@@ -246,9 +257,32 @@ def assess(root, task, use_diff=False, base=None, call=ask, source="manual"):
         floor=dict(level=floor, reasons=floor_reasons),
         finalRisk=final_risk,
         cost=round(sum(cost for _, cost in results.values()), 8),
+        mode="active",
     )
     record["path"] = path_for(final_risk, record["importance"]["value"], record["complexity"]["value"])
-    return dict(status="recorded", mode="shadow", recorded=True, **store(root, "tasks", record))
+    return dict(status="recorded", recorded=True, **store(root, "tasks", record))
+
+
+def active(root, feature="tasks"):
+    """The tasks assessor hands each request its path whenever the feature is on (ADR-0037)."""
+    try:
+        return feature == "tasks" and enabled(root, feature)
+    except (OSError, KeyError, TypeError, AifwError):
+        return False
+
+
+def path_context(result):
+    """What the agent reads with the request in active mode."""
+    if result.get("status") != "recorded":
+        return f"AIFW: avaliador de tarefas indisponível ({result.get('reason')}); siga a classificação de sempre."
+    risk = result["risk"]["value"]
+    floor = f", elevado pelo diff a {result['finalRisk']}" if result["finalRisk"] != risk else ""
+    return (
+        f"AIFW, avaliador de tarefas (modo ativo): caminho {result['path']}. Risco {risk}{floor}, "
+        f"importância {result['importance']['value']}, complexidade {result['complexity']['value']}. "
+        f"{PATH_RULE[result['path']]}. Siga esse caminho com a tabela de modelos da skill aifw-workflow; "
+        "subir de caminho é sempre permitido, descer nunca."
+    )
 
 
 def fingerprint(attempt):
@@ -552,8 +586,6 @@ def suggestion(feature, entry):
         return "model"
     if feature in {"intake", "traceability", "decisions"}:
         return "right"
-    if feature == "judge":
-        return "harmless" if entry["judgment"] == "harmless" else "ask"  # unknown asks, like the hook
     return "repeat" if entry["wouldRepeat"] else "distinct"
 
 
@@ -584,7 +616,12 @@ def report(root, feature="tasks"):
     """Every assessment with the person's latest verdict, and whether the activation criteria hold."""
     require(feature in FEATURES, f"--feature must be one of {', '.join(FEATURES)}.")
     log, verdict_log = LOGS[feature]
-    entries = read_lines(Path(root) / log)
+    # Automatic messages recorded before the hook ignored them are not requests; ids stay as recorded.
+    entries = [
+        e
+        for e in read_lines(Path(root) / log)
+        if feature != "tasks" or e.get("source") != "prompt" or is_request(e.get("task", ""))
+    ]
     verdicts = {v["id"]: v for v in read_lines(Path(root) / verdict_log)}
     rows = [dict(e, suggestion=suggestion(feature, e), verdict=verdicts.get(e["id"])) for e in entries]
     judged = [r for r in rows if r["verdict"]]
@@ -605,6 +642,7 @@ def report(root, feature="tasks"):
             cost=round(sum(r.get("cost", 0) for r in rows), 6),
             criteria=dict(ACTIVATION, criticalDemoted=0),
             criteriaMet=ready,
+            active=active(root, feature),
         ),
     )
 
@@ -631,6 +669,7 @@ def render_report(value):
         )
     lines += [
         f"- Critério de ativação atingido: {'sim' if s['criteriaMet'] else 'não'}",
+        f"- Modo ativo: {'sim' if s.get('active') else 'não'}",
         f"- Custo total: US$ {s['cost']:.6f}",
         "",
         "## Perguntas",
@@ -798,38 +837,6 @@ SHAPES = {
         ],
         example="--value wrong",
     ),
-    "judge": dict(
-        title="Juiz do código opaco",
-        questions={
-            "verdict": dict(
-                instructions="Pelo que o comando e o código fazem de fato, ele pode rodar sem pedir sua confirmação?",
-                criteria={
-                    "harmless": "só lê, calcula, formata, testa ou grava dentro do projeto, sem rede nem efeito externo",
-                    "ask": "qualquer outro efeito, ou depende de código que o juiz não vê",
-                    "unknown": "não há código suficiente para saber; conta como ask",
-                },
-            )
-        },
-        rule={
-            "escalada": "Haiku primeiro; Sonnet quando a confiança fica abaixo de 0.7 ou a resposta é unknown",
-            "mudaria": "só quando o único motivo da pergunta do hook era código opaco e o veredito é harmless",
-            "limite": "push, instalação, deploy, rede, aprovações e arquivos de controle nunca mudariam,"
-            " seja pela regra fixa, seja por aparecerem no texto do comando ou do código",
-        },
-        columns=["#", "Comando", "O que provavelmente faz", "Regra fixa", "Juiz (confiança)", "Mudaria"]
-        + ["Diverge da descrição", "Latência", "Seu veredito"],
-        row=lambda r: [
-            str(r["id"]),
-            cell(r["command"], 70),
-            cell(r["intent"] or "—"),
-            r["hook"]["decision"],
-            f"{r['judgment']} ({r['confidence']:.0%})" + (" ↑" if r["escalated"] else ""),
-            "sim" if r["wouldChange"] else "não",
-            "sim" if r["mismatch"] else "não",
-            f"{r['latencyMs'] / 1000:.1f} s",
-        ],
-        example="--value ask",
-    ),
 }
 
 
@@ -842,7 +849,8 @@ def pending_notices(root):
     if config["mode"] != "shadow":
         return []
     notices = []
-    for feature in (f for f in FEATURES if f in config["features"]):
+    # The tasks assessor is always active (ADR-0037); verdicts on it are optional quality tracking.
+    for feature in (f for f in FEATURES if f in config["features"] and f != "tasks"):
         summary = report(root, feature)["summary"]
         if summary["assessments"] >= ACTIVATION["requests"] and summary["judged"] < summary["assessments"]:
             notices.append(

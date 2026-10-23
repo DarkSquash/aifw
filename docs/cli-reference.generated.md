@@ -2,7 +2,7 @@
 
 > Gerado por `python scripts/generate_cli_reference.py`. Guia: [HOW_TO_USE.md](../HOW_TO_USE.md).
 
-Esta referência contém 62 comandos finais e suas opções.
+Esta referência contém 61 comandos finais e suas opções.
 
 ## `aifw --help`
 
@@ -315,7 +315,7 @@ options:
 ```text
 usage: aifw spec approve [-h] [--json] --by BY [--at AT] --record RECORD id
 
-persist human approval for a change
+persist human approval for a change, from the approver's terminal
 
 positional arguments:
   id
@@ -326,6 +326,21 @@ options:
   --by BY          by
   --at AT          at
   --record RECORD  record
+```
+
+## `aifw spec request-approval`
+
+```text
+usage: aifw spec request-approval [-h] [--json] id
+
+mark a change as awaiting the person's reply to the plan in the chat
+
+positional arguments:
+  id
+
+options:
+  -h, --help  show this help message and exit
+  --json      emit stable machine-readable JSON
 ```
 
 ## `aifw spec archive`
@@ -502,7 +517,7 @@ options:
 
 ```text
 usage: aifw assess eval [-h] [--json]
-                        --feature {tasks,impasse,context,intake,traceability,decisions,judge}
+                        --feature {tasks,impasse,context,intake,traceability,decisions}
                         [--cases CASES] [--output OUTPUT]
 
 run a reviewable suite in evals/assessment against the decision model
@@ -510,37 +525,24 @@ run a reviewable suite in evals/assessment against the decision model
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context,intake,traceability,decisions,judge}
+  --feature {tasks,impasse,context,intake,traceability,decisions}
                         feature
   --cases CASES         cases
   --output OUTPUT       output
-```
-
-## `aifw assess judge`
-
-```text
-usage: aifw assess judge [-h] [--json] [--hook]
-
-shadow-judge a shell command the hook cannot read; it records, never decides
-
-options:
-  -h, --help  show this help message and exit
-  --json      emit stable machine-readable JSON
-  --hook      hook
 ```
 
 ## `aifw assess report`
 
 ```text
 usage: aifw assess report [-h] [--json]
-                          [--feature {tasks,impasse,context,intake,traceability,decisions,judge}]
+                          [--feature {tasks,impasse,context,intake,traceability,decisions}]
 
 report shadow assessments and your verdicts against the activation criteria
 
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context,intake,traceability,decisions,judge}
+  --feature {tasks,impasse,context,intake,traceability,decisions}
                         feature
 ```
 
@@ -548,7 +550,7 @@ options:
 
 ```text
 usage: aifw assess verdict [-h] [--json]
-                           [--feature {tasks,impasse,context,intake,traceability,decisions,judge}]
+                           [--feature {tasks,impasse,context,intake,traceability,decisions}]
                            --id ID [--agree]
                            [--value {FAST,WORK,PLANNED,CRITICAL,repeat,distinct,model,keyword,right,wrong}]
                            [--path {FAST,WORK,PLANNED,CRITICAL}] [--note NOTE]
@@ -559,7 +561,7 @@ record whether you agree with shadow assessments
 options:
   -h, --help            show this help message and exit
   --json                emit stable machine-readable JSON
-  --feature {tasks,impasse,context,intake,traceability,decisions,judge}
+  --feature {tasks,impasse,context,intake,traceability,decisions}
                         feature
   --id ID               id
   --agree               agree
@@ -619,22 +621,6 @@ options:
   --json           emit stable machine-readable JSON
   --cases CASES    cases
   --output OUTPUT  output
-```
-
-## `aifw route activate`
-
-```text
-usage: aifw route activate [-h] [--json] --report REPORT --by BY
-                           --record RECORD
-
-activate routing after evals and human approval
-
-options:
-  -h, --help       show this help message and exit
-  --json           emit stable machine-readable JSON
-  --report REPORT  report
-  --by BY          by
-  --record RECORD  record
 ```
 
 ## `aifw waiver add`

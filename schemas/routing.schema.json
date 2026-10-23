@@ -4,7 +4,8 @@
   "title": "AIFW RoutingPolicy",
   "type": "object",
   "additionalProperties": false,
-  "required": ["apiVersion", "kind", "enabled", "mode", "aliases", "targets", "activation"],
+  "required": ["apiVersion", "kind", "enabled", "mode", "aliases", "targets"],
+  "$comment": "Routing is always on (ADR-0037); activation and approval only describe older projects.",
   "properties": {
     "apiVersion": { "const": "aifw.dev/v1alpha1" },
     "kind": { "const": "RoutingPolicy" },

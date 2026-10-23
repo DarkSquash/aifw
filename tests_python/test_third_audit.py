@@ -70,10 +70,10 @@ def test_custom_service_domains_and_protected_paths(tmp_path):
     assert pre(tmp_path, "Edit", file_path="src/ui/view.py") is None
 
 
-def test_grep_and_glob_on_secret_files_ask(tmp_path):
+def test_grep_and_glob_on_secret_files_are_denied(tmp_path):
     init(tmp_path)
-    assert pre(tmp_path, "Grep", pattern="KEY", path=".env") == "ask"
-    assert pre(tmp_path, "Glob", pattern="**/*.pem") == "ask"
+    assert pre(tmp_path, "Grep", pattern="KEY", path=".env") == "deny"  # ADR-0037
+    assert pre(tmp_path, "Glob", pattern="**/*.pem") == "deny"
     assert pre(tmp_path, "Grep", pattern="TODO", path="src") is None
 
 

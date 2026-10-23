@@ -66,7 +66,7 @@ Classificação conservadora prevalece quando a evidência é insuficiente.
 
 ## 8. Especificação, teste e evidência
 
-Mudanças comportamentais devem possuir intenção verificável. L2/L3 exigem spec e plano técnico; L3 exige RFC/ADR, threat model quando aplicável, migração, rollback, revisão independente e aprovação humana.
+Mudanças comportamentais devem possuir intenção verificável. L2/L3 exigem spec e plano técnico; L3 exige RFC/ADR, threat model quando aplicável, migração, rollback, revisão independente e aprovação humana. A aprovação de L2/L3 é a resposta da pessoa ao plano no chat, registrada pelo hook, e vale para a mudança inteira (ADR-0037).
 
 Testes são escolhidos pelo risco. Nenhum agente pode declarar sucesso usando apenas memória, intuição ou um resultado anterior. Evidência fresca precede a conclusão.
 
@@ -99,15 +99,13 @@ Sem aprovação, o impasse permanece aberto.
 
 ## 11. Roteamento de modelos
 
-Roteamento automático nasce desativado. Recomendações FAST/WORK/BRAIN podem ser exibidas, mas execução por haiku/sonnet/opus ou equivalentes só é ativada quando:
+O roteamento automático fica sempre ligado (ADR-0037): o agente escolhe haiku/sonnet/opus ou equivalentes pela tabela de modelos, sem ativação nem confirmação. A tabela só muda quando a suíte de roteamento:
 
-- pelo menos 30 casos representativos foram avaliados;
-- taxa de aprovação é igual ou superior a 95%;
-- não há falha crítica;
-- custo, latência e fallback foram revisados;
-- uma aprovação humana e um ADR foram persistidos.
+- avalia pelo menos 30 casos representativos;
+- tem taxa de aprovação igual ou superior a 95%;
+- não tem falha crítica.
 
-Uma alteração de alias não muda as classes cognitivas. Falha ou regressão crítica desativa o roteamento até nova avaliação.
+Uma alteração de alias não muda as classes cognitivas. Subir de modelo é sempre permitido; L3 ou BRAIN nunca é rebaixado.
 
 ## 12. Documentação automática
 

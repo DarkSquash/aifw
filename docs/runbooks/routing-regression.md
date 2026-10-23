@@ -12,8 +12,8 @@ Conformance trace mostra falha crítica, seleção abaixo da competência necess
 ## Mitigação segura
 
 1. preservar relatório, trace, policy e versão do adapter/modelo;
-2. alterar `.aifw/routing.yaml` para `enabled: false` e `mode: recommendation-only` por Change Case L3 aprovado;
-3. impedir novas execuções automáticas e manter sugestões visíveis;
+2. restaurar em `.aifw/routing.yaml` os aliases da última tabela que passou na suíte, por Change Case L3 aprovado (o roteamento fica sempre ligado, ADR-0037);
+3. subir de modelo nas tarefas afetadas até a correção;
 4. reexecutar tarefa afetada com BRAIN/modelo competente sob revisão humana.
 
 ## Diagnóstico
@@ -22,4 +22,4 @@ Comparar input, impacto, rota, aliases, capabilities, prompt/toolset e decisões
 
 ## Recovery
 
-Corrigir causa, adicionar caso de regressão, executar pelo menos o conjunto afetado e depois a suíte de ativação. Reativar apenas com zero falhas críticas e nova aprovação/ADR.
+Corrigir causa, adicionar caso de regressão, executar pelo menos o conjunto afetado e depois a suíte inteira. Trocar a tabela apenas com zero falhas críticas.
