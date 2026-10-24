@@ -6,8 +6,9 @@ metadata:
   level: L2
   createdAt: '2026-10-23T14:09:44.598Z'
 summary: aifw claude enable instala subagentes com modelo fixo (haiku, sonnet, opus) e a skill e o avaliador delegam por nome.
-status: draft
+status: archived
 approval:
   approvedBy: human:DarkSquash
   approvedAt: '2026-10-24T21:11:15.376Z'
   record: .aifw/changes/active/role-subagents/approval.md
+archivedAt: '2026-10-24T21:37:53.259Z'

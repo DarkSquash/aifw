@@ -4,7 +4,7 @@ changeId: role-subagents
 artifacts:
 - id: TEST-ROLE-SUBAGENTS
   type: test
-  path: .aifw/changes/active/role-subagents/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-24-role-subagents/evidence/tests.txt
   status: passed
 - id: ADR-0038
   type: adr
@@ -12,7 +12,7 @@ artifacts:
   status: passed
 - id: DESIGN-ROLE-SUBAGENTS
   type: design
-  path: .aifw/changes/active/role-subagents/design.md
+  path: .aifw/changes/archive/2026-10-24-role-subagents/design.md
   status: passed
 links:
 - from: SCN-SUBAGENTS-INSTALL
