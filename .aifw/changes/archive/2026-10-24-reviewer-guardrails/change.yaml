@@ -6,8 +6,9 @@ metadata:
   level: L2
   createdAt: '2026-10-24T21:55:10.227Z'
 summary: O hook impede os subagentes revisores de alterar o projeto, protege as definições dos subagentes do AIFW, e o adversário e o QA fazem os eixos Spec e Standards do code-review sem lançar subagentes.
-status: draft
+status: archived
 approval:
   approvedBy: human:DarkSquash
   approvedAt: '2026-10-24T22:36:32.098Z'
   record: .aifw/changes/active/reviewer-guardrails/approval.md
+archivedAt: '2026-10-24T23:23:36.697Z'

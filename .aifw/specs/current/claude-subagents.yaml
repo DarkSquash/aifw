@@ -4,6 +4,17 @@ capability: claude-subagents
 title: Subagentes por papel
 purpose: Delegar cada papel do trabalho ao modelo certo, com o modelo fixo na definição do subagente, sem depender de o agente lembrar de passá-lo.
 requirements:
+- id: REQ-SUBAGENTS-DEFINITIONS-CONTROL
+  strength: MUST
+  statement: Editar as definições .claude/agents/aifw-*.md deve pedir confirmação, como a skill do AIFW, e o aifw claude enable deve continuar instalando-as sem perguntar.
+  scenarios:
+  - id: SCN-SUBAGENTS-DEFINITIONS-CONTROL
+    given:
+    - Um projeto com os subagentes instalados.
+    when:
+    - O agente edita .claude/agents/aifw-qa.md pela ferramenta Edit ou por sed -i, ou roda aifw claude enable.
+    then:
+    - A edição pede confirmação; o aifw claude enable roda sem perguntar.
 - id: REQ-SUBAGENTS-DELEGATION
   strength: MUST
   statement: O caminho entregue pelo avaliador e a tabela de modelos da skill devem nomear o subagente de cada papel, e a delegação por nome não deve passar model, para que valha o modelo da definição.
@@ -28,7 +39,7 @@ requirements:
     - Os cinco arquivos ficam com o modelo, o esforço do papel e as ferramentas do template e o carimbo da versão; a cópia editada vai para aifw-executor.md.bak; a segunda execução não muda nada; aifw claude check acusa cada subagente antes e nenhum depois.
 - id: REQ-SUBAGENTS-REVIEW-FLOW
   strength: MUST
-  statement: A revisão independente de L2 e L3 deve ter duas etapas, o aifw-adversary tentando provar que a mudança está errada e, só sem achado provado, o aifw-qa conferindo critérios, evidências e documentação, com ônus da prova e um limite de rodadas de correção.
+  statement: A revisão independente de L2 e L3 deve ter duas etapas, o aifw-adversary tentando provar que a mudança está errada pelo eixo Spec e, só sem achado provado, o aifw-qa conferindo critérios, evidências, documentação e o eixo Standards, cada um no próprio contexto e sem lançar subagentes, com ônus da prova e um limite de rodadas de correção.
   scenarios:
   - id: SCN-SUBAGENTS-REVIEW-FLOW
     given:
@@ -39,3 +50,16 @@ requirements:
     - Com achado provado, independent-review.md termina em "Resultado - reprovado", o gate falha e a rodada seguinte confere só as correções e o que elas podem ter quebrado; sem prova é ressalva e não reabre rodada.
     - Sem achado provado, o aifw-qa acrescenta a sua seção e escreve o Resultado final.
     - Uma terceira reprovação para a revisão e leva o caso à pessoa.
+    - O adversário cobre o eixo Spec e o QA o eixo Standards do code-review; nenhum dos dois tem a ferramenta Agent.
+- id: REQ-SUBAGENTS-REVIEWER-GUARD
+  strength: MUST
+  statement: O hook deve negar a um subagente revisor (aifw-adversary, aifw-qa) a edição de arquivos do projeto além do independent-review.md da mudança e o comando de shell que escreve arquivos, faz commit ou altera o repositório, deixando seguir leitura, testes, aifw, código opaco e arquivos fora do projeto.
+  scenarios:
+  - id: SCN-SUBAGENTS-REVIEWER-GUARD
+    given:
+    - Uma chamada de ferramenta com agent_type aifw-adversary ou aifw-qa.
+    when:
+    - O revisor edita python/aifw/claude.py, roda sed -i, git commit ou git stash, ou escreve o independent-review.md da mudança, um arquivo numa pasta temporária, ou roda pytest, git diff e aifw spec analyze.
+    then:
+    - A edição do código e os comandos que escrevem, commitam ou mudam o repositório são negados com o motivo; o arquivo de revisão, o arquivo temporário e os comandos de leitura e teste seguem.
+    - As mesmas chamadas sem agent_type, ou do aifw-executor, seguem as regras de antes.

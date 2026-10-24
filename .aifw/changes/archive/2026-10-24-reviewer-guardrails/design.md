@@ -11,7 +11,7 @@ O Claude Code envia `agent_id` e `agent_type` no PreToolUse quando a chamada vem
   - Uma função `reviewer_change(root, payload)` devolve o motivo da negação, ou nada.
     - Ferramentas de edição: alvo dentro da raiz que não seja `.aifw/changes/active/<id>/independent-review.md` é negado. O caminho é resolvido como em `control_target`.
     - Shell: `analyze(command)` e negação se algum pedido não for `read-only`, `external-read`, `opaque` ou `secret-read`; o segredo continua com a regra de sempre.
-  - `pre_tool_use` consulta essa função antes de `evaluate`, depois do congelamento da aprovação.
+  - `pre_tool_use` consulta essa função logo depois de `evaluate`, no mesmo `try`, e a negação dela prevalece; se `evaluate` falhar, o resultado é o `ask` de sempre.
   - `CONTROL` ganha `.claude/agents/aifw-`. A comparação por prefixo e por trecho já cobre as ferramentas de edição e o shell.
 - Templates:
   - O `aifw-adversary` sai com `tools: Read, Grep, Glob, Bash, Write` e o brief do eixo Spec no próprio texto.

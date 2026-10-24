@@ -4,11 +4,11 @@ changeId: reviewer-guardrails
 artifacts:
 - id: TEST-REVIEWER-GUARDRAILS
   type: test
-  path: .aifw/changes/active/reviewer-guardrails/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-24-reviewer-guardrails/evidence/tests.txt
   status: passed
 - id: DESIGN-REVIEWER-GUARDRAILS
   type: design
-  path: .aifw/changes/active/reviewer-guardrails/design.md
+  path: .aifw/changes/archive/2026-10-24-reviewer-guardrails/design.md
   status: passed
 - id: ADR-0038
   type: adr
