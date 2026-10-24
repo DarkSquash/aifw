@@ -1,0 +1,42 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: reviewer-guardrails
+tasks:
+- id: TASK-GUARD-HOOK
+  title: Trava dos revisores por agent_type e .claude/agents/aifw- como arquivo de controle
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEWER-GUARD
+  - REQ-SUBAGENTS-DEFINITIONS-CONTROL
+  paths:
+  - python/aifw/hooks.py
+  - python/aifw/shell.py
+  - tests_python/test_reviewer_guardrails.py
+- id: TASK-GUARD-AXES
+  title: Eixos Spec e Standards nas definições dos revisores, sem Agent
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-FLOW
+  paths:
+  - templates/claude/agents/aifw-adversary.md
+  - templates/claude/agents/aifw-qa.md
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - tests_python/test_reviewer_guardrails.py
+- id: TASK-GUARD-DOCS
+  title: Documentação, CHANGELOG, ADR-0038 e enable neste repositório
+  status: done
+  dependsOn:
+  - TASK-GUARD-HOOK
+  - TASK-GUARD-AXES
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEWER-GUARD
+  - REQ-SUBAGENTS-DEFINITIONS-CONTROL
+  - REQ-SUBAGENTS-REVIEW-FLOW
+  paths:
+  - docs/claude-code.md
+  - docs/decisions/ADR-0038-role-subagents.md
+  - CHANGELOG.md
+  - .claude/agents/
+  - .claude/skills/aifw-workflow/SKILL.md

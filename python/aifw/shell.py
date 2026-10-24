@@ -553,7 +553,9 @@ def git_requests(args):
         return [request("commit")] + signing
     if destructive:
         return [request("filesystem-write", destructive=True)] + signing
-    if sub in GIT_READ or (sub in GIT_LISTING and (not rest or rest[0] in LIST_ARGS)):
+    # A bare `git stash` saves and reverts the working tree; the other bare listings only list.
+    listing = sub in GIT_LISTING and (rest[0] in LIST_ARGS if rest else sub != "stash")
+    if sub in GIT_READ or listing:
         return [request("read-only")]
     # Unknown subcommands include aliases, which can expand to anything (git p -> git push).
     return [request("git-local" if sub in GIT_LOCAL else "opaque")] + signing
