@@ -23,6 +23,11 @@ $ python scratchpad/staged.py
 $ python -m pytest tests_python -q   (depois da correção instalada)
 2629 passed in 81.53s (0:01:21)
 
+Revisão, rodada 2 (evidence/independent-review-2.md): as correções da rodada 1 valeram, mas git config list e git tag -v passaram a ser negados aos revisores. Correção: list em GIT_LISTING["config"] e -n, -v, --verify em GIT_LISTING["tag"]; casos novos no teste. tests_python/test_reviewer_guardrails.py tem hoje 59 casos.
+
+$ python -m pytest tests_python -q
+2633 passed in 82.03s (0:01:22)
+
 Cobertura dos cenários (tests_python/test_reviewer_guardrails.py, 35 casos):
 - SCN-SUBAGENTS-REVIEWER-GUARD: para aifw-adversary e aifw-qa, negados Edit de python/aifw/claude.py, sed -i, git commit, git stash e echo x > notes.txt; seguem o Write do independent-review.md da mudança, o Write fora do projeto, pytest, git diff e aifw spec analyze. Sem agent_type e com aifw-executor, as mesmas chamadas não recebem a trava.
 - SCN-SUBAGENTS-DEFINITIONS-CONTROL: Edit e sed -i em .claude/agents/aifw-qa.md pedem confirmação; aifw claude enable e Edit de .claude/agents/minha.md não pedem.

@@ -30,6 +30,8 @@ ALLOWED = [
     ("Bash", dict(command="git branch -a")),
     ("Bash", dict(command="git stash list")),
     ("Bash", dict(command="git tag -l")),
+    ("Bash", dict(command="git tag -v v1")),
+    ("Bash", dict(command="git config list")),
     ("Bash", dict(command="git reflog")),
     ("Bash", dict(command="aifw spec analyze x")),
 ]

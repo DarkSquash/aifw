@@ -182,10 +182,10 @@ GIT_READ = {
 # The first argument that only lists, per subcommand: `git tag -a` and `git stash -a` create, not list.
 GIT_LISTING = {
     "branch": {"-a", "-r", "-v", "-vv", "-l", "--list", "--show-current"},
-    "tag": {"-l", "--list"},
+    "tag": {"-l", "--list", "-n", "-v", "--verify"},
     "remote": {"-v", "show"},
     "stash": {"list", "show"},
-    "config": {"-l", "--list", "--get", "--get-all"},
+    "config": {"-l", "--list", "--get", "--get-all", "list"},  # git 2.46+: git config list
     "worktree": {"list"},
     "submodule": {"status"},
 }
