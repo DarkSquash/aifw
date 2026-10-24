@@ -46,7 +46,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 ## Mudanças e evidências
 
 1. Classifique a alteração com `aifw change classify --diff` (sinais derivados dos arquivos alterados) mais os sinais reais que você observou e consulte os requisitos de L0–L3. Verifique se já existe uma mudança ativa adequada antes de criar outra.
-   - Com o recurso `tasks` ligado, cada pedido do usuário chega com o contexto "AIFW, avaliador de tarefas (modo ativo): caminho …" (ADR-0036, ADR-0037). Siga esse caminho na tabela de modelos (FAST, WORK, PLANNED, CRITICAL): subir é sempre permitido, descer nunca. A aprovação do plano em L2/L3 continua valendo. Se vier o aviso de indisponível, siga a classificação de sempre.
+   - Com o recurso `tasks` ligado, cada pedido do usuário chega com o contexto "AIFW, avaliador de tarefas (modo ativo): caminho …" (ADR-0036, ADR-0037), que já nomeia o subagente do caminho (ADR-0038). Siga esse caminho na tabela de modelos (FAST, WORK, PLANNED, CRITICAL): subir é sempre permitido, descer nunca. A aprovação do plano em L2/L3 continua valendo. Se vier o aviso de indisponível, siga a classificação de sempre.
    - Quando o início de sessão avisar que o relatório do avaliador está pronto, rode `aifw assess report` e mostre o relatório ao usuário. Os vereditos são aprovações dele: mostre os comandos `aifw assess verdict` para ele rodar no terminal.
 2. Para L2/L3, use `aifw spec new <id> --title ... --summary ... --level ...`. Preencha proposta, design, deltas, tarefas e traceabilidade em `.aifw/changes/active/<id>/`. L0/L1 mantêm registros e verificações proporcionais ao risco.
 3. Preserve IDs. Use um delta por capability; `modified` e `removed` devem referenciar requisitos aceitos. Uma capability nova precisa de propósito. Consulte os schemas/templates da instalação ou do repositório do framework quando necessário; não invente campos.
@@ -54,7 +54,10 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 5. Em mudança material de código ou design, revise o diff invocando a skill `code-review` pela ferramenta Skill; no eixo Standards, use `principle-catalogs/` como fonte de padrões. Princípios são auditoria contextual: cite arquivo, impacto e evidência, respeite exceções e riscos de mau uso.
 6. Registre resultados reais. Um artefato `passed` precisa apontar para um arquivo existente dentro do projeto; o arquivo de teste existir não prova que foi executado. Persista também o resultado da execução.
 7. Para uma spec change, execute `aifw validate --change <id> --write --json`. Ele usa o nível e a aprovação da mudança, roda os gates, confere os artefatos exigidos pelo nível e grava `evidence/validation.json`. Sem spec change, use `aifw validate --level <nível> --json`. Hard/human bloqueados impedem declarar aprovação; audit warnings devem ser registrados. Nunca remova um gate nem altere o núcleo para obter verde.
-   - L2 exige, na pasta da mudança: `design.md` com as seções de abordagem e rollback preenchidas e `independent-review.md` com o resultado da revisão independente. Para escrevê-lo, delegue a um subagente `opus` que recebe só o diff, a spec e os critérios, usa a skill `code-review` e termina o arquivo com a linha `Resultado: aprovado`, `Resultado: aprovado com ressalvas` ou `Resultado: reprovado`. O gate `independent-review` lê essa linha: sem ela, ou com `reprovado`, ele falha. Corrija os achados e peça nova revisão em vez de editar o resultado.
+   - L2 exige, na pasta da mudança: `design.md` com as seções de abordagem e rollback preenchidas e `independent-review.md` com o resultado da revisão independente, feita em duas etapas (ADR-0038):
+     1. Delegue ao subagente `aifw-adversary`, passando só o diff, a spec, os critérios e o caminho do arquivo. Ele tenta provar que a mudança está errada e, com um achado provado por um cenário concreto que falha, termina o arquivo em `Resultado: reprovado`.
+     2. Sem achado provado, delegue ao `aifw-qa`, que confere critérios, evidências, testes, gates e documentação e termina o arquivo com `Resultado: aprovado`, `Resultado: aprovado com ressalvas` ou `Resultado: reprovado`.
+     O gate `independent-review` lê essa linha: sem ela, ou com `reprovado`, ele falha. Corrija os achados e peça nova revisão em vez de editar o resultado: mova o arquivo para `evidence/independent-review-<n>.md` e passe ao adversário só o diff desde a revisão anterior e os achados dela. Ressalva sem prova não reabre rodada. Depois de duas rodadas de correção, uma terceira reprovação para a revisão: leve o caso à pessoa.
    - L3 exige, além disso: `proposal.md` com critérios de aceitação, `threat-model.md`, `migration.md` (pode dizer por que não se aplica) e um artefato `adr` com caminho em `traceability.yaml`.
 8. Quando entradas do catálogo ou da resolução mudarem, use `map build` ou `resolve build` e confira novamente. Não edite manualmente suas projeções para esconder drift.
 
@@ -76,14 +79,23 @@ Depois de `change classify` e `route explain`, distribua o trabalho pela linha m
 
 | Situação | Planeja | Executa | Revisa |
 | --- | --- | --- | --- |
-| impacto L3 ou rota BRAIN | `opus` | `opus`, ou `sonnet` com plano passo a passo | revisor independente `opus` + plano aprovado no chat |
-| impacto L2 | `opus` | `sonnet` | revisor independente `opus` |
-| rota WORK | — | `sonnet` | testes e gates |
-| rota FAST | — | `haiku` | testes e gates |
+| impacto L3, caminho CRITICAL ou rota BRAIN | `opus` | `opus`, ou `aifw-executor` com plano passo a passo | `aifw-adversary`, depois `aifw-qa`, e plano aprovado no chat |
+| impacto L2 ou caminho PLANNED | `opus` | `aifw-executor` | `aifw-adversary`, depois `aifw-qa` |
+| caminho ou rota WORK | — | `aifw-executor` | testes e gates |
+| caminho ou rota FAST | — | `aifw-quick` | testes e gates |
 
-- Execute e revise por subagentes, com o parâmetro `model` da ferramenta Agent; a escolha do modelo é sua e não pede confirmação. Em pontos críticos, prefira que o `opus` edite. Planeje na própria sessão se ela já usa o modelo indicado; caso contrário, use um subagente.
+| Subagente | Modelo | Esforço | Papel |
+| --- | --- | --- | --- |
+| `aifw-explorer` | haiku | low | busca só de leitura no código |
+| `aifw-quick` | haiku | low | tarefas do caminho FAST |
+| `aifw-executor` | sonnet | medium | caminho WORK e planos do Opus |
+| `aifw-adversary` | opus | high | revisão: tenta provar que a mudança está errada |
+| `aifw-qa` | sonnet | high | revisão: confere critérios, evidências e documentação |
+
+- Execute e revise por subagentes; a escolha é sua e não pede confirmação. Delegue pelo nome (`subagent_type`) sem passar `model`, para valer o modelo da definição; passe `model` só para subir. Em pontos críticos, prefira que o `opus` edite. Planeje na própria sessão se ela já usa o modelo indicado; caso contrário, use um subagente. Para buscar no código, use o `aifw-explorer`.
+- Fora desses papéis (agentes de Workflow, Agent genérico, outra sessão), escolha o esforço pelo mesmo critério, nunca acima de `high`: planejar, revisar e papéis críticos `high`; executar e pesquisar `medium`; tarefas rápidas e busca `low`. Sem os subagentes em `.claude/agents/`, rode `aifw claude enable`; até lá, use o Agent genérico com o `model` da tabela.
 - O plano entregue ao executor nomeia arquivos, passos e verificações; o executor não decide arquitetura.
-- O revisor independente recebe só o diff, a spec e os critérios, sem o contexto da implementação. Use a skill `code-review`.
+- Os revisores recebem só o diff, a spec e os critérios, sem o contexto da implementação, e usam a skill `code-review`. Cada achado precisa de prova; o escopo é a spec, os critérios e o modelo de ameaça aceito.
 - Trabalho trivial e autocontido pode ser feito inline, sem subagente. Subir de modelo é sempre permitido; rebaixar L3 ou BRAIN, nunca.
 - Testes e gates rodam em toda classe; revisão não substitui evidência.
 

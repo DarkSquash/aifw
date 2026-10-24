@@ -1,0 +1,22 @@
+Mudança role-subagents, 2026-10-24, branch feat/role-subagents.
+
+$ python -m pytest tests_python/test_assessor_active.py tests_python/test_assessment.py -q
+25 passed in 17.31s
+
+$ python -m pytest tests_python/test_role_subagents.py -q   (executor aifw, Sonnet)
+9 passed
+
+$ aifw claude enable
+agents: .claude/agents/aifw-explorer.md, aifw-quick.md, aifw-executor.md, aifw-adversary.md, aifw-qa.md
+agentBackups: []
+
+$ aifw claude check
+{"status": "pass", "findings": []}
+
+$ python -m pytest tests_python -q
+2573 passed in 85.82s (0:01:25)
+
+Cobertura dos cenários (tests_python/test_role_subagents.py):
+- SCN-SUBAGENTS-INSTALL: enable cria os cinco arquivos com nome, modelo, esforço, ferramentas e carimbo; a segunda execução não muda nada; a cópia editada vai para .bak; check acusa cada subagente antes do enable e nenhum depois.
+- SCN-SUBAGENTS-DELEGATION: path_context cita aifw-quick (FAST), aifw-executor (WORK), aifw-executor, aifw-adversary e aifw-qa (PLANNED) e aifw-adversary e aifw-qa (CRITICAL); a skill cita cada subagente e subagent_type.
+- SCN-SUBAGENTS-REVIEW-FLOW: a skill descreve as duas etapas e o limite de rodadas ("terceira reprovação"); os templates do adversário e do QA trazem o ônus da prova e o Resultado; esta própria mudança foi revisada pelo fluxo (independent-review.md).
