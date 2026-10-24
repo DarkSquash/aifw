@@ -77,6 +77,18 @@ def test_check_reports_missing_subagents_until_enable(project):
     assert not any("subagent" in f for f in check_project(project, home)["findings"])
 
 
+def test_check_reports_a_subagent_from_another_version(project):
+    home = project / "home"
+    enable_project(project)
+    path = agent_file(project, "aifw-qa")
+    old = path.read_text(encoding="utf-8").replace(STAMP.format(__version__), STAMP.format("0.0.1"))
+    path.write_text(old, encoding="utf-8", newline="\n")
+    findings = check_project(project, home)["findings"]
+    assert f"subagent aifw-qa is not from aifw {__version__}: run `aifw claude enable`" in findings
+    assert enable_project(project)["agentBackups"] == [".claude/agents/aifw-qa.md.bak"]
+    assert not any("subagent" in f for f in check_project(project, home)["findings"])
+
+
 def context(path, risk):
     return assessment.path_context(
         dict(
