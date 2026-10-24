@@ -15,6 +15,14 @@ $ aifw claude check
 $ python -m pytest tests_python -q
 2609 passed in 84.04s (0:01:24)
 
+Revisão, rodada 1 (evidence/independent-review-1.md): o adversário provou que git stash -a, git tag -a e git reflog expire ainda contavam como leitura. Correção em python/aifw/shell.py: opções de listagem por subcomando (GIT_LISTING) e reflog expire/delete como git-local; casos novos no teste.
+
+$ python scratchpad/staged.py
+2629 passed in 81.60s (0:01:21)
+
+$ python -m pytest tests_python -q   (depois da correção instalada)
+2629 passed in 81.53s (0:01:21)
+
 Cobertura dos cenários (tests_python/test_reviewer_guardrails.py, 35 casos):
 - SCN-SUBAGENTS-REVIEWER-GUARD: para aifw-adversary e aifw-qa, negados Edit de python/aifw/claude.py, sed -i, git commit, git stash e echo x > notes.txt; seguem o Write do independent-review.md da mudança, o Write fora do projeto, pytest, git diff e aifw spec analyze. Sem agent_type e com aifw-executor, as mesmas chamadas não recebem a trava.
 - SCN-SUBAGENTS-DEFINITIONS-CONTROL: Edit e sed -i em .claude/agents/aifw-qa.md pedem confirmação; aifw claude enable e Edit de .claude/agents/minha.md não pedem.

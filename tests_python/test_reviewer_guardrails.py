@@ -17,6 +17,9 @@ DENIED = [
     ("Bash", dict(command="sed -i 's/a/b/' python/aifw/claude.py")),
     ("Bash", dict(command="git commit -m x")),
     ("Bash", dict(command="git stash")),
+    ("Bash", dict(command="git stash -a")),
+    ("Bash", dict(command="git tag -a v9 -m x")),
+    ("Bash", dict(command="git reflog expire --expire=now --all")),
     ("Bash", dict(command="echo x > notes.txt")),
 ]
 ALLOWED = [
@@ -24,6 +27,10 @@ ALLOWED = [
     ("Write", dict(file_path="{outside}/probe.py", content="x")),
     ("Bash", dict(command="python -m pytest tests_python -q")),
     ("Bash", dict(command="git diff main...HEAD")),
+    ("Bash", dict(command="git branch -a")),
+    ("Bash", dict(command="git stash list")),
+    ("Bash", dict(command="git tag -l")),
+    ("Bash", dict(command="git reflog")),
     ("Bash", dict(command="aifw spec analyze x")),
 ]
 
