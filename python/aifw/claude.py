@@ -41,6 +41,7 @@ def entries_for(event):
 
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
 STAMP = "<!-- aifw-version: {} -->"
+AGENTS = ("aifw-explorer", "aifw-quick", "aifw-executor", "aifw-adversary", "aifw-qa")
 
 
 def install_command(home=None):
@@ -59,8 +60,25 @@ def ours(entry):
     )
 
 
+def install_template(root, template, target):
+    """Copy a stamped template into the project; returns the backup path if an older copy was kept."""
+    path = project_path(root, target)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = (assets() / template).read_text(encoding="utf-8")
+    content = text.rstrip("\n") + "\n\n" + STAMP.format(__version__) + "\n"
+    backup = None
+    if path.is_file():
+        existing = path.read_text(encoding="utf-8")
+        if existing != content:
+            # Someone edited the project copy, or it came from another version: keep it before replacing.
+            path.with_name(path.name + ".bak").write_text(existing, encoding="utf-8", newline="\n")
+            backup = f"{target}.bak"
+    path.write_text(content, encoding="utf-8", newline="\n")
+    return backup
+
+
 def enable_project(root):
-    """Add the AIFW hooks and workflow skill to this project's .claude folder, idempotently."""
+    """Add the AIFW hooks, workflow skill and role subagents to this project's .claude folder, idempotently."""
     root = Path(root)
     require((root / "aifw.yaml").is_file(), "Run aifw init before enabling Claude Code.", "NOT_READY")
     settings_file = project_path(root, ".claude/settings.json")
@@ -76,25 +94,27 @@ def enable_project(root):
             changed.append(event)
     if changed:
         write_json(settings_file, settings)
-    skill = project_path(root, ".claude/skills/aifw-workflow/SKILL.md")
-    skill.parent.mkdir(parents=True, exist_ok=True)
-    text = (assets() / "templates/claude/skills/aifw-workflow/SKILL.md").read_text(encoding="utf-8")
-    content = text.rstrip("\n") + "\n\n" + STAMP.format(__version__) + "\n"
-    backup = None
-    if skill.is_file():
-        existing = skill.read_text(encoding="utf-8")
-        if existing != content:
-            # Someone edited the project copy, or it came from another version: keep it before replacing.
-            backup = skill.with_name("SKILL.md.bak")
-            backup.write_text(existing, encoding="utf-8", newline="\n")
-    skill.write_text(content, encoding="utf-8", newline="\n")
+    skill_backup = install_template(
+        root, "templates/claude/skills/aifw-workflow/SKILL.md", ".claude/skills/aifw-workflow/SKILL.md"
+    )
+    agent_backups = [
+        backup
+        for name in AGENTS
+        if (
+            backup := install_template(
+                root, f"templates/claude/agents/{name}.md", f".claude/agents/{name}.md"
+            )
+        )
+    ]
     return dict(
         status="enabled",
         hooksChanged=changed,
         gitignored=ignore_local_logs(root),  # also for projects initialized before the logs were ignored
         settings=".claude/settings.json",
         skill=".claude/skills/aifw-workflow/SKILL.md",
-        skillBackup=backup and ".claude/skills/aifw-workflow/SKILL.md.bak",
+        skillBackup=skill_backup,
+        agents=[f".claude/agents/{n}.md" for n in AGENTS],
+        agentBackups=agent_backups,
         nextAction="Open a new Claude Code session in this project so the hooks and skill load.",
     )
 
@@ -115,6 +135,12 @@ def check_project(root, home=None):
         findings.append(
             f"project skill aifw-workflow is not from aifw {__version__}: run `aifw claude enable`"
         )
+    for name in AGENTS:
+        agent = root / f".claude/agents/{name}.md"
+        if not agent.is_file():
+            findings.append(f"subagent {name} missing: run `aifw claude enable`")
+        elif STAMP.format(__version__) not in agent.read_text(encoding="utf-8"):
+            findings.append(f"subagent {name} is not from aifw {__version__}: run `aifw claude enable`")
     if not shutil.which("aifw-hook"):
         findings.append("aifw-hook is not on PATH: reinstall with `uv tool install <aifw folder>`")
     command = home / ".claude/skills/aifw/SKILL.md"

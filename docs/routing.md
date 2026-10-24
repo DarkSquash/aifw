@@ -12,16 +12,16 @@ Aliases não são competências garantidas e podem apontar para outros modelos e
 
 ## No Claude Code
 
-O Claude Code não troca o modelo da sessão a pedido do AIFW. A skill `aifw` distribui planejamento, execução e revisão entre subagentes (parâmetro `model` da ferramenta Agent), usando a linha mais alta que se aplicar:
+O Claude Code não troca o modelo da sessão a pedido do AIFW. A skill `aifw-workflow` distribui planejamento, execução e revisão entre os subagentes por papel que o `aifw claude enable` instala (ADR-0038), delegando pelo nome, sem passar `model`, para valer o modelo e o esforço da definição. Ela usa a linha mais alta que se aplicar:
 
 | Situação | Planeja | Executa | Revisa |
 | --- | --- | --- | --- |
-| impacto L3 ou rota BRAIN | opus | opus, ou sonnet com plano passo a passo | revisor independente opus + aprovação humana em L3 |
-| impacto L2 | opus | sonnet | revisor independente opus |
-| rota WORK | — | sonnet | testes e gates |
-| rota FAST | — | haiku | testes e gates |
+| impacto L3 ou rota BRAIN | opus | opus, ou `aifw-executor` (sonnet) com plano passo a passo | `aifw-adversary` (opus), depois `aifw-qa` (sonnet), + aprovação humana em L3 |
+| impacto L2 | opus | `aifw-executor` (sonnet) | `aifw-adversary` (opus), depois `aifw-qa` (sonnet) |
+| rota WORK | — | `aifw-executor` (sonnet) | testes e gates |
+| rota FAST | — | `aifw-quick` (haiku) | testes e gates |
 
-Revisão não substitui testes e gates, que rodam em toda classe. Trabalho trivial pode ser feito inline. Subir de modelo é permitido; L3 ou BRAIN nunca é rebaixado.
+A revisão independente tem duas etapas: o `aifw-adversary` tenta provar que a mudança está errada e só reprova com um cenário concreto que falha; sem achado provado, o `aifw-qa` confere critérios, evidências e documentação. Revisão não substitui testes e gates, que rodam em toda classe. Trabalho trivial pode ser feito inline. Subir de modelo é permitido; L3 ou BRAIN nunca é rebaixado. Os modelos e esforços de cada subagente estão em [Claude Code](claude-code.md#modelos).
 
 ## Ativação
 
@@ -35,10 +35,10 @@ Com `spec.assessment.mode: shadow` em `aifw.yaml` e o recurso `tasks` ligado, ca
 
 | Caminho | Quando | Planeja | Executa | Revisa |
 | --- | --- | --- | --- | --- |
-| FAST | risco L0, complexidade trivial ou simples, importância baixa ou média | — | haiku | testes e gates |
-| WORK | risco L1; ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica | — | sonnet | testes e gates |
-| PLANNED | risco L2; ou L1 com complexidade alta | opus | sonnet | opus |
-| CRITICAL | risco L3 | opus | opus | revisor independente e humano |
+| FAST | risco L0, complexidade trivial ou simples, importância baixa ou média | — | `aifw-quick` (haiku) | testes e gates |
+| WORK | risco L1; ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica | — | `aifw-executor` (sonnet) | testes e gates |
+| PLANNED | risco L2; ou L1 com complexidade alta | opus | `aifw-executor` (sonnet) | `aifw-adversary`, depois `aifw-qa` |
+| CRITICAL | risco L3 | opus | opus | `aifw-adversary`, depois `aifw-qa`, e humano |
 
 - Com `--diff`, os fatos verificáveis do diff (autenticação, deploy, contratos, arquivos de controle) formam um piso: o risco final nunca fica abaixo dele.
 - Cada avaliação é gravada em `.aifw/assessments/shadow.jsonl`. Os outros recursos (`impasse`, `context`, `intake`, `traceability`, `decisions`) continuam em modo sombra: só registram.

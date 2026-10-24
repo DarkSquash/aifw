@@ -28,7 +28,7 @@ Também é possível instalar com `python -m pip install .`. No ambiente virtual
 
 ## Integração com Claude Code
 
-Na pasta do projeto, abra o Claude Code e digite `/aifw new` (projeto do zero) ou `/aifw adopt` (projeto existente). O hook e a skill `aifw-workflow` ficam gravados em `.claude/` do próprio projeto. Veja [instalação e uso no Claude Code](docs/claude-code.md).
+Na pasta do projeto, abra o Claude Code e digite `/aifw new` (projeto do zero) ou `/aifw adopt` (projeto existente). O hook, a skill `aifw-workflow` e os subagentes por papel (`.claude/agents/aifw-*.md`) ficam gravados em `.claude/` do próprio projeto. Veja [instalação e uso no Claude Code](docs/claude-code.md).
 
 ## Skills, plugins e MCPs
 
