@@ -1,0 +1,26 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: approved-scope
+artifacts:
+- id: TEST-APPROVED-SCOPE
+  type: test
+  path: .aifw/changes/active/approved-scope/evidence/tests.txt
+  status: passed
+- id: DESIGN-APPROVED-SCOPE
+  type: design
+  path: .aifw/changes/active/approved-scope/design.md
+  status: passed
+- id: ADR-0039
+  type: adr
+  path: docs/decisions/ADR-0039-approved-scope.md
+  status: passed
+links:
+- from: SCN-AUTONOMY-APPROVED-SCOPE
+  relation: verifiedBy
+  to: TEST-APPROVED-SCOPE
+- from: REQ-AUTONOMY-APPROVED-SCOPE
+  relation: designedBy
+  to: DESIGN-APPROVED-SCOPE
+- from: REQ-AUTONOMY-APPROVED-SCOPE
+  relation: governedBy
+  to: ADR-0039

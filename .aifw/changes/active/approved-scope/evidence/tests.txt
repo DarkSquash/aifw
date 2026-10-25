@@ -1,0 +1,19 @@
+Mudança approved-scope, 2026-10-25, branch feat/approved-scope.
+
+$ python scratchpad/staged.py   (hooks.py editado numa cópia, antes de instalar)
+2724 passed in 100.68s (0:01:40)
+
+$ aifw claude enable
+skill atualizada; a cópia .bak era igual ao HEAD e foi apagada.
+
+$ python -m pytest tests_python -q   (depois de instalar)
+2724 passed in 100.31s (0:01:40)
+
+Depois de instalar, a regra valeu para esta própria mudança: todas as edições seguintes (skill, docs, CHANGELOG, ADR-0039) estavam nos paths do tasks.yaml e nenhuma pediu confirmação.
+
+Cobertura do cenário SCN-AUTONOMY-APPROVED-SCOPE (tests_python/test_approved_scope.py, 13 casos):
+- não pedem: python/aifw/claude.py, docs/x.md, docs/deep/y.md, templates/claude/agents/aifw-qa.md (padrão), a pasta da mudança e a de outra mudança ativa, e um arquivo fora do projeto;
+- pedem: python/aifw/hooks.py por Edit e Write, citando a mudança; com duas mudanças aprovadas, vale a união dos paths, e o motivo cita as duas;
+- sem mudança aprovada ativa, só com uma não aprovada, ou com changeScope off, nada pede; o tasks.yaml da mudança não aprovada não pede;
+- o tasks.yaml aprovado pede por Edit e por sed -i ("control file tasks.yaml");
+- um tasks.yaml ilegível deixa a mudança fora da regra.
