@@ -4,11 +4,11 @@ changeId: git-read-classification
 artifacts:
 - id: TEST-GIT-READ-CLASSIFICATION
   type: test
-  path: .aifw/changes/active/git-read-classification/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-25-git-read-classification/evidence/tests.txt
   status: passed
 - id: DESIGN-GIT-READ-CLASSIFICATION
   type: design
-  path: .aifw/changes/active/git-read-classification/design.md
+  path: .aifw/changes/archive/2026-10-25-git-read-classification/design.md
   status: passed
 - id: ADR-0038
   type: adr

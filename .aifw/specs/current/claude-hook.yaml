@@ -15,6 +15,17 @@ requirements:
     - O hook avalia o comando ou a edição.
     then:
     - O hook pede confirmação; a leitura de configurações continua livre.
+- id: REQ-HOOK-GIT-LISTING
+  strength: MUST
+  statement: O hook deve classificar como leitura só os comandos do git que listam ou consultam, olhando todas as opções de branch e tag, e como alteração local os que guardam, criam, apagam ou expiram algo.
+  scenarios:
+  - id: SCN-HOOK-GIT-LISTING
+    given:
+    - Comandos git de listagem e de alteração.
+    when:
+    - O hook classifica git stash, git stash -a, git stash list, git tag -a, git tag -l, git tag -v, git tag -l -d, git branch -a, git branch -r -d, git reflog, git reflog expire, git config list, git config get e git remote get-url.
+    then:
+    - git stash list, git tag -l, git tag -v, git branch -a, git reflog, git config list, git config get e git remote get-url são leitura; git stash, git stash -a, git tag -a, git tag -l -d, git branch -r -d e git reflog expire são alteração local.
 - id: REQ-HOOK-SCRIPT-FILES
   strength: MUST
   statement: O hook deve ler o arquivo de código que um shell, um interpretador ou a linha de comando executa e decidir pelo que ele faz.

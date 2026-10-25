@@ -53,13 +53,13 @@ requirements:
     - O adversário cobre o eixo Spec e o QA o eixo Standards do code-review; nenhum dos dois tem a ferramenta Agent.
 - id: REQ-SUBAGENTS-REVIEWER-GUARD
   strength: MUST
-  statement: O hook deve negar a um subagente revisor (aifw-adversary, aifw-qa) a edição de arquivos do projeto além do independent-review.md da mudança e o comando de shell que escreve arquivos, faz commit ou altera o repositório, deixando seguir leitura, testes, aifw, código opaco e arquivos fora do projeto.
+  statement: O hook deve negar a um subagente revisor (aifw-adversary, aifw-qa) a edição de arquivos do projeto além do independent-review.md da mudança e o comando de shell que escreve arquivos de forma explícita, faz commit ou altera o repositório, mesmo quando a avaliação da política falha, deixando seguir leitura, testes, aifw, código opaco, programas desconhecidos e arquivos fora do projeto.
   scenarios:
   - id: SCN-SUBAGENTS-REVIEWER-GUARD
     given:
     - Uma chamada de ferramenta com agent_type aifw-adversary ou aifw-qa.
     when:
-    - O revisor edita python/aifw/claude.py, roda sed -i, git commit ou git stash, ou escreve o independent-review.md da mudança, um arquivo numa pasta temporária, ou roda pytest, git diff e aifw spec analyze.
+    - O revisor edita python/aifw/claude.py, roda sed -i, cp, touch, mkdir, tee, echo x > f, git commit, git stash, git branch -r -d ou git tag -l -d, ou escreve o independent-review.md da mudança, um arquivo numa pasta temporária, ou roda pytest, git diff, aifw spec analyze, python --version, python -m ruff check, cmp, git config get ou git remote get-url.
     then:
-    - A edição do código e os comandos que escrevem, commitam ou mudam o repositório são negados com o motivo; o arquivo de revisão, o arquivo temporário e os comandos de leitura e teste seguem.
+    - A edição do código e os comandos que escrevem, commitam ou mudam o repositório são negados com o motivo, também quando a avaliação da política lança exceção; o arquivo de revisão, o arquivo temporário e os comandos de leitura, teste e programas desconhecidos seguem.
     - As mesmas chamadas sem agent_type, ou do aifw-executor, seguem as regras de antes.
