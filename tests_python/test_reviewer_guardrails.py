@@ -21,6 +21,12 @@ DENIED = [
     ("Bash", dict(command="git tag -a v9 -m x")),
     ("Bash", dict(command="git reflog expire --expire=now --all")),
     ("Bash", dict(command="echo x > notes.txt")),
+    ("Bash", dict(command="cp a b")),
+    ("Bash", dict(command="touch x")),
+    ("Bash", dict(command="mkdir x")),
+    ("Bash", dict(command="tee x")),
+    ("Bash", dict(command="git branch -r -d origin/x")),
+    ("Bash", dict(command="git tag -l -d v1")),
 ]
 ALLOWED = [
     ("Write", dict(file_path="{root}/" + REVIEW, content="x")),
@@ -32,6 +38,11 @@ ALLOWED = [
     ("Bash", dict(command="git tag -l")),
     ("Bash", dict(command="git tag -v v1")),
     ("Bash", dict(command="git config list")),
+    ("Bash", dict(command="git config get user.name")),
+    ("Bash", dict(command="git remote get-url origin")),
+    ("Bash", dict(command="python --version")),
+    ("Bash", dict(command="python -m ruff check python")),
+    ("Bash", dict(command="cmp a b")),
     ("Bash", dict(command="git reflog")),
     ("Bash", dict(command="aifw spec analyze x")),
 ]
@@ -68,6 +79,16 @@ def test_reviewer_can_review_and_probe(project, tmp_path_factory, agent, tool, t
     outside = tmp_path_factory.mktemp("probe")
     out = decide(project, tool, tool_input, agent, outside)
     assert out is None or out["permissionDecision"] != "deny"
+
+
+def test_reviewer_lock_holds_when_the_policy_fails(project, monkeypatch):
+    def broken(*args, **kwargs):
+        raise RuntimeError("broken policy")
+
+    monkeypatch.setattr("aifw.hooks.evaluate", broken)
+    out = decide(project, "Bash", dict(command="git commit -m x"), "aifw-qa")
+    assert out["permissionDecision"] == "deny"
+    assert "reviewer subagent" in out["permissionDecisionReason"]
 
 
 @pytest.mark.parametrize("agent", [None, "aifw-executor"])

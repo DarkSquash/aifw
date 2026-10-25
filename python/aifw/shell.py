@@ -183,12 +183,26 @@ GIT_READ = {
 GIT_LISTING = {
     "branch": {"-a", "-r", "-v", "-vv", "-l", "--list", "--show-current"},
     "tag": {"-l", "--list", "-n", "-v", "--verify"},
-    "remote": {"-v", "show"},
+    "remote": {"-v", "show", "get-url"},
     "stash": {"list", "show"},
-    "config": {"-l", "--list", "--get", "--get-all", "list"},  # git 2.46+: git config list
+    "config": {"-l", "--list", "--get", "--get-all", "list", "get"},  # git 2.46+: git config list|get
     "worktree": {"list"},
     "submodule": {"status"},
 }
+# Options that change something wherever they appear: `git branch -r -d x` deletes, not lists.
+GIT_CHANGES = {
+    "branch": {
+        "-d", "-D", "--delete", "-m", "-M", "--move", "-c", "-C", "--copy", "-u", "--set-upstream-to",
+        "--unset-upstream", "--edit-description", "-f", "--force",
+    },
+    "tag": {"-a", "--annotate", "-s", "--sign", "-u", "--local-user", "-d", "--delete", "-f", "--force", "-m", "-F"},
+}  # fmt: skip
+# Programs whose job is writing files; any other unknown program is marked as such (ADR-0038).
+FILE_WRITERS = {
+    "cp", "mv", "touch", "mkdir", "tee", "ln", "install", "rsync", "truncate", "chmod", "chown", "patch",
+    "tar", "unzip", "copy", "move", "ren", "rename", "mklink", "copy-item", "cpi", "move-item", "mi",
+    "new-item", "ni", "set-content", "sc", "add-content", "ac", "out-file", "rename-item", "rni",
+}  # fmt: skip
 SEVERITY = [
     "opaque", "destructive", "deploy", "publish", "git-remote", "external-write", "install", "secret-read",
     "signing",
@@ -563,7 +577,8 @@ def git_requests(args):
     if destructive:
         return [request("filesystem-write", destructive=True)] + signing
     # A bare `git stash` saves and reverts the working tree; the other bare listings only list.
-    listing = sub in GIT_LISTING and (rest[0] in GIT_LISTING[sub] if rest else sub != "stash")
+    changes = GIT_CHANGES.get(sub, set()) & {a.split("=", 1)[0] for a in rest}
+    listing = sub in GIT_LISTING and not changes and (rest[0] in GIT_LISTING[sub] if rest else sub != "stash")
     # `git reflog expire` and `delete` drop history; plain `git reflog` reads it.
     reads = sub in GIT_READ and not (sub == "reflog" and rest[:1] in (["expire"], ["delete"]))
     if reads or listing:
@@ -855,7 +870,8 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
     ):
         found.append(request("read-only"))
     else:
-        found.append(request("filesystem-write", destructive=False))
+        unknown = name not in FILE_WRITERS and not edits_files(name, args)
+        found.append(request("filesystem-write", destructive=False, unknown=unknown))
     if DESTRUCTIVE_SQL.search(text):
         found.append(request("filesystem-write", destructive=True))
     if any(">" in w and set(w) <= set(">&|") for w in words):

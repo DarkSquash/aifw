@@ -3,7 +3,7 @@
 - Status: accepted
 - Date: 2026-10-24
 - Impact: L2
-- Change: `role-subagents`, `reviewer-guardrails`
+- Change: `role-subagents`, `reviewer-guardrails`, `git-read-classification`
 - Amends: ADR-0036 e ADR-0037 (caminho do avaliador e tabela de modelos da skill)
 
 ## Contexto
@@ -35,7 +35,8 @@ A revisão independente de L2/L3 era um único revisor `opus`. Na agent-autonomy
    - Depois de duas rodadas de correção, uma terceira reprovação para a revisão e leva o caso à pessoa, o mesmo limite do impasse em L2/L3.
 6. **Revisores sem alterar o projeto (mudança `reviewer-guardrails`):**
    - O hook lê o `agent_type` que o Claude Code envia nas chamadas de subagentes. Aos revisores `aifw-adversary` e `aifw-qa` nega editar arquivos do projeto além do `independent-review.md` da mudança e rodar comando que escreve, commita ou muda o repositório.
-   - Leitura, testes, `aifw`, código opaco e arquivos fora do projeto seguem, para o adversário poder provar um achado com um experimento numa pasta temporária.
+   - Leitura, testes, `aifw`, código opaco, programas que o hook não conhece e arquivos fora do projeto seguem, para o adversário poder provar um achado com um experimento numa pasta temporária. Programas que gravam arquivos por natureza (`cp`, `mv`, `touch`, `tee`...) e o redirecionamento continuam negados (mudança `git-read-classification`).
+   - A trava roda antes da avaliação da política, então nega mesmo quando a política falha.
 7. **As definições `.claude/agents/aifw-*.md` são arquivos de controle**, como a skill `aifw-workflow`: editá-las pede confirmação, e o `aifw claude enable` continua instalando sem perguntar.
 8. **Os dois eixos do `code-review` são as duas etapas:** o adversário faz o eixo Spec e o QA o eixo Standards, cada um no próprio contexto. Nenhum tem a ferramenta `Agent`: subagentes aninhados rodariam no modelo da sessão e com outro `agent_type`, fora da trava do item 6.
 

@@ -10,6 +10,39 @@ from test_workflows import init
 
 
 @pytest.mark.parametrize(
+    ("command", "kind"),
+    [
+        ("git stash", "git-local"),
+        ("git stash -a", "git-local"),
+        ("git stash list", "read-only"),
+        ("git tag -a v1 -m x", "git-local"),
+        ("git tag -l", "read-only"),
+        ("git tag -v v1", "read-only"),
+        ("git tag -l -d v1", "git-local"),
+        ("git branch -a", "read-only"),
+        ("git branch -r -d origin/x", "git-local"),
+        ("git branch --list --set-upstream-to=origin/x", "git-local"),
+        ("git reflog", "read-only"),
+        ("git reflog expire --expire=now --all", "git-local"),
+        ("git config list", "read-only"),
+        ("git config get user.name", "read-only"),
+        ("git remote get-url origin", "read-only"),
+    ],
+)
+def test_git_listings_read_and_changes_do_not(command, kind):
+    assert analyze(command)["kind"] == kind
+
+
+@pytest.mark.parametrize(
+    ("command", "unknown"),
+    [("python --version", True), ("cmp a b", True), ("cp a b", False), ("sed -i s/a/b/ f", False)],
+)
+def test_unknown_programs_are_marked(command, unknown):
+    writes = [r for r in analyze(command)["requests"] if r["kind"] == "filesystem-write"]
+    assert writes and all(bool(r.get("unknown")) == unknown for r in writes)
+
+
+@pytest.mark.parametrize(
     ("command", "kind", "destructive"),
     [
         ("git -C . push", "git-remote", False),

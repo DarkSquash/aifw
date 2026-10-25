@@ -1,0 +1,36 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: git-read-classification
+tasks:
+- id: TASK-GITREAD-CLASSIFIER
+  title: Programas desconhecidos marcados, FILE_WRITERS e listagem do git por todas as opções
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-HOOK-GIT-LISTING
+  - REQ-SUBAGENTS-REVIEWER-GUARD
+  paths:
+  - python/aifw/shell.py
+  - tests_python/test_shell.py
+  - tests_python/test_indirect_code.py
+- id: TASK-GITREAD-GUARD
+  title: Trava dos revisores aceita programa desconhecido e roda antes da política
+  status: done
+  dependsOn:
+  - TASK-GITREAD-CLASSIFIER
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEWER-GUARD
+  paths:
+  - python/aifw/hooks.py
+  - tests_python/test_reviewer_guardrails.py
+- id: TASK-GITREAD-DOCS
+  title: CHANGELOG e ADR-0038
+  status: done
+  dependsOn:
+  - TASK-GITREAD-GUARD
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEWER-GUARD
+  - REQ-HOOK-GIT-LISTING
+  paths:
+  - CHANGELOG.md
+  - docs/decisions/ADR-0038-role-subagents.md

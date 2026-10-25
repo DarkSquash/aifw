@@ -163,7 +163,9 @@ def reviewer_change(root, payload):
         return "a reviewer subagent writes only the change's independent-review.md; put probes in a temporary folder"
     if tool_name in SHELL_TOOLS:
         requests = analyze(tool_input.get("command", ""), cwd=payload.get("cwd"))["requests"]
-        if {r["kind"] for r in requests} - REVIEWER_KINDS:
+        # An unknown program (python --version, ruff check) runs like opaque code; known writers do not.
+        writes = [r for r in requests if not (r["kind"] == "filesystem-write" and r.get("unknown"))]
+        if {r["kind"] for r in writes} - REVIEWER_KINDS:
             return "a reviewer subagent does not write files, commit or change the repository; read, test or probe instead"
     return None
 
@@ -466,11 +468,15 @@ def pre_tool_use(root, payload):
             )
         )
     try:
-        result = evaluate(
-            root, payload.get("tool_name", ""), payload.get("tool_input") or {}, payload.get("cwd")
+        # A reviewer's write is denied before the policy is read, so a broken policy cannot soften it.
+        reason = reviewer_change(root, payload)
+        result = (
+            ("deny", [reason])
+            if reason
+            else evaluate(
+                root, payload.get("tool_name", ""), payload.get("tool_input") or {}, payload.get("cwd")
+            )
         )
-        if reason := reviewer_change(root, payload):
-            result = "deny", [reason]
     except Exception as error:  # noqa: BLE001 - a broken policy must reach the human, not pass silently
         result = "ask", [f"AIFW hook could not evaluate the policy: {error}"]
     command = str((payload.get("tool_input") or {}).get("command") or "")

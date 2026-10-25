@@ -1,0 +1,13 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: git-read-classification
+  title: Leitura do git e comandos dos revisores
+  level: L2
+  createdAt: '2026-10-25T16:39:26.145Z'
+summary: 'Corrige as ressalvas da reviewer-guardrails: revisores rodam programas de leitura, git config get e remote get-url contam como leitura, git branch/tag com opção que altera deixam de contar, e a trava roda mesmo se a política falhar.'
+status: draft
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-25T16:41:05.895Z'
+  record: .aifw/changes/active/git-read-classification/approval.md

@@ -1,0 +1,29 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: git-read-classification
+artifacts:
+- id: TEST-GIT-READ-CLASSIFICATION
+  type: test
+  path: .aifw/changes/active/git-read-classification/evidence/tests.txt
+  status: passed
+- id: DESIGN-GIT-READ-CLASSIFICATION
+  type: design
+  path: .aifw/changes/active/git-read-classification/design.md
+  status: passed
+- id: ADR-0038
+  type: adr
+  path: docs/decisions/ADR-0038-role-subagents.md
+  status: passed
+links:
+- from: SCN-SUBAGENTS-REVIEWER-GUARD
+  relation: verifiedBy
+  to: TEST-GIT-READ-CLASSIFICATION
+- from: SCN-HOOK-GIT-LISTING
+  relation: verifiedBy
+  to: TEST-GIT-READ-CLASSIFICATION
+- from: REQ-HOOK-GIT-LISTING
+  relation: designedBy
+  to: DESIGN-GIT-READ-CLASSIFICATION
+- from: REQ-SUBAGENTS-REVIEWER-GUARD
+  relation: governedBy
+  to: ADR-0038
