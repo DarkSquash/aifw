@@ -4,7 +4,7 @@
 
 ### Alterado
 
-- Edição restrita ao plano aprovado (ADR-0039): com uma mudança aprovada ativa, editar arquivo fora dos `paths` do `tasks.yaml` dela pede confirmação, e o `tasks.yaml` aprovado vira arquivo de controle. A pasta das mudanças ativas fica livre, e comandos de shell que escrevem não entram na regra. `changeScope: off` no `permissions.yaml` a desliga.
+- Edição restrita ao plano aprovado (ADR-0039): com uma mudança aprovada ativa, editar arquivo fora dos `paths` do `tasks.yaml` dela pede confirmação, e o `tasks.yaml` aprovado vira arquivo de controle. A pasta das mudanças ativas fica livre, e comandos de shell que escrevem não entram na regra. `changeScope: off` no `permissions.yaml` desliga a regra e a proteção do `tasks.yaml`.
 - Subagentes por papel (ADR-0038):
   - `aifw claude enable` instala em `.claude/agents/` os subagentes `aifw-explorer` (haiku, low, só leitura), `aifw-quick` (haiku, low), `aifw-executor` (sonnet, medium), `aifw-adversary` (opus, high) e `aifw-qa` (sonnet, high), guardando uma cópia editada em `.bak`. `aifw claude check` acusa subagente ausente ou desatualizado.
   - O caminho do avaliador de tarefas nomeia o subagente, e a skill delega pelo nome, sem passar `model`, para valer o modelo da definição.

@@ -133,7 +133,10 @@ def outside_plan(root, policy, tool_name, tool_input):
     text = target.relative_to(base).as_posix().lower()
     if text.startswith(".aifw/changes/active/"):
         return None  # the changes' own artifacts; change.yaml, approval.md and tasks.yaml are control files
-    for path in (p.replace("\\", "/").lower().strip("/") for paths in plans.values() for p in paths):
+    planned = (
+        p.replace("\\", "/").lower().removeprefix("./").strip("/") for ps in plans.values() for p in ps
+    )
+    for path in planned:
         if text == path or text.startswith(path + "/") or fnmatch(text, path):
             return None
     return (
@@ -141,8 +144,8 @@ def outside_plan(root, policy, tool_name, tool_input):
     )
 
 
-def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None):
-    """The AIFW control file this call would change, if any."""
+def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None, scope=True):
+    """The AIFW control file this call would change, if any; scope keeps the approved tasks.yaml in."""
     if tool_name in EDIT_TOOLS:
         target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
         target = (target if target.is_absolute() else Path(root) / target).resolve()
@@ -165,15 +168,19 @@ def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None
         if INSTALLED.search(text):
             matches.append(INSTALLED.search(text).group(2) + "/")
         plan = re.fullmatch(r"\.aifw/changes/active/([^/]+)/tasks\.yaml", text)
-        if plan and plan.group(1) in approved_plans(root):
-            matches.append("tasks.yaml")  # the approved plan does not widen itself (ADR-0039)
+        if (
+            scope and plan and plan.group(1) in approved_plans(root)
+        ):  # the plan does not widen itself (ADR-0039)
+            matches.append(f"tasks.yaml of the approved change {plan.group(1)}")
     elif tool_name in SHELL_TOOLS and mutation:
         text = tool_input.get("command", "").replace("\\", "/").lower()
         controls = (*CONTROL, *protected, "change.yaml", "approval.md", ".claude/settings")
         matches = [c for c in controls if c.lower() in text]
-        if "tasks.yaml" in text:
+        if scope and "tasks.yaml" in text:
             matches += [
-                "tasks.yaml" for c in approved_plans(root) if f".aifw/changes/active/{c}/tasks.yaml" in text
+                f"tasks.yaml of the approved change {c}"
+                for c in approved_plans(root)
+                if f".aifw/changes/active/{c}/tasks.yaml" in text
             ]
         # A pattern can name a control file without spelling it (chang?.yaml, approval.m[d]).
         for word in PATTERN_WORD.findall(tool_input.get("command", "").replace("\\", "/")):
@@ -452,7 +459,13 @@ def evaluate(root, tool_name, tool_input, cwd=None):
         item = dict(item, mixed=True) if mixed and item["kind"] == "commit" else item
         findings += item_findings(root, policy, item, allowlist, classification, tool_name, tool_input)
     control = control_target(
-        root, tool_name, tool_input, request["mutation"], policy.get("protectedPaths", []), cwd
+        root,
+        tool_name,
+        tool_input,
+        request["mutation"],
+        policy.get("protectedPaths", []),
+        cwd,
+        scope=policy.get("changeScope", "ask") == "ask",
     )
     if control:
         findings.append(("ask", f"changes the AIFW control file {control}"))

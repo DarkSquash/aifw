@@ -70,6 +70,13 @@ def test_change_scope_off(project):
     policy["changeScope"] = "off"
     write_yaml(policy_file, policy)
     assert edit(project, "python/aifw/hooks.py") is None
+    assert edit(project, ".aifw/changes/active/plan/tasks.yaml") is None
+
+
+def test_dot_slash_paths_match(project):
+    add_change(project, "plan", paths=["./docs/", r".\python\aifw\claude.py"])
+    assert edit(project, "docs/x.md") is None
+    assert edit(project, "python/aifw/claude.py") is None
 
 
 def test_paths_of_every_approved_change_count(project):
@@ -83,10 +90,10 @@ def test_the_approved_plan_is_a_control_file(project):
     add_change(project, "plan")
     out = edit(project, ".aifw/changes/active/plan/tasks.yaml")
     assert out["permissionDecision"] == "ask"
-    assert "control file tasks.yaml" in out["permissionDecisionReason"]
+    assert "control file tasks.yaml of the approved change plan" in out["permissionDecisionReason"]
     command = "sed -i 's/a/b/' .aifw/changes/active/plan/tasks.yaml"
     shell = handle(dict(cwd=str(project), session_id="s", tool_name="Bash", tool_input=dict(command=command)))
-    assert "control file tasks.yaml" in shell["hookSpecificOutput"]["permissionDecisionReason"]
+    assert "tasks.yaml of the approved change plan" in shell["hookSpecificOutput"]["permissionDecisionReason"]
 
 
 def test_a_broken_change_is_left_out(project):

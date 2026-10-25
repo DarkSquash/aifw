@@ -17,3 +17,11 @@ Cobertura do cenário SCN-AUTONOMY-APPROVED-SCOPE (tests_python/test_approved_sc
 - sem mudança aprovada ativa, só com uma não aprovada, ou com changeScope off, nada pede; o tasks.yaml da mudança não aprovada não pede;
 - o tasks.yaml aprovado pede por Edit e por sed -i ("control file tasks.yaml");
 - um tasks.yaml ilegível deixa a mudança fora da regra.
+
+Revisão, rodada 1 (evidence/independent-review-1.md): o adversário provou que o motivo do tasks.yaml não citava a mudança, que paths com ./ não casavam e que changeScope off não desligava a proteção do tasks.yaml. Correção em python/aifw/hooks.py (motivo "tasks.yaml of the approved change <id>", removeprefix("./"), control_target(scope=...)); testes novos; o tasks.yaml aprovado entrou nas listas de arquivos de controle da skill e de docs/claude-code.md.
+
+$ python scratchpad/staged.py
+2725 passed in 87.51s (0:01:27)
+
+$ python -m pytest tests_python -q   (depois de instalar)
+2725 passed in 87.78s (0:01:27)
