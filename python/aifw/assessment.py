@@ -134,11 +134,18 @@ COVERS = dict(
         "false": "o cenário testa outra coisa, ou só uma parte irrelevante do requisito",
     },
 )
+# Each path names the role subagent that takes it (ADR-0038).
 PATH_RULE = {
-    "FAST": "risco L0, complexidade trivial ou simples, importância baixa ou média: Haiku executa",
-    "WORK": "risco L1, ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica: Sonnet executa",
-    "PLANNED": "risco L2, ou L1 com complexidade alta: Opus planeja, Sonnet executa, Opus revisa",
-    "CRITICAL": "risco L3: Opus planeja e executa, revisor independente e aprovação humana",
+    "FAST": "risco L0, complexidade trivial ou simples, importância baixa ou média: aifw-quick (Haiku) executa",
+    "WORK": (
+        "risco L1, ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica: "
+        "aifw-executor (Sonnet) executa"
+    ),
+    "PLANNED": (
+        "risco L2, ou L1 com complexidade alta: Opus planeja, aifw-executor (Sonnet) executa, "
+        "aifw-adversary e depois aifw-qa revisam"
+    ),
+    "CRITICAL": "risco L3: Opus planeja e executa, aifw-adversary e depois aifw-qa revisam, com aprovação humana",
 }
 
 

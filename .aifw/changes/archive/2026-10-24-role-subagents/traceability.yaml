@@ -1,0 +1,35 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: role-subagents
+artifacts:
+- id: TEST-ROLE-SUBAGENTS
+  type: test
+  path: .aifw/changes/archive/2026-10-24-role-subagents/evidence/tests.txt
+  status: passed
+- id: ADR-0038
+  type: adr
+  path: docs/decisions/ADR-0038-role-subagents.md
+  status: passed
+- id: DESIGN-ROLE-SUBAGENTS
+  type: design
+  path: .aifw/changes/archive/2026-10-24-role-subagents/design.md
+  status: passed
+links:
+- from: SCN-SUBAGENTS-INSTALL
+  relation: verifiedBy
+  to: TEST-ROLE-SUBAGENTS
+- from: SCN-SUBAGENTS-DELEGATION
+  relation: verifiedBy
+  to: TEST-ROLE-SUBAGENTS
+- from: SCN-SUBAGENTS-REVIEW-FLOW
+  relation: verifiedBy
+  to: TEST-ROLE-SUBAGENTS
+- from: REQ-SUBAGENTS-REVIEW-FLOW
+  relation: designedBy
+  to: DESIGN-ROLE-SUBAGENTS
+- from: REQ-SUBAGENTS-INSTALL
+  relation: designedBy
+  to: DESIGN-ROLE-SUBAGENTS
+- from: REQ-SUBAGENTS-DELEGATION
+  relation: governedBy
+  to: ADR-0038

@@ -38,7 +38,7 @@ Ler segredos (`.env`, chaves, `printenv`) é sempre negado.
 - quality gates progressivos, distinguindo hard gate, auditoria e aprovação humana;
 - máquina de estados para prevenção de impasse e loops de correção;
 - política de permissões para Git local/remoto (branches de trabalho livres, branch padrão protegida), deploy, serviços externos com allowlist, publicação, delegação e break-glass;
-- integração com o Claude Code ativada por projeto (`/aifw new|adopt`), com skill de fluxo e tabela de modelos FAST/WORK/BRAIN (haiku/sonnet/opus) sempre ligada;
+- integração com o Claude Code ativada por projeto (`/aifw new|adopt`), com skill de fluxo e tabela de modelos FAST/WORK/BRAIN (haiku/sonnet/opus) sempre ligada, e subagentes por papel com modelo e esforço fixos: explorador, rápido, executor e a revisão em duas etapas, adversário e QA;
 - hooks que aplicam permissões, impasses e arquivos de controle a cada ação, leem os comandos de shell como um shell (inclusive scripts, `package.json` e `Makefile` que o comando executa), gravam a aprovação do plano a partir da sua resposta no chat e impedem concluir com código não verificado;
 - avaliador de tarefas que classifica cada pedido (risco, importância, complexidade) e entrega ao agente o caminho FAST, WORK, PLANNED ou CRITICAL, com piso de risco vindo do diff;
 - avaliações em modo sombra por modelo de decisão para impasse, contexto, intake, rastreabilidade e sinais de decisão, com relatório e vereditos humanos;

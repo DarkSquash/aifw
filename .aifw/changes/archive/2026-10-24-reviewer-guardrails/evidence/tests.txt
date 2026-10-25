@@ -1,0 +1,34 @@
+Mudança reviewer-guardrails, 2026-10-24, branch feat/role-subagents.
+
+$ python scratchpad/staged.py   (hooks.py e shell.py editados numa cópia, antes de instalar)
+2609 passed in 94.74s (0:01:34)
+
+$ python -m pytest tests_python/test_reviewer_guardrails.py -q   (aifw-executor, primeira rodada)
+33 passed, 2 failed: git stash sem argumentos não era negado a um revisor, porque o classificador o tratava como listagem. Corrigido em python/aifw/shell.py (git_requests): um git stash sem argumentos é git-local.
+
+$ aifw claude enable
+.claude/agents/aifw-adversary.md e aifw-qa.md e a skill atualizados; as cópias .bak eram iguais ao HEAD e foram apagadas.
+
+$ aifw claude check
+{"status": "pass", "findings": []}
+
+$ python -m pytest tests_python -q
+2609 passed in 84.04s (0:01:24)
+
+Revisão, rodada 1 (evidence/independent-review-1.md): o adversário provou que git stash -a, git tag -a e git reflog expire ainda contavam como leitura. Correção em python/aifw/shell.py: opções de listagem por subcomando (GIT_LISTING) e reflog expire/delete como git-local; casos novos no teste.
+
+$ python scratchpad/staged.py
+2629 passed in 81.60s (0:01:21)
+
+$ python -m pytest tests_python -q   (depois da correção instalada)
+2629 passed in 81.53s (0:01:21)
+
+Revisão, rodada 2 (evidence/independent-review-2.md): as correções da rodada 1 valeram, mas git config list e git tag -v passaram a ser negados aos revisores. Correção: list em GIT_LISTING["config"] e -n, -v, --verify em GIT_LISTING["tag"]; casos novos no teste. tests_python/test_reviewer_guardrails.py tem hoje 59 casos.
+
+$ python -m pytest tests_python -q
+2633 passed in 82.03s (0:01:22)
+
+Cobertura dos cenários (tests_python/test_reviewer_guardrails.py, 59 casos):
+- SCN-SUBAGENTS-REVIEWER-GUARD: para aifw-adversary e aifw-qa, negados Edit de python/aifw/claude.py, sed -i, git commit, git stash e echo x > notes.txt; seguem o Write do independent-review.md da mudança, o Write fora do projeto, pytest, git diff e aifw spec analyze. Sem agent_type e com aifw-executor, as mesmas chamadas não recebem a trava.
+- SCN-SUBAGENTS-DEFINITIONS-CONTROL: Edit e sed -i em .claude/agents/aifw-qa.md pedem confirmação; aifw claude enable e Edit de .claude/agents/minha.md não pedem.
+- SCN-SUBAGENTS-REVIEW-FLOW: nenhum revisor tem Agent; o adversário não tem Skill; o adversário cita o eixo Spec e o QA o eixo Standards, e a skill cita os dois. As duas etapas rodaram nesta mudança (independent-review.md).

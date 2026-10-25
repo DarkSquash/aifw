@@ -47,6 +47,7 @@ CONTROL = (
     ".claude/settings.json",
     ".claude/settings.local.json",
     ".claude/skills/aifw-workflow/",
+    ".claude/agents/aifw-",  # the role subagents: their model, tools and instructions (ADR-0038)
     ".aifw/assessments/",
     # git runs code from here by itself (hooks, aliases and helpers from config), unread by the hook.
     ".git/",
@@ -137,6 +138,36 @@ def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None
     else:
         return None
     return matches[0] if matches else None
+
+
+# Role subagents that review a change: they read and test, and write only the review (ADR-0038).
+REVIEWERS = {"aifw-adversary", "aifw-qa"}
+REVIEW_FILE = re.compile(r"\.aifw/changes/active/[^/]+/independent-review\.md")
+# Opaque code still runs, so the adversary can prove a finding with a probe; what it does is not read.
+REVIEWER_KINDS = {"read-only", "external-read", "secret-read", "opaque"}
+
+
+def reviewer_change(root, payload):
+    """Why a reviewer subagent may not make this call: it would change the project."""
+    if payload.get("agent_type") not in REVIEWERS:
+        return None
+    tool_name, tool_input = payload.get("tool_name", ""), payload.get("tool_input") or {}
+    if tool_name in EDIT_TOOLS:
+        base = Path(root).resolve()
+        target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
+        target = (target if target.is_absolute() else base / target).resolve()
+        if not target.is_relative_to(base):
+            return None  # probes in a temporary folder
+        if REVIEW_FILE.fullmatch(target.relative_to(base).as_posix().lower()):
+            return None
+        return "a reviewer subagent writes only the change's independent-review.md; put probes in a temporary folder"
+    if tool_name in SHELL_TOOLS:
+        requests = analyze(tool_input.get("command", ""), cwd=payload.get("cwd"))["requests"]
+        # An unknown program (python --version, ruff check) runs like opaque code; known writers do not.
+        writes = [r for r in requests if not (r["kind"] == "filesystem-write" and r.get("unknown"))]
+        if {r["kind"] for r in writes} - REVIEWER_KINDS:
+            return "a reviewer subagent does not write files, commit or change the repository; read, test or probe instead"
+    return None
 
 
 def classify(tool_name, tool_input, allowlist, cwd=None):
@@ -437,8 +468,14 @@ def pre_tool_use(root, payload):
             )
         )
     try:
-        result = evaluate(
-            root, payload.get("tool_name", ""), payload.get("tool_input") or {}, payload.get("cwd")
+        # A reviewer's write is denied before the policy is read, so a broken policy cannot soften it.
+        reason = reviewer_change(root, payload)
+        result = (
+            ("deny", [reason])
+            if reason
+            else evaluate(
+                root, payload.get("tool_name", ""), payload.get("tool_input") or {}, payload.get("cwd")
+            )
         )
     except Exception as error:  # noqa: BLE001 - a broken policy must reach the human, not pass silently
         result = "ask", [f"AIFW hook could not evaluate the policy: {error}"]

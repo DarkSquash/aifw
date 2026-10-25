@@ -170,7 +170,7 @@ def test_make_reads_shell_calls_and_keeps_make_variables_as_data(tmp_path):
         ("git -c core.hooksPath=x commit -m x", "opaque"),
         ("git -c diff.x.textconv=cat diff", "opaque"),
         ("git config --get alias.p", "read-only"),
-        ("git config get alias.p", "git-local"),
+        ("git config get alias.p", "read-only"),
         ("git config --list", "read-only"),
         ("git config --unset alias.p", "git-local"),
         ("git config user.name x", "git-local"),

@@ -4,6 +4,15 @@
 
 ### Alterado
 
+- Subagentes por papel (ADR-0038):
+  - `aifw claude enable` instala em `.claude/agents/` os subagentes `aifw-explorer` (haiku, low, só leitura), `aifw-quick` (haiku, low), `aifw-executor` (sonnet, medium), `aifw-adversary` (opus, high) e `aifw-qa` (sonnet, high), guardando uma cópia editada em `.bak`. `aifw claude check` acusa subagente ausente ou desatualizado.
+  - O caminho do avaliador de tarefas nomeia o subagente, e a skill delega pelo nome, sem passar `model`, para valer o modelo da definição.
+  - A revisão independente de L2/L3 tem duas etapas: o adversário tenta provar que a mudança está errada e só reprova com um cenário concreto; sem achado provado, o QA confere a entrega e escreve o `Resultado:`. Uma terceira reprovação para a revisão e leva o caso à pessoa.
+  - O adversário faz o eixo Spec e o QA o eixo Standards do `code-review`, sem lançar subagentes.
+  - O hook reconhece o subagente pelo `agent_type`: aos revisores nega editar o projeto além do `independent-review.md` e rodar comando que escreve, commita ou muda o repositório. `git stash` sem argumentos ou com `-a`, `git tag -a` e `git reflog expire`/`delete` deixam de contar como leitura: as opções que só listam passam a ser definidas por subcomando.
+  - Os revisores rodam programas que o hook não conhece (`python --version`, `python -m ruff check`, `cmp`), como o código opaco; programas que gravam ou apagam arquivos por natureza (`cp`, `mv`, `touch`, `mkdir`/`md`, `tee`, `rm`, `del`, `Remove-Item`, `xcopy`, `robocopy`...) e todo `find -exec` continuam negados a eles. A trava roda antes da política, então nega mesmo se a avaliação falhar.
+  - `git config get` e `git remote get-url` contam como leitura; `git branch` e `git tag` com uma opção que altera (`-d`, `-m`, `-u`, `-a`...) em qualquer posição deixam de contar.
+  - Editar `.claude/agents/aifw-*.md` pede confirmação, como a skill do AIFW; `aifw claude enable` continua instalando sem perguntar.
 - Mais autonomia para o agente (ADR-0037):
   - Mudanças L2/L3 são aprovadas no chat: o agente apresenta o plano e roda `aifw spec request-approval <id>`, e o hook `UserPromptSubmit` grava a resposta "sim" da pessoa em `approval.md`. Qualquer outra resposta cancela o pedido, e só vale o pedido da mesma sessão. A aprovação de mudança não exige mais commit assinado. Enquanto o pedido está pendente, o agente fica congelado: o hook nega qualquer ferramenta até a resposta da pessoa.
   - O hook nega rodar `aifw-hook`, `python -m aifw.hooks` ou `claude -p` pelo shell, e editar `change.yaml`/`approval.md` (também por padrão de shell ou em outra árvore) pede confirmação. A proteção mira erro do agente, não um agente decidido a forjar a aprovação.

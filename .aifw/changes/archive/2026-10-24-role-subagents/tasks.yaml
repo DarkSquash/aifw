@@ -1,0 +1,55 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: role-subagents
+tasks:
+- id: TASK-SUBAGENTS-TEMPLATES
+  title: Definições dos cinco subagentes em templates/claude/agents
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-INSTALL
+  - REQ-SUBAGENTS-REVIEW-FLOW
+  paths:
+  - templates/claude/agents/aifw-explorer.md
+  - templates/claude/agents/aifw-quick.md
+  - templates/claude/agents/aifw-executor.md
+  - templates/claude/agents/aifw-adversary.md
+  - templates/claude/agents/aifw-qa.md
+- id: TASK-SUBAGENTS-ENABLE
+  title: claude enable instala e claude check confere os subagentes
+  status: done
+  dependsOn:
+  - TASK-SUBAGENTS-TEMPLATES
+  requirementIds:
+  - REQ-SUBAGENTS-INSTALL
+  paths:
+  - python/aifw/claude.py
+  - tests_python/test_role_subagents.py
+- id: TASK-SUBAGENTS-DELEGATION
+  title: Avaliador e skill delegam por nome, com a revisão em duas etapas
+  status: done
+  dependsOn:
+  - TASK-SUBAGENTS-TEMPLATES
+  requirementIds:
+  - REQ-SUBAGENTS-DELEGATION
+  - REQ-SUBAGENTS-REVIEW-FLOW
+  paths:
+  - python/aifw/assessment.py
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - .claude/skills/aifw-workflow/SKILL.md
+  - tests_python/test_role_subagents.py
+- id: TASK-SUBAGENTS-DOCS
+  title: Documentação, ADR-0038 e subagentes instalados neste repositório
+  status: done
+  dependsOn:
+  - TASK-SUBAGENTS-ENABLE
+  - TASK-SUBAGENTS-DELEGATION
+  requirementIds:
+  - REQ-SUBAGENTS-INSTALL
+  - REQ-SUBAGENTS-DELEGATION
+  paths:
+  - docs/claude-code.md
+  - docs/decisions/ADR-0038-role-subagents.md
+  - README.md
+  - CHANGELOG.md
+  - .claude/agents/

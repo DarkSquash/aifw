@@ -1,0 +1,22 @@
+Mudança role-subagents, 2026-10-24, branch feat/role-subagents.
+
+$ python -m pytest tests_python/test_assessor_active.py tests_python/test_assessment.py -q
+25 passed in 17.31s
+
+$ aifw claude enable
+agents: .claude/agents/aifw-explorer.md, aifw-quick.md, aifw-executor.md, aifw-adversary.md, aifw-qa.md
+agentBackups: []
+
+$ aifw claude check
+{"status": "pass", "findings": []}
+
+$ python -m pytest tests_python/test_role_subagents.py -q   (depois da rodada 1 da revisão)
+10 passed in 13.27s
+
+$ python -m pytest tests_python -q   (depois da rodada 2 da revisão)
+2574 passed in 98.68s (0:01:38)
+
+Cobertura dos cenários:
+- SCN-SUBAGENTS-INSTALL (tests_python/test_role_subagents.py): enable cria os cinco arquivos com nome, modelo, esforço, ferramentas e carimbo; a segunda execução não muda nada; a cópia editada vai para .bak; check acusa cada subagente antes do enable e nenhum depois, e acusa o subagente de outra versão até o enable seguinte.
+- SCN-SUBAGENTS-DELEGATION (tests_python/test_role_subagents.py): path_context cita aifw-quick (FAST), aifw-executor (WORK), aifw-executor, aifw-adversary e aifw-qa (PLANNED) e aifw-adversary e aifw-qa (CRITICAL); a skill cita cada subagente e subagent_type.
+- SCN-SUBAGENTS-REVIEW-FLOW: o teste confere que a skill traz o limite de rodadas ("terceira reprovação"). O ônus da prova e a linha Resultado nos templates do adversário e do QA foram conferidos por leitura, não por teste. O fluxo rodou nesta própria mudança: rodada 1 reprovada com um achado provado (evidence/independent-review-1.md), corrigido em d2c1bfb; rodada 2 sem achado provado, e o QA aprovou com ressalvas (independent-review.md).

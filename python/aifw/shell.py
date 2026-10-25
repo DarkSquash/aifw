@@ -102,6 +102,7 @@ GIT_LOCAL = {
     "add", "commit", "merge", "rebase", "tag", "stash", "checkout", "switch", "cherry-pick", "revert", "am",
     "fetch", "pull", "clone", "init", "mv", "rm", "restore", "reset", "clean", "branch", "remote", "config",
     "worktree", "submodule", "apply", "notes", "bisect", "gc", "maintenance", "sparse-checkout", "lfs",
+    "reflog",  # only `expire` and `delete` get here; plain `git reflog` reads
 }  # fmt: skip
 WRAPPERS = {"sudo", "env", "time", "nohup", "command", "exec", "nice", "timeout"}
 # Wrapper options that take a value, and positional arguments a wrapper reads before the program.
@@ -178,8 +179,32 @@ GIT_READ = {
     "status", "diff", "log", "show", "rev-parse", "ls-files", "ls-tree", "blame", "grep", "describe",
     "shortlog", "cat-file", "show-ref", "for-each-ref", "reflog", "help", "version",
 }  # fmt: skip
-GIT_LISTING = {"branch", "tag", "remote", "stash", "config", "worktree", "submodule"}
-LIST_ARGS = {"-a", "-r", "-v", "-vv", "-l", "--list", "list", "show", "--show-current", "--get", "--get-all"}
+# The first argument that only lists, per subcommand: `git tag -a` and `git stash -a` create, not list.
+GIT_LISTING = {
+    "branch": {"-a", "-r", "-v", "-vv", "-l", "--list", "--show-current"},
+    "tag": {"-l", "--list", "-n", "-v", "--verify"},
+    "remote": {"-v", "show", "get-url"},
+    "stash": {"list", "show"},
+    "config": {"-l", "--list", "--get", "--get-all", "list", "get"},  # git 2.46+: git config list|get
+    "worktree": {"list"},
+    "submodule": {"status"},
+}
+# Options that change something wherever they appear: `git branch -r -d x` deletes, not lists.
+GIT_CHANGES = {
+    "branch": {
+        "-d", "-D", "--delete", "-m", "-M", "--move", "-c", "-C", "--copy", "-u", "--set-upstream-to",
+        "--unset-upstream", "--edit-description", "-f", "--force",
+    },
+    "tag": {"-a", "--annotate", "-s", "--sign", "-u", "--local-user", "-d", "--delete", "-f", "--force", "-m", "-F"},
+}  # fmt: skip
+# Programs whose job is writing files; any other unknown program is marked as such (ADR-0038).
+FILE_WRITERS = {
+    "cp", "mv", "touch", "mkdir", "tee", "ln", "install", "rsync", "truncate", "chmod", "chown", "patch",
+    "tar", "unzip", "copy", "move", "ren", "rename", "mklink", "copy-item", "cpi", "move-item", "mi",
+    "new-item", "ni", "set-content", "sc", "add-content", "ac", "out-file", "rename-item", "rni",
+    "rm", "del", "erase", "rmdir", "rd", "unlink", "remove-item", "ri", "md", "xcopy", "robocopy",
+    "find",  # only here with -exec or -delete
+}  # fmt: skip
 SEVERITY = [
     "opaque", "destructive", "deploy", "publish", "git-remote", "external-write", "install", "secret-read",
     "signing",
@@ -553,7 +578,12 @@ def git_requests(args):
         return [request("commit")] + signing
     if destructive:
         return [request("filesystem-write", destructive=True)] + signing
-    if sub in GIT_READ or (sub in GIT_LISTING and (not rest or rest[0] in LIST_ARGS)):
+    # A bare `git stash` saves and reverts the working tree; the other bare listings only list.
+    changes = GIT_CHANGES.get(sub, set()) & {a.split("=", 1)[0] for a in rest}
+    listing = sub in GIT_LISTING and not changes and (rest[0] in GIT_LISTING[sub] if rest else sub != "stash")
+    # `git reflog expire` and `delete` drop history; plain `git reflog` reads it.
+    reads = sub in GIT_READ and not (sub == "reflog" and rest[:1] in (["expire"], ["delete"]))
+    if reads or listing:
         return [request("read-only")]
     # Unknown subcommands include aliases, which can expand to anything (git p -> git push).
     return [request("git-local" if sub in GIT_LOCAL else "opaque")] + signing
@@ -842,7 +872,8 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
     ):
         found.append(request("read-only"))
     else:
-        found.append(request("filesystem-write", destructive=False))
+        unknown = name not in FILE_WRITERS and not edits_files(name, args)
+        found.append(request("filesystem-write", destructive=False, unknown=unknown))
     if DESTRUCTIVE_SQL.search(text):
         found.append(request("filesystem-write", destructive=True))
     if any(">" in w and set(w) <= set(">&|") for w in words):

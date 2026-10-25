@@ -1,0 +1,19 @@
+Mudança git-read-classification, 2026-10-25, branch feat/role-subagents.
+
+$ python scratchpad/staged.py   (shell.py e hooks.py editados numa cópia, antes de instalar)
+2687 passed in 153.92s (0:02:33)
+
+$ python -m pytest tests_python -q   (depois de instalar)
+2687 passed in 157.68s (0:02:37)
+
+Cobertura dos cenários:
+- SCN-HOOK-GIT-LISTING (tests_python/test_shell.py, test_git_listings_read_and_changes_do_not): git stash, git stash -a, git tag -a, git tag -l -d, git branch -r -d, git branch --list --set-upstream-to=... e git reflog expire são git-local; git stash list, git tag -l, git tag -v, git branch -a, git reflog, git config list, git config get e git remote get-url são read-only. test_unknown_programs_are_marked: python --version e cmp marcados unknown; cp e sed -i não. tests_python/test_indirect_code.py: git config get alias.p passou de git-local para read-only.
+- SCN-SUBAGENTS-REVIEWER-GUARD (tests_python/test_reviewer_guardrails.py): negados aos revisores cp, touch, mkdir, tee, git branch -r -d e git tag -l -d, além dos casos anteriores; seguem git config get, git remote get-url, python --version, python -m ruff check e cmp; test_reviewer_lock_holds_when_the_policy_fails: com evaluate lançando exceção, git commit de um aifw-qa é negado.
+
+Revisão, rodada 1 (evidence/independent-review-1.md): o adversário provou que rm, del, Remove-Item, rmdir, unlink, find -exec rm, md, xcopy e robocopy passavam para os revisores como programa desconhecido. Correção: esses programas entram em FILE_WRITERS (find só chega ali com -exec ou -delete); casos novos no teste.
+
+$ python scratchpad/staged.py
+2711 passed in 109.90s (0:01:49)
+
+$ python -m pytest tests_python -q   (depois de instalar)
+2711 passed in 94.84s (0:01:34)

@@ -1,0 +1,32 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: reviewer-guardrails
+artifacts:
+- id: TEST-REVIEWER-GUARDRAILS
+  type: test
+  path: .aifw/changes/archive/2026-10-24-reviewer-guardrails/evidence/tests.txt
+  status: passed
+- id: DESIGN-REVIEWER-GUARDRAILS
+  type: design
+  path: .aifw/changes/archive/2026-10-24-reviewer-guardrails/design.md
+  status: passed
+- id: ADR-0038
+  type: adr
+  path: docs/decisions/ADR-0038-role-subagents.md
+  status: passed
+links:
+- from: SCN-SUBAGENTS-REVIEWER-GUARD
+  relation: verifiedBy
+  to: TEST-REVIEWER-GUARDRAILS
+- from: SCN-SUBAGENTS-DEFINITIONS-CONTROL
+  relation: verifiedBy
+  to: TEST-REVIEWER-GUARDRAILS
+- from: SCN-SUBAGENTS-REVIEW-FLOW
+  relation: verifiedBy
+  to: TEST-REVIEWER-GUARDRAILS
+- from: REQ-SUBAGENTS-REVIEWER-GUARD
+  relation: designedBy
+  to: DESIGN-REVIEWER-GUARDRAILS
+- from: REQ-SUBAGENTS-REVIEWER-GUARD
+  relation: governedBy
+  to: ADR-0038
