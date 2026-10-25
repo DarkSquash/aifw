@@ -202,6 +202,8 @@ FILE_WRITERS = {
     "cp", "mv", "touch", "mkdir", "tee", "ln", "install", "rsync", "truncate", "chmod", "chown", "patch",
     "tar", "unzip", "copy", "move", "ren", "rename", "mklink", "copy-item", "cpi", "move-item", "mi",
     "new-item", "ni", "set-content", "sc", "add-content", "ac", "out-file", "rename-item", "rni",
+    "rm", "del", "erase", "rmdir", "rd", "unlink", "remove-item", "ri", "md", "xcopy", "robocopy",
+    "find",  # only here with -exec or -delete
 }  # fmt: skip
 SEVERITY = [
     "opaque", "destructive", "deploy", "publish", "git-remote", "external-write", "install", "secret-read",

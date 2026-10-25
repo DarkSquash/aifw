@@ -27,6 +27,12 @@ DENIED = [
     ("Bash", dict(command="tee x")),
     ("Bash", dict(command="git branch -r -d origin/x")),
     ("Bash", dict(command="git tag -l -d v1")),
+    ("Bash", dict(command="rm notes.txt")),
+    ("Bash", dict(command="find . -name x -exec rm {{}} +")),  # {{}} is {} after .format
+    ("PowerShell", dict(command="Remove-Item notes.txt")),
+    ("PowerShell", dict(command="del notes.txt")),
+    ("PowerShell", dict(command="md x")),
+    ("PowerShell", dict(command="robocopy a b")),
 ]
 ALLOWED = [
     ("Write", dict(file_path="{root}/" + REVIEW, content="x")),
