@@ -4,11 +4,11 @@ changeId: approved-scope
 artifacts:
 - id: TEST-APPROVED-SCOPE
   type: test
-  path: .aifw/changes/active/approved-scope/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-25-approved-scope/evidence/tests.txt
   status: passed
 - id: DESIGN-APPROVED-SCOPE
   type: design
-  path: .aifw/changes/active/approved-scope/design.md
+  path: .aifw/changes/archive/2026-10-25-approved-scope/design.md
   status: passed
 - id: ADR-0039
   type: adr
