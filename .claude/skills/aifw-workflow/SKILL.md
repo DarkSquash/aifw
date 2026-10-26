@@ -80,15 +80,15 @@ Depois de `change classify` e `route explain`, distribua o trabalho pela linha m
 
 | Situação | Planeja | Executa | Revisa |
 | --- | --- | --- | --- |
-| impacto L3, caminho CRITICAL ou rota BRAIN | `opus` | `aifw-executor` com plano passo a passo | `aifw-adversary`, depois `aifw-qa`, e plano aprovado no chat |
-| impacto L2 ou caminho PLANNED | `opus` | `aifw-executor` | `aifw-adversary`, depois `aifw-qa` |
+| impacto L3, caminho CRITICAL ou rota BRAIN | `opus` | `aifw-executor` com plano passo a passo; `aifw-quick` nas tarefas rápidas e mecânicas | `aifw-adversary`, depois `aifw-qa`, e plano aprovado no chat |
+| impacto L2 ou caminho PLANNED | `opus` | `aifw-executor`; `aifw-quick` nas tarefas rápidas e mecânicas | `aifw-adversary`, depois `aifw-qa` |
 | caminho ou rota WORK | — | `aifw-executor` | testes e gates |
 | caminho ou rota FAST | — | `aifw-quick` | testes e gates |
 
 | Subagente | Modelo | Esforço | Papel |
 | --- | --- | --- | --- |
 | `aifw-explorer` | haiku | low | busca só de leitura no código |
-| `aifw-quick` | haiku | low | tarefas do caminho FAST |
+| `aifw-quick` | haiku | low | tarefas do caminho FAST e tarefas rápidas e mecânicas de L2/L3 |
 | `aifw-executor` | sonnet | medium | caminho WORK e planos do Opus |
 | `aifw-adversary` | opus | high | revisão: tenta provar que a mudança está errada |
 | `aifw-qa` | sonnet | high | revisão: confere critérios, evidências e documentação |
@@ -98,7 +98,7 @@ Depois de `change classify` e `route explain`, distribua o trabalho pela linha m
 - O plano entregue ao executor nomeia arquivos, passos e verificações; o executor não decide arquitetura.
 - Os revisores recebem só o diff, a spec e os critérios, sem o contexto da implementação. O `aifw-adversary` faz o eixo Spec e o `aifw-qa` o eixo Standards do `code-review`, cada um no próprio contexto e sem lançar subagentes. Cada achado precisa de prova; o escopo é a spec, os critérios e o modelo de ameaça aceito. O hook nega a eles editar o projeto além do `independent-review.md` e rodar comando que escreve, commita ou muda o repositório.
 - A orquestração é obrigatória em L2 e L3 (ADR-0040): a sessão planeja e delega. A execução vai ao `aifw-executor`; subtarefas rápidas e mecânicas (renomear, ajuste pequeno de texto, busca) ao `aifw-quick` ou ao `aifw-explorer`; a revisão ao `aifw-adversary` e ao `aifw-qa`. Com uma mudança aprovada ativa, o hook nega à sessão principal editar arquivos do projeto (fora de `orchestration.sessionPaths` no `permissions.yaml`); subagentes, a pasta `.aifw/changes/active/` e arquivos fora do projeto seguem livres. Para corrigir um arquivo que o executor errou, melhore o plano ou delegue de novo; subir de modelo com `model` é permitido.
-- Fazer inline só vale em L0 e L1. Subir de modelo é sempre permitido; rebaixar L3 ou BRAIN, nunca.
+- Fazer inline só vale em L0 e L1, sem mudança L2/L3 aprovada ativa: com uma ativa, o hook nega a edição pela sessão. Subir de modelo é sempre permitido; rebaixar L3 ou BRAIN, nunca.
 - Testes e gates rodam em toda classe; revisão não substitui evidência.
 
 ## Limites da integração

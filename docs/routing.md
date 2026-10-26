@@ -16,8 +16,8 @@ O Claude Code não troca o modelo da sessão a pedido do AIFW. A skill `aifw-wor
 
 | Situação | Planeja | Executa | Revisa |
 | --- | --- | --- | --- |
-| impacto L3 ou rota BRAIN | opus | `aifw-executor` (sonnet) com plano passo a passo | `aifw-adversary` (opus), depois `aifw-qa` (sonnet), + aprovação humana em L3 |
-| impacto L2 | opus | `aifw-executor` (sonnet) | `aifw-adversary` (opus), depois `aifw-qa` (sonnet) |
+| impacto L3 ou rota BRAIN | opus | `aifw-executor` (sonnet) com plano passo a passo; `aifw-quick` (haiku) nas tarefas rápidas e mecânicas | `aifw-adversary` (opus), depois `aifw-qa` (sonnet), + aprovação humana em L3 |
+| impacto L2 | opus | `aifw-executor` (sonnet); `aifw-quick` (haiku) nas tarefas rápidas e mecânicas | `aifw-adversary` (opus), depois `aifw-qa` (sonnet) |
 | rota WORK | — | `aifw-executor` (sonnet) | testes e gates |
 | rota FAST | — | `aifw-quick` (haiku) | testes e gates |
 

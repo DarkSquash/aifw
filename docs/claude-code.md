@@ -139,7 +139,7 @@ O `aifw claude enable` instala subagentes por papel (ADR-0038). O modelo e o esf
 | Subagente | Modelo | Esforço | Papel |
 | --- | --- | --- | --- |
 | `aifw-explorer` | haiku | low | busca só de leitura no código |
-| `aifw-quick` | haiku | low | tarefas do caminho FAST |
+| `aifw-quick` | haiku | low | tarefas do caminho FAST e tarefas rápidas e mecânicas de L2/L3 |
 | `aifw-executor` | sonnet | medium | caminho WORK e planos do Opus |
 | `aifw-adversary` | opus | high | revisão: tenta provar que a mudança está errada |
 | `aifw-qa` | sonnet | high | revisão: confere critérios, evidências e documentação |

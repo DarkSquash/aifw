@@ -26,7 +26,13 @@ def set_orchestration(root, orchestration):
 
 
 def edit(root, path, tool="Edit", agent_id=None):
-    tool_input = dict(file_path=str(root / path), old_string="a", new_string="b", content="x")
+    tool_input = dict(
+        file_path=str(root / path),
+        old_string="a",
+        new_string="b",
+        content="x",
+        notebook_path=str(root / path),
+    )
     payload = dict(cwd=str(root), session_id="s", tool_name=tool, tool_input=tool_input)
     if agent_id:
         payload["agent_id"] = agent_id
@@ -85,3 +91,34 @@ def test_the_schema_rejects_an_unknown_mode(project):
     set_orchestration(project, dict(mode="x"))
     with pytest.raises(AifwError):
         load_permission_policy(project)
+
+
+def test_multiedit_and_notebookedit_follow_the_same_rule(project):
+    add_change(project, "plan", paths=ALL)
+    for tool in ("MultiEdit", "NotebookEdit"):
+        assert edit(project, "python/aifw/claude.py", tool=tool)["permissionDecision"] == "deny"
+        assert edit(project, "python/aifw/claude.py", tool=tool, agent_id="sub") is None
+
+
+@pytest.mark.parametrize(
+    ("entry", "path"),
+    [
+        ("docs/", "docs/a.md"),
+        ("docs", "docs/sub/a.md"),
+        ("templates/*.md", "templates/a.md"),
+        ("./docs/", "docs/a.md"),
+        ("docs\\", "docs/a.md"),
+        ("Docs/", "docs/a.md"),
+        ("docs/", "Docs/X.md"),
+    ],
+)
+def test_session_paths_match_folder_pattern_dot_slash_backslash_and_case(project, entry, path):
+    add_change(project, "plan", paths=[*ALL, "templates/"])
+    set_orchestration(project, dict(mode="required", sessionPaths=[entry]))
+    assert edit(project, path) is None
+
+
+def test_a_dot_slash_session_path_does_not_free_the_whole_project(project):
+    add_change(project, "plan", paths=ALL)
+    set_orchestration(project, dict(mode="required", sessionPaths=["./"]))
+    assert edit(project, "python/aifw/claude.py")["permissionDecision"] == "deny"

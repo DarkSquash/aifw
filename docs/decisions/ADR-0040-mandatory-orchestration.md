@@ -24,4 +24,5 @@ Desde o ADR-0038 a skill manda delegar execução e revisão a subagentes, mas a
 - O que a pessoa aprova no plano é executado por subagentes, e a sessão fica com planejamento, decisão e revisão.
 - Comandos de shell que escrevem ficam fora da regra, como no ADR-0039: o hook protege contra erro do agente, não contra um agente decidido a contornar.
 - Um `change.yaml` ou `tasks.yaml` ilegível deixa aquela mudança fora da regra, sem travar o hook.
+- Para alterar `orchestration` no `permissions.yaml` (arquivo de controle) a sessão pede à pessoa.
 - Rollback: `orchestration.mode: off`, ou reverter a mudança.
