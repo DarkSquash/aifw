@@ -1,0 +1,33 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: mandatory-orchestration
+capability: claude-subagents
+title: Subagentes por papel
+purpose: Delegar cada papel do trabalho ao modelo certo, com o modelo fixo na definição do subagente, sem depender de o agente lembrar de passá-lo.
+operations:
+  added:
+  - id: REQ-SUBAGENTS-MANDATORY-ORCHESTRATION
+    strength: MUST
+    statement: Com uma mudança aprovada ativa e orchestration required, o hook deve negar à sessão principal a edição de arquivos do projeto fora de .aifw/changes/active e de orchestration.sessionPaths, deixando as edições dos subagentes seguirem.
+    scenarios:
+    - id: SCN-SUBAGENTS-MANDATORY-ORCHESTRATION
+      given:
+      - Uma mudança ativa aprovada e sessionPaths com python/aifw/hooks.py.
+      when:
+      - A sessão principal edita python/aifw/claude.py, python/aifw/hooks.py, um arquivo da pasta da mudança ou um arquivo fora do projeto, ou um subagente edita python/aifw/claude.py.
+      then:
+      - A edição de python/aifw/claude.py pela sessão é negada, citando o aifw-executor e o aifw-quick; as outras seguem.
+      - Sem mudança aprovada ativa, ou com orchestration mode off, a sessão edita python/aifw/claude.py sem negação.
+  modified:
+  - id: REQ-SUBAGENTS-DELEGATION
+    strength: MUST
+    statement: O caminho entregue pelo avaliador e a tabela de modelos da skill devem nomear o subagente de cada papel, com o aifw-executor executando também em L3 e o aifw-quick nas tarefas rápidas de L2 e L3, e a delegação por nome não deve passar model, para que valha o modelo da definição.
+    scenarios:
+    - id: SCN-SUBAGENTS-DELEGATION
+      given:
+      - O recurso tasks ligado e a skill aifw-workflow instalada.
+      when:
+      - O avaliador entrega o caminho FAST, WORK, PLANNED ou CRITICAL.
+      then:
+      - O contexto cita aifw-quick (FAST), aifw-executor (WORK), aifw-executor, aifw-quick, aifw-adversary e aifw-qa (PLANNED e CRITICAL); a skill manda delegar por subagent_type sem model e só passar model para subir.
+  removed: []

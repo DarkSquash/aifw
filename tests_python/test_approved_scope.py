@@ -26,9 +26,11 @@ def add_change(root, change_id, approved=True, paths=PATHS):
     return folder
 
 
-def edit(root, path, tool="Edit"):
+def edit(root, path, tool="Edit", agent_id="sub"):
     tool_input = dict(file_path=str(root / path), old_string="a", new_string="b", content="x")
-    output = handle(dict(cwd=str(root), session_id="s", tool_name=tool, tool_input=tool_input))
+    output = handle(
+        dict(cwd=str(root), session_id="s", agent_id=agent_id, tool_name=tool, tool_input=tool_input)
+    )
     return output and output["hookSpecificOutput"]
 
 

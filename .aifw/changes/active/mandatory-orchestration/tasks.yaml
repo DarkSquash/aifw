@@ -1,0 +1,42 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: mandatory-orchestration
+tasks:
+- id: TASK-ORCH-HOOK
+  title: Negação da edição pela sessão principal, orchestration no schema e sessionPaths deste repositório
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-MANDATORY-ORCHESTRATION
+  paths:
+  - python/aifw/hooks.py
+  - schemas/permissions.schema.json
+  - .aifw/permissions.yaml
+  - .aifw/effective-policy.json
+  - tests_python/test_orchestration.py
+- id: TASK-ORCH-PATHS
+  title: Caminhos do avaliador com aifw-executor em L3 e aifw-quick em L2/L3
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-DELEGATION
+  paths:
+  - python/aifw/assessment.py
+  - tests_python/test_role_subagents.py
+  - tests_python/test_assessor_active.py
+- id: TASK-ORCH-DOCS
+  title: Skill, documentação, CHANGELOG e ADR-0040
+  status: done
+  dependsOn:
+  - TASK-ORCH-HOOK
+  - TASK-ORCH-PATHS
+  requirementIds:
+  - REQ-SUBAGENTS-MANDATORY-ORCHESTRATION
+  - REQ-SUBAGENTS-DELEGATION
+  paths:
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - .claude/skills/aifw-workflow/SKILL.md
+  - docs/claude-code.md
+  - docs/routing.md
+  - docs/decisions/ADR-0040-mandatory-orchestration.md
+  - CHANGELOG.md

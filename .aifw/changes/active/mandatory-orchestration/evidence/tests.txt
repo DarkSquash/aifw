@@ -1,0 +1,16 @@
+Mudança mandatory-orchestration, 2026-10-26, branch feat/mandatory-orchestration.
+
+$ python scratchpad/staged.py   (hooks.py editado numa cópia, antes de instalar)
+8 failed, 2717 passed: os oito testes de test_approved_scope.py simulavam a sessão principal editando, que a orquestração agora nega; o executor passou a simular um subagente (agent_id) neles.
+
+$ python -m pytest tests_python/test_hooks.py tests_python/test_reviewer_guardrails.py tests_python/test_agent_autonomy.py tests_python/test_shell.py -q   (hooks.py instalado)
+393 passed in 72.19s (0:01:12)
+
+$ python -m pytest tests_python -q   (depois do trabalho do aifw-executor)
+2733 passed in 130.47s (0:02:10)
+
+Divisão do trabalho: a sessão principal editou só o núcleo do hook (hooks.py, schema e sessionPaths, esse último com a confirmação da pessoa); o aifw-executor (Sonnet) fez assessment.py, os testes, a skill e a documentação.
+
+Cobertura dos cenários:
+- SCN-SUBAGENTS-MANDATORY-ORCHESTRATION (tests_python/test_orchestration.py, 8 testes): a sessão sem agent_id editando python/aifw/claude.py, por Edit e Write, é negada citando aifw-executor e aifw-quick; com agent_id segue; seguem para a sessão os sessionPaths, a pasta da mudança e um arquivo fora do projeto; sem mudança aprovada ativa, ou com mode off, nada é negado; com duas mudanças aprovadas o motivo cita as duas; um tasks.yaml ilegível deixa a mudança fora da regra; o schema recusa orchestration.mode inválido.
+- SCN-SUBAGENTS-DELEGATION (tests_python/test_role_subagents.py e test_assessor_active.py): PLANNED cita aifw-executor, aifw-quick, aifw-adversary e aifw-qa; CRITICAL cita aifw-executor, aifw-quick e os dois revisores; a skill cita os subagentes.

@@ -143,9 +143,12 @@ PATH_RULE = {
     ),
     "PLANNED": (
         "risco L2, ou L1 com complexidade alta: Opus planeja, aifw-executor (Sonnet) executa, "
-        "aifw-adversary e depois aifw-qa revisam"
+        "aifw-quick (Haiku) nas tarefas rápidas, aifw-adversary e depois aifw-qa revisam"
     ),
-    "CRITICAL": "risco L3: Opus planeja e executa, aifw-adversary e depois aifw-qa revisam, com aprovação humana",
+    "CRITICAL": (
+        "risco L3: Opus planeja, aifw-executor (Sonnet) executa, aifw-quick (Haiku) nas tarefas rápidas, "
+        "aifw-adversary e depois aifw-qa revisam, com aprovação humana"
+    ),
 }
 
 

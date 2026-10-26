@@ -1,0 +1,29 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: mandatory-orchestration
+artifacts:
+- id: TEST-MANDATORY-ORCHESTRATION
+  type: test
+  path: .aifw/changes/active/mandatory-orchestration/evidence/tests.txt
+  status: passed
+- id: DESIGN-MANDATORY-ORCHESTRATION
+  type: design
+  path: .aifw/changes/active/mandatory-orchestration/design.md
+  status: passed
+- id: ADR-0040
+  type: adr
+  path: docs/decisions/ADR-0040-mandatory-orchestration.md
+  status: passed
+links:
+- from: SCN-SUBAGENTS-MANDATORY-ORCHESTRATION
+  relation: verifiedBy
+  to: TEST-MANDATORY-ORCHESTRATION
+- from: SCN-SUBAGENTS-DELEGATION
+  relation: verifiedBy
+  to: TEST-MANDATORY-ORCHESTRATION
+- from: REQ-SUBAGENTS-MANDATORY-ORCHESTRATION
+  relation: designedBy
+  to: DESIGN-MANDATORY-ORCHESTRATION
+- from: REQ-SUBAGENTS-MANDATORY-ORCHESTRATION
+  relation: governedBy
+  to: ADR-0040

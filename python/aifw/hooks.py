@@ -120,27 +120,55 @@ def approved_plans(root):
     return plans
 
 
+def edited_file(root, tool_input):
+    """The project-relative, lowercase path an edit tool writes, or None outside the project."""
+    base = Path(root).resolve()
+    target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
+    target = (target if target.is_absolute() else base / target).resolve()
+    return target.relative_to(base).as_posix().lower() if target.is_relative_to(base) else None
+
+
+def in_paths(text, paths):
+    """A file, everything inside a folder or a fnmatch pattern; ./ and backslashes allowed."""
+    for path in (p.replace("\\", "/").lower().removeprefix("./").strip("/") for p in paths):
+        if text == path or text.startswith(path + "/") or fnmatch(text, path):
+            return True
+    return False
+
+
 def outside_plan(root, policy, tool_name, tool_input):
     """Why an edit asks: it lands outside every approved plan's paths (ADR-0039)."""
     if tool_name not in EDIT_TOOLS or policy.get("changeScope", "ask") != "ask":
         return None
     plans = approved_plans(root)
-    base = Path(root).resolve()
-    target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
-    target = (target if target.is_absolute() else base / target).resolve()
-    if not plans or not target.is_relative_to(base):
+    text = edited_file(root, tool_input) if plans else None
+    # The changes' own artifacts are free; change.yaml, approval.md and tasks.yaml are control files.
+    if text is None or text.startswith(".aifw/changes/active/"):
         return None
-    text = target.relative_to(base).as_posix().lower()
-    if text.startswith(".aifw/changes/active/"):
-        return None  # the changes' own artifacts; change.yaml, approval.md and tasks.yaml are control files
-    planned = (
-        p.replace("\\", "/").lower().removeprefix("./").strip("/") for ps in plans.values() for p in ps
-    )
-    for path in planned:
-        if text == path or text.startswith(path + "/") or fnmatch(text, path):
-            return None
+    if in_paths(text, [p for ps in plans.values() for p in ps]):
+        return None
     return (
         f"changes {text}, outside the approved plan of {', '.join(plans)}; add it to that change's tasks.yaml"
+    )
+
+
+def session_edit(root, payload):
+    """Why the main session may not edit: an approved change is orchestrated (ADR-0040)."""
+    tool_name, tool_input = payload.get("tool_name", ""), payload.get("tool_input") or {}
+    if tool_name not in EDIT_TOOLS or payload.get("agent_id"):
+        return None  # subagents carry an agent_id; the session plans and delegates
+    orchestration = load_permission_policy(root).get("orchestration") or {}
+    if orchestration.get("mode", "required") != "required":
+        return None
+    plans = approved_plans(root)
+    text = edited_file(root, tool_input) if plans else None
+    if text is None or text.startswith(".aifw/changes/active/"):
+        return None
+    if in_paths(text, orchestration.get("sessionPaths") or []):
+        return None
+    return (
+        f"the approved change {', '.join(plans)} is orchestrated: delegate this edit to aifw-executor, "
+        "or to aifw-quick for a quick one (ADR-0040)"
     )
 
 
@@ -527,7 +555,7 @@ def pre_tool_use(root, payload):
         )
     try:
         # A reviewer's write is denied before the policy is read, so a broken policy cannot soften it.
-        reason = reviewer_change(root, payload)
+        reason = reviewer_change(root, payload) or session_edit(root, payload)
         result = (
             ("deny", [reason])
             if reason
