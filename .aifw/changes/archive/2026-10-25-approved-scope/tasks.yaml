@@ -1,0 +1,28 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: approved-scope
+tasks:
+- id: TASK-SCOPE-HOOK
+  title: Regra fora do plano, tasks.yaml aprovado como controle e changeScope
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AUTONOMY-APPROVED-SCOPE
+  paths:
+  - python/aifw/hooks.py
+  - schemas/permissions.schema.json
+  - tests_python/test_approved_scope.py
+- id: TASK-SCOPE-DOCS
+  title: Skill, documentação, CHANGELOG e ADR-0039
+  status: done
+  dependsOn:
+  - TASK-SCOPE-HOOK
+  requirementIds:
+  - REQ-AUTONOMY-APPROVED-SCOPE
+  paths:
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - .claude/skills/aifw-workflow/SKILL.md
+  - docs/claude-code.md
+  - docs/decisions/ADR-0039-approved-scope.md
+  - CHANGELOG.md
+  - docs/cli-reference.generated.md

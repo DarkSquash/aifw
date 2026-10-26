@@ -6,6 +6,7 @@ session log, Stop blocks unverified code changes and SessionStart injects projec
 Outside an AIFW project every event is a no-op.
 """
 
+from fnmatch import fnmatch
 from hashlib import sha256
 from itertools import islice
 import json
@@ -105,8 +106,46 @@ def pattern_files(root, cwd, word):
     return found
 
 
-def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None):
-    """The AIFW control file this call would change, if any."""
+def approved_plans(root):
+    """The paths each active, approved change planned to touch, by change id (ADR-0039)."""
+    plans = {}
+    for folder in sorted((Path(root) / ".aifw/changes/active").glob("*/")):
+        try:
+            if not (read_yaml(folder / "change.yaml") or {}).get("approval"):
+                continue
+            tasks = (read_yaml(folder / "tasks.yaml") or {}).get("tasks") or []
+            plans[folder.name.lower()] = [str(p) for t in tasks for p in t.get("paths") or []]
+        except Exception:  # noqa: BLE001 - a broken change leaves the rule, never takes the hook down
+            continue
+    return plans
+
+
+def outside_plan(root, policy, tool_name, tool_input):
+    """Why an edit asks: it lands outside every approved plan's paths (ADR-0039)."""
+    if tool_name not in EDIT_TOOLS or policy.get("changeScope", "ask") != "ask":
+        return None
+    plans = approved_plans(root)
+    base = Path(root).resolve()
+    target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
+    target = (target if target.is_absolute() else base / target).resolve()
+    if not plans or not target.is_relative_to(base):
+        return None
+    text = target.relative_to(base).as_posix().lower()
+    if text.startswith(".aifw/changes/active/"):
+        return None  # the changes' own artifacts; change.yaml, approval.md and tasks.yaml are control files
+    planned = (
+        p.replace("\\", "/").lower().removeprefix("./").strip("/") for ps in plans.values() for p in ps
+    )
+    for path in planned:
+        if text == path or text.startswith(path + "/") or fnmatch(text, path):
+            return None
+    return (
+        f"changes {text}, outside the approved plan of {', '.join(plans)}; add it to that change's tasks.yaml"
+    )
+
+
+def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None, scope=True):
+    """The AIFW control file this call would change, if any; scope keeps the approved tasks.yaml in."""
     if tool_name in EDIT_TOOLS:
         target = Path(tool_input.get("file_path") or tool_input.get("notebook_path") or "")
         target = (target if target.is_absolute() else Path(root) / target).resolve()
@@ -128,10 +167,21 @@ def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None
             matches.append(text.rsplit("/", 1)[1])  # the approval and its record, kept by the prompt hook
         if INSTALLED.search(text):
             matches.append(INSTALLED.search(text).group(2) + "/")
+        plan = re.fullmatch(r"\.aifw/changes/active/([^/]+)/tasks\.yaml", text)
+        if (
+            scope and plan and plan.group(1) in approved_plans(root)
+        ):  # the plan does not widen itself (ADR-0039)
+            matches.append(f"tasks.yaml of the approved change {plan.group(1)}")
     elif tool_name in SHELL_TOOLS and mutation:
         text = tool_input.get("command", "").replace("\\", "/").lower()
         controls = (*CONTROL, *protected, "change.yaml", "approval.md", ".claude/settings")
         matches = [c for c in controls if c.lower() in text]
+        if scope and "tasks.yaml" in text:
+            matches += [
+                f"tasks.yaml of the approved change {c}"
+                for c in approved_plans(root)
+                if f".aifw/changes/active/{c}/tasks.yaml" in text
+            ]
         # A pattern can name a control file without spelling it (chang?.yaml, approval.m[d]).
         for word in PATTERN_WORD.findall(tool_input.get("command", "").replace("\\", "/")):
             matches += [c for f in pattern_files(root, cwd, word) for c in controls if c.lower() in "/" + f]
@@ -409,10 +459,18 @@ def evaluate(root, tool_name, tool_input, cwd=None):
         item = dict(item, mixed=True) if mixed and item["kind"] == "commit" else item
         findings += item_findings(root, policy, item, allowlist, classification, tool_name, tool_input)
     control = control_target(
-        root, tool_name, tool_input, request["mutation"], policy.get("protectedPaths", []), cwd
+        root,
+        tool_name,
+        tool_input,
+        request["mutation"],
+        policy.get("protectedPaths", []),
+        cwd,
+        scope=policy.get("changeScope", "ask") == "ask",
     )
     if control:
         findings.append(("ask", f"changes the AIFW control file {control}"))
+    elif scope := outside_plan(root, policy, tool_name, tool_input):
+        findings.append(("ask", scope))
     if request.get("approval"):
         findings.append(
             (

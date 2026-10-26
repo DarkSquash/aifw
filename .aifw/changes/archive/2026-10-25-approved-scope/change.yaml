@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: approved-scope
+  title: Edição restrita ao plano aprovado
+  level: L2
+  createdAt: '2026-10-25T17:26:54.854Z'
+summary: Com uma mudança aprovada ativa, editar arquivo fora dos paths do tasks.yaml pede confirmação, e o tasks.yaml aprovado vira arquivo de controle.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-25T17:33:01.597Z'
+  record: .aifw/changes/active/approved-scope/approval.md
+archivedAt: '2026-10-25T18:01:51.988Z'
