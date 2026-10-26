@@ -4,11 +4,11 @@ changeId: mandatory-orchestration
 artifacts:
 - id: TEST-MANDATORY-ORCHESTRATION
   type: test
-  path: .aifw/changes/active/mandatory-orchestration/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-26-mandatory-orchestration/evidence/tests.txt
   status: passed
 - id: DESIGN-MANDATORY-ORCHESTRATION
   type: design
-  path: .aifw/changes/active/mandatory-orchestration/design.md
+  path: .aifw/changes/archive/2026-10-26-mandatory-orchestration/design.md
   status: passed
 - id: ADR-0040
   type: adr
