@@ -6,8 +6,9 @@ metadata:
   level: L2
   createdAt: '2026-10-28T03:03:51.594Z'
 summary: O aifw claude enable guarda .bak só quando a cópia instalada foi editada, e marcar o status de uma tarefa no tasks.yaml aprovado deixa de pedir confirmação; mudar os paths continua pedindo.
-status: draft
+status: archived
 approval:
   approvedBy: human:DarkSquash
   approvedAt: '2026-10-28T03:05:18.050Z'
   record: .aifw/changes/active/quiet-enable-and-status/approval.md
+archivedAt: '2026-10-28T03:31:18.020Z'

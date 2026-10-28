@@ -26,6 +26,17 @@ requirements:
     - O avaliador entrega o caminho FAST, WORK, PLANNED ou CRITICAL.
     then:
     - O contexto cita aifw-quick (FAST), aifw-executor (WORK), aifw-executor, aifw-quick, aifw-adversary e aifw-qa (PLANNED e CRITICAL); a skill manda delegar por subagent_type sem model e só passar model para subir.
+- id: REQ-SUBAGENTS-EDITED-BACKUP
+  strength: MUST
+  statement: O aifw claude enable deve guardar a cópia anterior da skill ou de um subagente em .bak só quando ela foi editada desde a instalação, ou quando foi instalada sem hash e difere do template.
+  scenarios:
+  - id: SCN-SUBAGENTS-EDITED-BACKUP
+    given:
+    - Um projeto com a skill e os subagentes instalados.
+    when:
+    - O template muda e o enable roda de novo, com a cópia intacta, editada ou sem a linha de hash.
+    then:
+    - A cópia intacta é trocada sem .bak; a editada e a sem hash diferente do template vão para .bak; aifw claude check passa depois.
 - id: REQ-SUBAGENTS-INSTALL
   strength: MUST
   statement: O aifw claude enable deve instalar em .claude/agents os subagentes aifw-explorer (haiku, só leitura), aifw-quick (haiku), aifw-executor (sonnet), aifw-adversary (opus) e aifw-qa (sonnet), os revisores sem editar código, com esforço high nos revisores, medium no executor e low no rápido e no explorador, guardando antes a cópia editada, e o aifw claude check deve acusar subagente ausente ou desatualizado.

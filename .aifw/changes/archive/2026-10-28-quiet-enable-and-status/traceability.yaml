@@ -4,11 +4,11 @@ changeId: quiet-enable-and-status
 artifacts:
 - id: TEST-QUIET-ENABLE-AND-STATUS
   type: test
-  path: .aifw/changes/active/quiet-enable-and-status/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-28-quiet-enable-and-status/evidence/tests.txt
   status: passed
 - id: DESIGN-QUIET-ENABLE-AND-STATUS
   type: design
-  path: .aifw/changes/active/quiet-enable-and-status/design.md
+  path: .aifw/changes/archive/2026-10-28-quiet-enable-and-status/design.md
   status: passed
 - id: ADR-0041
   type: adr
