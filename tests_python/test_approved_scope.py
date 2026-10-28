@@ -129,6 +129,32 @@ def test_path_edits_of_the_approved_plan_ask(project):
     asks(plan_call(project, "MultiEdit", edits=edits))
 
 
+def test_duplicate_key_asks_and_keeps_the_plan_on(project):
+    planned(project)
+    asks(plan_call(project, "Edit", **swap("status: pending\n", "status: pending\n  status: done\n")))
+    assert edit(project, "python/aifw/hooks.py")["permissionDecision"] == "ask"
+
+
+BLOCK = "- id: TASK-X\n  status: pending\n  paths:\n  - docs/\n  - python/aifw/claude.py\n"
+
+
+def test_duplicate_or_idless_tasks_with_paths_ask(project):
+    planned(project)
+    extra = BLOCK.replace("  - docs/\n", "  - docs/\n  - README.md\n")
+    asks(plan_call(project, "Edit", **swap(BLOCK, BLOCK + extra)))
+    asks(plan_call(project, "Write", content=TASKS + extra))
+    asks(plan_call(project, "Write", content=TASKS + "- status: pending\n  paths:\n  - README.md\n"))
+
+
+def test_title_edits_of_the_approved_plan_do_not_ask(project):
+    planned(project)
+    assert (
+        plan_call(project, "Edit", **swap("  status: pending\n", "  title: Novo\n  status: pending\n"))
+        is None
+    )
+    assert plan_call(project, "Edit", **swap("TASK-X\n", "TASK-X\n  title: A\n")) is None
+
+
 def test_edits_that_do_not_apply_ask(project):
     planned(project)
     asks(plan_call(project, "Edit", **swap("status: missing", "status: done")))

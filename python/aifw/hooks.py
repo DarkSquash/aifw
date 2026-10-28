@@ -16,10 +16,8 @@ import subprocess
 import sys
 import time
 
-import yaml
-
 from . import signing
-from .common import AifwError, now, read_yaml
+from .common import AifwError, now, parse_yaml, read_yaml
 from .impasse import case_file, load_cases, mutation_allowed
 from .permissions import decide_action, load_permission_policy, validate_break_glass
 from .shell import SECRET_FILE, analyze, domains_for, runs_tests, service_of, verification_visible
@@ -178,8 +176,10 @@ def widens_plan(path, tool_name, tool_input):
     """Whether an edit changes the paths of any task in a tasks.yaml; when unsure, it does (ADR-0041)."""
 
     def planned(text):
-        tasks = (yaml.safe_load(text) or {}).get("tasks") or []
-        return {task.get("id"): task.get("paths") or [] for task in tasks}
+        # The strict loader approved_plans uses: a duplicate key is an error here too, so it asks.
+        tasks = (parse_yaml(text, "tasks.yaml") or {}).get("tasks") or []
+        # Every task counts, a copied id or a task without one included.
+        return sorted((str(task.get("id")), json.dumps(task.get("paths") or [])) for task in tasks)
 
     try:
         before = after = Path(path).read_text(encoding="utf-8")
