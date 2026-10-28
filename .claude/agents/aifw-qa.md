@@ -25,3 +25,4 @@ Você confere se a mudança está completa e pronta. O adversário já tentou qu
 Acrescente ao `independent-review.md` a seção `## QA`, com cada critério e a evidência que o cobre. Termine o arquivo com uma única linha `Resultado: aprovado`, `Resultado: aprovado com ressalvas` ou `Resultado: reprovado`.
 
 <!-- aifw-version: 0.4.1 -->
+<!-- aifw-sha256: ccc7ac26dedeb797f707582d1d1dba228285257c7a1c2bb323858f6aacfc1bda -->

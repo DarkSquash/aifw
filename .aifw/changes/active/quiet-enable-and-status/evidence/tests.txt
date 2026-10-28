@@ -1,0 +1,26 @@
+Mudança quiet-enable-and-status, 2026-10-28, branch feat/quiet-enable-and-status.
+
+Divisão do trabalho (ADR-0040): a sessão editou só python/aifw/hooks.py, numa cópia testada antes de entrar; dois aifw-executor em paralelo fizeram claude.py com seus testes e a documentação, e os testes do status livre; um aifw-quick ajustou o texto do ADR-0041 e as listas de arquivos de controle.
+
+$ python scratchpad/staged.py tests_python/test_approved_scope.py tests_python/test_orchestration.py tests_python/test_hooks.py
+1 failed, 72 passed: o teste antigo do tasks.yaml editava um trecho sem paths, que pela regra nova não pede mais; o executor o reescreveu.
+
+$ python -m pytest tests_python/test_role_subagents.py tests_python/test_third_audit.py -q   (aifw-executor)
+41 passed
+
+$ python -m pytest tests_python/test_approved_scope.py tests_python/test_orchestration.py -q   (aifw-executor)
+35 passed
+
+$ aifw claude enable   (primeira vez, cópias sem hash)
+6 .bak, todos iguais ao HEAD e apagados.
+$ aifw claude enable   (segunda vez, e depois do ajuste de texto da skill)
+skillBackup: null, agentBackups: []
+
+$ python -m pytest tests_python -q
+2752 passed in 98.78s (0:01:38)
+
+Marcar estas tarefas como done pelo Edit no tasks.yaml aprovado não pediu confirmação (a regra nova em uso).
+
+Cobertura:
+- SCN-SUBAGENTS-EDITED-BACKUP (tests_python/test_role_subagents.py): cópia intacta trocada sem .bak quando o template muda; cópia editada e cópia sem hash diferente do template vão para .bak; a cópia instalada termina com a linha de hash e check_project não acusa nada; para a skill e para o aifw-qa.
+- SCN-AUTONOMY-APPROVED-SCOPE (tests_python/test_approved_scope.py): troca de status por Edit, Write e MultiEdit não pede; acrescentar ou trocar path por Edit, Write ou MultiEdit pede, citando a mudança; old_string ausente ou vazio e YAML quebrado pedem; sed -i pede; com changeScope off nada pede.

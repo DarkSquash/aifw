@@ -88,14 +88,70 @@ def test_paths_of_every_approved_change_count(project):
     assert "approved plan of other, plan" in edit(project, "README.md")["permissionDecisionReason"]
 
 
-def test_the_approved_plan_is_a_control_file(project):
-    add_change(project, "plan")
-    out = edit(project, ".aifw/changes/active/plan/tasks.yaml")
+TASKS = "changeId: plan\ntasks:\n- id: TASK-X\n  status: pending\n  paths:\n  - docs/\n  - python/aifw/claude.py\n"
+TASKS_FILE = ".aifw/changes/active/plan/tasks.yaml"
+
+
+def plan_call(root, tool, **tool_input):
+    tool_input["file_path"] = str(root / TASKS_FILE)
+    out = handle(dict(cwd=str(root), session_id="s", agent_id="sub", tool_name=tool, tool_input=tool_input))
+    return out and out["hookSpecificOutput"]
+
+
+def swap(old, new):
+    return dict(old_string=old, new_string=new)
+
+
+def planned(root):
+    add_change(root, "plan")
+    (root / TASKS_FILE).write_text(TASKS, encoding="utf-8")
+
+
+def asks(out):
     assert out["permissionDecision"] == "ask"
-    assert "control file tasks.yaml of the approved change plan" in out["permissionDecisionReason"]
-    command = "sed -i 's/a/b/' .aifw/changes/active/plan/tasks.yaml"
+    assert "tasks.yaml of the approved change plan" in out["permissionDecisionReason"]
+
+
+def test_status_edits_of_the_approved_plan_do_not_ask(project):
+    planned(project)
+    assert plan_call(project, "Edit", **swap("status: pending", "status: done")) is None
+    assert plan_call(project, "Write", content=TASKS.replace("pending", "done")) is None
+    edits = [swap("status: pending", "status: running"), swap("running", "done")]
+    assert plan_call(project, "MultiEdit", edits=edits) is None
+
+
+def test_path_edits_of_the_approved_plan_ask(project):
+    planned(project)
+    asks(plan_call(project, "Edit", **swap("  - docs/\n", "  - docs/\n  - README.md\n")))
+    asks(plan_call(project, "Edit", **swap("- docs/", "- src/")))
+    asks(plan_call(project, "Write", content=TASKS.replace("docs/", "src/")))
+    edits = [swap("pending", "done"), swap("- docs/", "- src/")]
+    asks(plan_call(project, "MultiEdit", edits=edits))
+
+
+def test_edits_that_do_not_apply_ask(project):
+    planned(project)
+    asks(plan_call(project, "Edit", **swap("status: missing", "status: done")))
+    asks(plan_call(project, "Edit", **swap("", "x")))
+    asks(plan_call(project, "Write", content="tasks: ["))
+
+
+def test_the_approved_plan_is_a_control_file_in_the_shell(project):
+    planned(project)
+    command = "sed -i 's/pending/done/' .aifw/changes/active/plan/tasks.yaml"
     shell = handle(dict(cwd=str(project), session_id="s", tool_name="Bash", tool_input=dict(command=command)))
-    assert "tasks.yaml of the approved change plan" in shell["hookSpecificOutput"]["permissionDecisionReason"]
+    asks(shell["hookSpecificOutput"])
+
+
+def test_change_scope_off_lets_every_plan_edit_through(project):
+    planned(project)
+    policy_file = project / ".aifw/permissions.yaml"
+    policy = read_yaml(policy_file)
+    policy["changeScope"] = "off"
+    write_yaml(policy_file, policy)
+    assert plan_call(project, "Edit", **swap("- docs/", "- src/")) is None
+    assert plan_call(project, "Edit", **swap("status: missing", "x")) is None
+    assert plan_call(project, "Write", content="tasks: [") is None
 
 
 def test_a_broken_change_is_left_out(project):

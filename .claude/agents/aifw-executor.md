@@ -13,3 +13,4 @@ Você implementa um plano. Quem planejou já decidiu a arquitetura; você execut
 - No fim, relate o que mudou (arquivos), o que foi verificado e como, e o que ficou pendente.
 
 <!-- aifw-version: 0.4.1 -->
+<!-- aifw-sha256: 17d807eb6fac229eff81d25766bc32ae7da8207f6c299f943f5d0ca85f10910d -->

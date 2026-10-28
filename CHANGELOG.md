@@ -4,6 +4,7 @@
 
 ### Alterado
 
+- Backup só de cópia editada e status livre no plano aprovado (ADR-0041): a skill e os subagentes instalados trazem o sha256 do corpo, e o `aifw claude enable` só cria `.bak` quando a cópia foi editada ou não tem o hash. No `tasks.yaml` aprovado, trocar o `status` de uma tarefa não pede mais confirmação; mudar os `paths` ou outro campo continua pedindo.
 - Orquestração obrigatória em L2/L3 (ADR-0040): com uma mudança aprovada ativa, o hook nega à sessão principal editar arquivos do projeto e manda delegar ao `aifw-executor` (ou ao `aifw-quick` numa tarefa rápida). Subagentes, a pasta das mudanças ativas e os caminhos de `orchestration.sessionPaths` seguem livres; `orchestration.mode: off` desliga. O L3 passa a ser executado pelo `aifw-executor` com plano do Opus, e os caminhos PLANNED e CRITICAL do avaliador citam o `aifw-quick`.
 - Edição restrita ao plano aprovado (ADR-0039): com uma mudança aprovada ativa, editar arquivo fora dos `paths` do `tasks.yaml` dela pede confirmação, e o `tasks.yaml` aprovado vira arquivo de controle. A pasta das mudanças ativas fica livre, e comandos de shell que escrevem não entram na regra. `changeScope: off` no `permissions.yaml` desliga a regra e a proteção do `tasks.yaml`.
 - Subagentes por papel (ADR-0038):

@@ -12,3 +12,4 @@ Você executa uma tarefa pequena e bem definida, exatamente como pedida: do cami
 - Pare e devolva a tarefa, sem seguir, se ela se mostrar maior que o descrito: mexe em segurança, permissões, aprovações, arquivos de controle do AIFW ou API pública, ou exige uma decisão de design. Subir de caminho é sempre permitido.
 
 <!-- aifw-version: 0.4.1 -->
+<!-- aifw-sha256: 17c34b835726f85547f02b2f57f3ebb6445e79b55034dee8b71375601d14c1c9 -->

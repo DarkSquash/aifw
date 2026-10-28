@@ -26,3 +26,4 @@ No arquivo indicado (o `independent-review.md` da mudança), escreva a seção `
 - Sem achado provado, não escreva nenhuma linha começando com `Resultado`: a revisão segue para o `aifw-qa`.
 
 <!-- aifw-version: 0.4.1 -->
+<!-- aifw-sha256: c307ff7bfff523f7da2a3b81a584f8ca6f3c1b841ea96240ec04c9ccebe4ca65 -->
