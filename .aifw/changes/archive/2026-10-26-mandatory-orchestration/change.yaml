@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: mandatory-orchestration
+  title: Orquestração obrigatória em L2/L3
+  level: L2
+  createdAt: '2026-10-26T13:53:44.203Z'
+summary: 'Com uma mudança L2/L3 aprovada, a sessão principal planeja e delega: o hook nega a ela editar arquivos do projeto, que vão ao aifw-executor (e ao aifw-quick nas tarefas rápidas), salvo os caminhos que a pessoa reservar à sessão.'
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-10-26T13:59:18.802Z'
+  record: .aifw/changes/active/mandatory-orchestration/approval.md
+archivedAt: '2026-10-26T17:24:17.203Z'

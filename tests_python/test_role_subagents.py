@@ -107,8 +107,8 @@ def context(path, risk):
     [
         ("FAST", "L0", ["aifw-quick"]),
         ("WORK", "L1", ["aifw-executor"]),
-        ("PLANNED", "L2", ["aifw-executor", "aifw-adversary", "aifw-qa", "Opus planeja"]),
-        ("CRITICAL", "L3", ["aifw-adversary", "aifw-qa"]),
+        ("PLANNED", "L2", ["aifw-executor", "aifw-quick", "aifw-adversary", "aifw-qa", "Opus planeja"]),
+        ("CRITICAL", "L3", ["aifw-executor", "aifw-quick", "aifw-adversary", "aifw-qa", "Opus planeja"]),
     ],
 )
 def test_path_context_names_the_subagents(path, risk, named):

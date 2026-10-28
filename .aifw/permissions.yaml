@@ -20,6 +20,14 @@ trustedPackages:
   - ctx7
 # Commits run without asking, except with a control file changed (ADR-0030).
 commits: allow
+# With an approved change active, the main session edits only the live hook core; the rest goes to
+# subagents (ADR-0040).
+orchestration:
+  mode: required
+  sessionPaths:
+    - python/aifw/hooks.py
+    - python/aifw/shell.py
+    - python/aifw/indirect.py
 childAgents:
   capabilityCeiling: parent
 breakGlass:
