@@ -4,6 +4,18 @@ capability: task-assessor
 title: Avaliador de tarefas
 purpose: Avaliar cada pedido da pessoa e, depois da ativação humana, entregar ao agente o caminho de execução, sem nunca rebaixar a aprovação humana.
 requirements:
+- id: REQ-ASSESSOR-COMPLEXITY-PATH
+  strength: MUST
+  statement: O caminho de execução deve vir só da complexidade (trivial L0, simples L1, moderada L2, alta L3), e o risco deve decidir a exceção de L0/L1 e a governança, sem que uma avaliação de risco alto ou crítico perca o pedido de aprovação e os revisores.
+  scenarios:
+  - id: SCN-ASSESSOR-COMPLEXITY-PATH
+    given:
+    - Avaliações com cada complexidade, combinadas com risco baixo, médio, alto e crítico e com importância baixa e crítica.
+    when:
+    - O avaliador escolhe o caminho e monta o contexto do pedido.
+    then:
+    - O caminho é FAST, WORK, PLANNED ou CRITICAL pela complexidade, qualquer que seja a importância.
+    - O contexto descreve a cascata do nível; com risco alto ou crítico em L0 ou L1, cita a exceção (aifw-executor ou aifw-senior sozinho) e os dois revisores; com risco alto ou crítico em qualquer nível, cita o plano aprovado no chat.
 - id: REQ-ASSESSOR-HOOK-INSTALL
   strength: MUST
   statement: O hook de pedidos deve rodar sempre em primeiro plano, porque grava a aprovação do plano e entrega o caminho antes de o agente ler a mensagem.

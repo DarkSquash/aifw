@@ -4,11 +4,11 @@ changeId: cascade-orchestration
 artifacts:
 - id: TEST-CASCADE-ORCHESTRATION
   type: test
-  path: .aifw/changes/active/cascade-orchestration/evidence/tests.txt
+  path: .aifw/changes/archive/2026-10-29-cascade-orchestration/evidence/tests.txt
   status: passed
 - id: DESIGN-CASCADE-ORCHESTRATION
   type: design
-  path: .aifw/changes/active/cascade-orchestration/design.md
+  path: .aifw/changes/archive/2026-10-29-cascade-orchestration/design.md
   status: passed
 - id: ADR-0042
   type: adr

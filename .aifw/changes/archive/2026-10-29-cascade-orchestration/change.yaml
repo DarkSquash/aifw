@@ -6,8 +6,9 @@ metadata:
   level: L2
   createdAt: '2026-10-29T02:22:06.304Z'
 summary: O caminho de execução passa a vir da complexidade (L0 a L3), com uma cascata de Opus, Sonnet e Haiku por nível e a exceção de risco alto ou crítico em L0/L1; a governança continua pelo risco.
-status: draft
+status: archived
 approval:
   approvedBy: human:DarkSquash
   approvedAt: '2026-10-29T02:59:28.985Z'
   record: .aifw/changes/active/cascade-orchestration/approval.md
+archivedAt: '2026-10-29T11:02:51.365Z'
