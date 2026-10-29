@@ -8,6 +8,7 @@ tasks:
   dependsOn: []
   requirementIds:
   - REQ-ASSESSOR-COMPLEXITY-PATH
+  - REQ-SUBAGENTS-DELEGATION
   paths:
   - python/aifw/assessment.py
   - python/aifw/hooks.py
@@ -43,3 +44,4 @@ tasks:
   - docs/routing.md
   - docs/decisions/ADR-0042-cascade-orchestration.md
   - CHANGELOG.md
+  - README.md

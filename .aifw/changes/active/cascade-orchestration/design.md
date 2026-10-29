@@ -20,7 +20,7 @@
 - `claude.AGENTS` com os quatro nomes novos.
 - O `aifw-quick` e o `aifw-executor` passam a dizer que planejam e executam sozinhos o L0 e o L1. O `aifw-executor` também é o "Sonnet sozinho" da exceção em L0.
 - A skill troca a tabela de modelos pela tabela da cascata.
-- Execução orquestrada: `assessment.py`, `claude.py`, templates, testes e documentação pelo `aifw-executor`; nada no núcleo do hook muda.
+- Execução orquestrada: `assessment.py`, `claude.py`, templates, testes e documentação pelo `aifw-executor`. No núcleo do hook muda só o texto da negação da orquestração (ADR-0040), que passa a citar os papéis da cascata; a regra não muda.
 
 ## Decisions
 

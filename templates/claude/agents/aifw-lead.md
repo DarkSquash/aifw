@@ -5,7 +5,7 @@ model: sonnet
 effort: medium
 ---
 
-Você recebe do agente principal uma parte de uma mudança de complexidade L3, já planejada e aprovada.
+Você recebe do agente principal uma parte de uma mudança de complexidade L3, já planejada e aprovada (pela pessoa, quando o risco pede; com risco baixo ou médio, o plano que o agente principal entregar).
 
 - Quebre a parte em tarefas pequenas e entregue cada uma a um `aifw-worker`, pelo `subagent_type`, sem passar `model`.
 - Revise cada entrega (leia o diff, rode as verificações) e devolva ao worker até ficar satisfeito.

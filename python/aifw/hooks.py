@@ -168,7 +168,7 @@ def session_edit(root, payload):
         return None
     return (
         f"the approved change {', '.join(plans)} is orchestrated: delegate this edit through the cascade "
-        "(aifw-quick, aifw-executor, aifw-planner or aifw-lead, ADR-0040, ADR-0042); "
+        "(aifw-quick, aifw-executor, aifw-planner, aifw-lead or aifw-senior, ADR-0040, ADR-0042); "
         "only the person changes orchestration in permissions.yaml"
     )
 

@@ -21,6 +21,9 @@ links:
 - from: SCN-SUBAGENTS-CASCADE
   relation: verifiedBy
   to: TEST-CASCADE-ORCHESTRATION
+- from: SCN-SUBAGENTS-DELEGATION
+  relation: verifiedBy
+  to: TEST-CASCADE-ORCHESTRATION
 - from: REQ-ASSESSOR-COMPLEXITY-PATH
   relation: designedBy
   to: DESIGN-CASCADE-ORCHESTRATION

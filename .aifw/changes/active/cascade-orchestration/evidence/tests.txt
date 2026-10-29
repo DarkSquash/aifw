@@ -22,3 +22,8 @@ Casos de avaliação ajustados (evals/assessment/tasks-cases.yaml, path pela com
 Cobertura:
 - SCN-ASSESSOR-COMPLEXITY-PATH (tests_python/test_assessment.py, test_cascade.py, test_assessor_active.py): path_for por complexidade com risco L0/L3 e importância baixa/crítica; contexto de cada caminho com a cascata; exceção com risco alto/crítico em FAST (aifw-executor sozinho) e WORK (aifw-senior sozinho), com os revisores; governança (aifw spec request-approval) com risco alto/crítico em qualquer caminho e sem ela com risco baixo/médio; risco por extenso.
 - SCN-SUBAGENTS-CASCADE (tests_python/test_cascade.py, test_role_subagents.py): os nove subagentes instalados com modelo, esforço e ferramentas; planner e lead com Agent; worker e senior com disallowedTools Agent; check_project limpo; a skill cita os nove.
+
+Revisão, rodada 1 (evidence/independent-review-1.md): o adversário provou que a spec aceita REQ-SUBAGENTS-DELEGATION seguia exigindo o modelo antigo e o delta não a modificava. Correção da sessão: o delta passa a modificar REQ-SUBAGENTS-DELEGATION com a cascata; o design registra a mudança de texto do hook; a mensagem de negação cita aifw-senior. Ressalvas corrigidas pelo aifw-executor: com a exceção de risco o contexto não diz mais "sem revisor"; planner e lead dizem "aprovado pela pessoa, quando o risco pede"; docs/claude-code.md e README citam a cascata. README.md entrou no tasks.yaml com a confirmação da pessoa.
+
+$ python -m pytest tests_python -q   (depois das correções)
+2791 passed in 111.95s (0:01:51)

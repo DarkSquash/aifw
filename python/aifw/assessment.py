@@ -152,8 +152,8 @@ LEVEL_OF_PATH = {"FAST": "L0", "WORK": "L1", "PLANNED": "L2", "CRITICAL": "L3"}
 RISK_WORD = {"L0": "baixo", "L1": "médio", "L2": "alto", "L3": "crítico"}
 # High or critical risk on a small task swaps the cascade for a lone, stronger subagent.
 EXCEPTION = {
-    "FAST": "aifw-executor (Sonnet) faz sozinho, e depois aifw-adversary e aifw-qa revisam.",
-    "WORK": "aifw-senior (Opus) faz sozinho, e depois aifw-adversary e aifw-qa revisam.",
+    "FAST": "aifw-executor (Sonnet) planeja e executa sozinho, e depois aifw-adversary e aifw-qa revisam",
+    "WORK": "aifw-senior (Opus) planeja e executa sozinho, e depois aifw-adversary e aifw-qa revisam",
 }
 
 
@@ -287,14 +287,18 @@ def path_context(result):
     path, final, risk = result["path"], result["finalRisk"], result["risk"]["value"]
     raised = ", elevado pelo diff" if final != risk else ""
     high = final in {"L2", "L3"}
+    swapped = high and path in EXCEPTION
+    rule = (
+        f"Risco {RISK_WORD[final]} em {LEVEL_OF_PATH[path]}: {EXCEPTION[path]}"
+        if swapped
+        else PATH_RULE[path]
+    )
     parts = [
         f"AIFW, avaliador de tarefas (modo ativo): caminho {path}. "
         f"Complexidade {LEVEL_OF_PATH[path]} ({result['complexity']['value']}), "
         f"risco {RISK_WORD[final]} ({final}{raised}), importância {result['importance']['value']}. "
-        f"{PATH_RULE[path]}."
+        f"{rule}."
     ]
-    if high and path in EXCEPTION:
-        parts.append(f"Risco {RISK_WORD[final]} em {LEVEL_OF_PATH[path]}: {EXCEPTION[path]}")
     if high:
         parts.append(
             f"Risco {RISK_WORD[final]}: apresente o plano e peça a aprovação no chat "

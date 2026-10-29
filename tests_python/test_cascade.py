@@ -41,16 +41,20 @@ def test_each_path_names_its_cascade(path):
 @pytest.mark.parametrize("final", ["L2", "L3"])
 @pytest.mark.parametrize(
     ("path", "alone"),
-    [("FAST", "aifw-executor (Sonnet) faz sozinho"), ("WORK", "aifw-senior (Opus) faz sozinho")],
+    [
+        ("FAST", "aifw-executor (Sonnet) planeja e executa sozinho"),
+        ("WORK", "aifw-senior (Opus) planeja e executa sozinho"),
+    ],
 )
 def test_high_risk_on_a_small_task_swaps_the_cascade(path, alone, final):
     text = context(path, final)
     assert alone in text and "aifw-adversary e aifw-qa revisam" in text and WORDS[final] in text
+    assert "sem revisor" not in text and CASCADE[path][1] not in text
 
 
 @pytest.mark.parametrize("path", ["PLANNED", "CRITICAL"])
 def test_high_risk_keeps_the_cascade_on_larger_tasks(path):
-    assert "faz sozinho" not in context(path, "L3")
+    assert "sozinho" not in context(path, "L3")
 
 
 @pytest.mark.parametrize("path", CASCADE)
@@ -60,7 +64,7 @@ def test_governance_follows_the_risk(path, final):
     assert f"risco {WORDS[final]} ({final})" in text
     assert ("aifw spec request-approval" in text) == (final in {"L2", "L3"})
     if final in {"L0", "L1"}:
-        assert "faz sozinho" not in text
+        assert "revisam" not in text
 
 
 def test_diff_raised_risk_is_shown():
