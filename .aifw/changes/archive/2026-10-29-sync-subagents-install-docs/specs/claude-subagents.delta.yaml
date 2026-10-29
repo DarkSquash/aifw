@@ -1,0 +1,21 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: sync-subagents-install-docs
+capability: claude-subagents
+title: Subagentes por papel
+purpose: Delegar cada papel do trabalho ao modelo certo, com o modelo fixo na definição do subagente, sem depender de o agente lembrar de passá-lo.
+operations:
+  added: []
+  modified:
+  - id: REQ-SUBAGENTS-INSTALL
+    strength: MUST
+    statement: O aifw claude enable deve instalar em .claude/agents os nove subagentes aifw-explorer (haiku, low, só leitura), aifw-quick (haiku, low), aifw-executor (sonnet, medium), aifw-planner (sonnet, high, com Agent), aifw-lead (sonnet, medium, com Agent), aifw-worker (haiku, medium), aifw-senior (opus, high), aifw-adversary (opus, high) e aifw-qa (sonnet, high), os revisores sem editar código, o worker e o senior sem a ferramenta Agent, guardando antes a cópia editada, e o aifw claude check deve acusar subagente ausente ou desatualizado.
+    scenarios:
+    - id: SCN-SUBAGENTS-INSTALL
+      given:
+      - Um projeto com aifw.yaml, sem .claude/agents, ou com uma cópia editada de aifw-executor.md.
+      when:
+      - aifw claude enable roda, e roda de novo.
+      then:
+      - Os nove arquivos ficam com o modelo, o esforço do papel e as ferramentas do template e o carimbo da versão; a cópia editada vai para aifw-executor.md.bak; a segunda execução não muda nada; aifw claude check acusa cada subagente antes e nenhum depois.
+  removed: []

@@ -1,0 +1,9 @@
+Mudança sync-subagents-install-docs, 2026-10-29, branch feat/cascade-orchestration.
+
+$ aifw claude enable && aifw claude check
+status pass, findings [] (nove subagentes e a skill reinstalados a partir dos templates).
+
+$ python -m pytest -q
+2791 passed (saída completa em evidence/pytest.txt, exit 0).
+
+Cenário SCN-SUBAGENTS-INSTALL: coberto por tests_python/test_role_subagents.py e tests_python/test_cascade.py (test_new_templates_and_enable), que instalam e conferem os nove arquivos.

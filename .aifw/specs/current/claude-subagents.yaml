@@ -51,7 +51,7 @@ requirements:
     - A cópia intacta é trocada sem .bak; a editada e a sem hash diferente do template vão para .bak; aifw claude check passa depois.
 - id: REQ-SUBAGENTS-INSTALL
   strength: MUST
-  statement: O aifw claude enable deve instalar em .claude/agents os subagentes aifw-explorer (haiku, só leitura), aifw-quick (haiku), aifw-executor (sonnet), aifw-adversary (opus) e aifw-qa (sonnet), os revisores sem editar código, com esforço high nos revisores, medium no executor e low no rápido e no explorador, guardando antes a cópia editada, e o aifw claude check deve acusar subagente ausente ou desatualizado.
+  statement: O aifw claude enable deve instalar em .claude/agents os nove subagentes aifw-explorer (haiku, low, só leitura), aifw-quick (haiku, low), aifw-executor (sonnet, medium), aifw-planner (sonnet, high, com Agent), aifw-lead (sonnet, medium, com Agent), aifw-worker (haiku, medium), aifw-senior (opus, high), aifw-adversary (opus, high) e aifw-qa (sonnet, high), os revisores sem editar código, o worker e o senior sem a ferramenta Agent, guardando antes a cópia editada, e o aifw claude check deve acusar subagente ausente ou desatualizado.
   scenarios:
   - id: SCN-SUBAGENTS-INSTALL
     given:
@@ -59,7 +59,7 @@ requirements:
     when:
     - aifw claude enable roda, e roda de novo.
     then:
-    - Os cinco arquivos ficam com o modelo, o esforço do papel e as ferramentas do template e o carimbo da versão; a cópia editada vai para aifw-executor.md.bak; a segunda execução não muda nada; aifw claude check acusa cada subagente antes e nenhum depois.
+    - Os nove arquivos ficam com o modelo, o esforço do papel e as ferramentas do template e o carimbo da versão; a cópia editada vai para aifw-executor.md.bak; a segunda execução não muda nada; aifw claude check acusa cada subagente antes e nenhum depois.
 - id: REQ-SUBAGENTS-MANDATORY-ORCHESTRATION
   strength: MUST
   statement: Com uma mudança aprovada ativa e orchestration required, o hook deve negar à sessão principal a edição de arquivos do projeto fora de .aifw/changes/active e de orchestration.sessionPaths, deixando as edições dos subagentes seguirem.
