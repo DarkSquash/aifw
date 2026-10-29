@@ -1,0 +1,24 @@
+Mudança cascade-orchestration, 2026-10-29, branch feat/cascade-orchestration.
+
+Divisão do trabalho (ADR-0040): dois aifw-executor (Sonnet) em paralelo, um com assessment.py, claude.py, os templates dos papéis, os casos de avaliação e os testes, e outro com a skill e a documentação; um aifw-quick (Haiku) ajustou o parágrafo de orquestração em docs/claude-code.md; a sessão editou só a mensagem de negação em python/aifw/hooks.py (sessionPaths) e incluiu hooks.py e evals/assessment/tasks-cases.yaml no tasks.yaml aprovado, com a confirmação da pessoa.
+
+$ python -m pytest tests_python/test_assessment.py tests_python/test_role_subagents.py tests_python/test_assessor_active.py tests_python/test_cascade.py -q   (aifw-executor)
+77 passed
+
+$ python -m pytest tests_python/test_orchestration.py -q   (depois da mensagem nova do hook)
+17 passed
+
+$ aifw claude enable
+agents: 9, skillBackup: null, agentBackups: []
+
+$ aifw claude check
+{"status": "pass", "findings": []}
+
+$ python -m pytest tests_python -q
+2791 passed in 104.55s (0:01:44)
+
+Casos de avaliação ajustados (evals/assessment/tasks-cases.yaml, path pela complexidade): task-03 FAST→WORK, task-07 WORK→FAST, task-13/16/17 PLANNED→WORK, task-22/23/24 CRITICAL→WORK, task-04/10 WORK→PLANNED, task-12 PLANNED→CRITICAL, task-19 CRITICAL→PLANNED.
+
+Cobertura:
+- SCN-ASSESSOR-COMPLEXITY-PATH (tests_python/test_assessment.py, test_cascade.py, test_assessor_active.py): path_for por complexidade com risco L0/L3 e importância baixa/crítica; contexto de cada caminho com a cascata; exceção com risco alto/crítico em FAST (aifw-executor sozinho) e WORK (aifw-senior sozinho), com os revisores; governança (aifw spec request-approval) com risco alto/crítico em qualquer caminho e sem ela com risco baixo/médio; risco por extenso.
+- SCN-SUBAGENTS-CASCADE (tests_python/test_cascade.py, test_role_subagents.py): os nove subagentes instalados com modelo, esforço e ferramentas; planner e lead com Agent; worker e senior com disallowedTools Agent; check_project limpo; a skill cita os nove.

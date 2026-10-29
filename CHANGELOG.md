@@ -4,6 +4,12 @@
 
 ### Alterado
 
+- Orquestração em cascata pela complexidade (ADR-0042):
+  - O caminho vem da complexidade (trivial L0 FAST, simples L1 WORK, moderada L2 PLANNED, alta L3 CRITICAL); a importância deixa de mudá-lo, e os nomes dos caminhos ficam.
+  - L0: `aifw-quick` e L1: `aifw-executor` planejam e executam sozinhos; L2: `aifw-planner` planeja e distribui a `aifw-worker`; L3: o agente principal planeja e divide entre `aifw-lead`, que usam `aifw-worker`. Em L2 e L3 os dois revisores rodam depois.
+  - Exceção de risco: risco alto ou crítico em L0 vai a um `aifw-executor` sozinho, e em L1 a um `aifw-senior` (Opus), seguidos dos dois revisores. A governança (plano aprovado no chat, spec, ADR e revisores) segue o risco.
+  - O agente principal só orquestra, em todos os níveis. Novos subagentes: `aifw-planner`, `aifw-lead`, `aifw-worker` e `aifw-senior`.
+  - Os níveis de impacto do resto do framework (`--level`, `change.yaml`) não foram renomeados; o avaliador e a skill mostram o risco por extenso (baixo, médio, alto, crítico).
 - Backup só de cópia editada e status livre no plano aprovado (ADR-0041): a skill e os subagentes instalados trazem o sha256 do corpo, e o `aifw claude enable` só cria `.bak` quando a cópia foi editada ou não tem o hash. Editar o `tasks.yaml` aprovado sem mudar os `paths` de nenhuma tarefa (trocar `status` ou título, por exemplo) deixa de pedir confirmação; mudar os `paths`, acrescentar ou duplicar uma tarefa com paths, uma edição que o hook não aplica, um YAML ilegível ou com chave duplicada, e o shell continuam pedindo.
 - Orquestração obrigatória em L2/L3 (ADR-0040): com uma mudança aprovada ativa, o hook nega à sessão principal editar arquivos do projeto e manda delegar ao `aifw-executor` (ou ao `aifw-quick` numa tarefa rápida). Subagentes, a pasta das mudanças ativas e os caminhos de `orchestration.sessionPaths` seguem livres; `orchestration.mode: off` desliga. O L3 passa a ser executado pelo `aifw-executor` com plano do Opus, e os caminhos PLANNED e CRITICAL do avaliador citam o `aifw-quick`.
 - Edição restrita ao plano aprovado (ADR-0039): com uma mudança aprovada ativa, editar arquivo fora dos `paths` do `tasks.yaml` dela pede confirmação, e o `tasks.yaml` aprovado vira arquivo de controle. A pasta das mudanças ativas fica livre, e comandos de shell que escrevem não entram na regra. `changeScope: off` no `permissions.yaml` desliga a regra e a proteção do `tasks.yaml`.

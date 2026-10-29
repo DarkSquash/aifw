@@ -134,21 +134,26 @@ COVERS = dict(
         "false": "o cenário testa outra coisa, ou só uma parte irrelevante do requisito",
     },
 )
-# Each path names the role subagent that takes it (ADR-0038).
+# The path comes from the complexity alone; each one has a fixed cascade of role subagents (ADR-0042).
 PATH_RULE = {
-    "FAST": "risco L0, complexidade trivial ou simples, importância baixa ou média: aifw-quick (Haiku) executa",
-    "WORK": (
-        "risco L1, ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica: "
-        "aifw-executor (Sonnet) executa"
-    ),
+    "FAST": "aifw-quick (Haiku, low) planeja e executa sozinho, sem revisor",
+    "WORK": "aifw-executor (Sonnet, medium) planeja e executa sozinho, sem revisor",
     "PLANNED": (
-        "risco L2, ou L1 com complexidade alta: Opus planeja, aifw-executor (Sonnet) executa, "
-        "aifw-quick (Haiku) nas tarefas rápidas, aifw-adversary e depois aifw-qa revisam"
+        "aifw-planner (Sonnet, high) planeja; depois um ou mais aifw-worker (Haiku, medium) implementam, "
+        "o planner revisa e resume, e o agente principal chama aifw-adversary e depois aifw-qa"
     ),
     "CRITICAL": (
-        "risco L3: Opus planeja, aifw-executor (Sonnet) executa, aifw-quick (Haiku) nas tarefas rápidas, "
-        "aifw-adversary e depois aifw-qa revisam, com aprovação humana"
+        "o agente principal (Opus) planeja e divide entre um ou mais aifw-lead (Sonnet, medium); "
+        "cada lead quebra a sua parte para aifw-worker (Haiku, medium) e revisa, "
+        "e o agente principal chama aifw-adversary e depois aifw-qa"
     ),
+}
+LEVEL_OF_PATH = {"FAST": "L0", "WORK": "L1", "PLANNED": "L2", "CRITICAL": "L3"}
+RISK_WORD = {"L0": "baixo", "L1": "médio", "L2": "alto", "L3": "crítico"}
+# High or critical risk on a small task swaps the cascade for a lone, stronger subagent.
+EXCEPTION = {
+    "FAST": "aifw-executor (Sonnet) faz sozinho, e depois aifw-adversary e aifw-qa revisam.",
+    "WORK": "aifw-senior (Opus) faz sozinho, e depois aifw-adversary e aifw-qa revisam.",
 }
 
 
@@ -221,14 +226,8 @@ def most_likely(answer, names):
 
 
 def path_for(risk, importance, complexity):
-    """The execution path for these evaluations; the same table the skill follows."""
-    if risk == "L3":
-        return "CRITICAL"
-    if risk == "L2" or (risk == "L1" and complexity == "alta"):
-        return "PLANNED"
-    if risk == "L1" or complexity in {"moderada", "alta"} or importance in {"alta", "crítica"}:
-        return "WORK"
-    return "FAST"
+    """The execution path: complexity alone decides it; risk and importance only add governance."""
+    return {"trivial": "FAST", "simples": "WORK", "moderada": "PLANNED"}.get(complexity, "CRITICAL")
 
 
 def diff_floor(root, base=None):
@@ -285,14 +284,27 @@ def path_context(result):
     """What the agent reads with the request in active mode."""
     if result.get("status") != "recorded":
         return f"AIFW: avaliador de tarefas indisponível ({result.get('reason')}); siga a classificação de sempre."
-    risk = result["risk"]["value"]
-    floor = f", elevado pelo diff a {result['finalRisk']}" if result["finalRisk"] != risk else ""
-    return (
-        f"AIFW, avaliador de tarefas (modo ativo): caminho {result['path']}. Risco {risk}{floor}, "
-        f"importância {result['importance']['value']}, complexidade {result['complexity']['value']}. "
-        f"{PATH_RULE[result['path']]}. Siga esse caminho com a tabela de modelos da skill aifw-workflow; "
-        "subir de caminho é sempre permitido, descer nunca."
+    path, final, risk = result["path"], result["finalRisk"], result["risk"]["value"]
+    raised = ", elevado pelo diff" if final != risk else ""
+    high = final in {"L2", "L3"}
+    parts = [
+        f"AIFW, avaliador de tarefas (modo ativo): caminho {path}. "
+        f"Complexidade {LEVEL_OF_PATH[path]} ({result['complexity']['value']}), "
+        f"risco {RISK_WORD[final]} ({final}{raised}), importância {result['importance']['value']}. "
+        f"{PATH_RULE[path]}."
+    ]
+    if high and path in EXCEPTION:
+        parts.append(f"Risco {RISK_WORD[final]} em {LEVEL_OF_PATH[path]}: {EXCEPTION[path]}")
+    if high:
+        parts.append(
+            f"Risco {RISK_WORD[final]}: apresente o plano e peça a aprovação no chat "
+            "(aifw spec request-approval), com spec e ADR."
+        )
+    parts.append(
+        "O agente principal só orquestra: delegue pelo nome do subagente. "
+        "Subir de caminho é sempre permitido, descer nunca."
     )
+    return " ".join(parts)
 
 
 def fingerprint(attempt):

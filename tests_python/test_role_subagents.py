@@ -17,6 +17,10 @@ EXPECTED = {
     "aifw-executor": ("sonnet", "medium"),
     "aifw-adversary": ("opus", "high"),
     "aifw-qa": ("sonnet", "high"),
+    "aifw-planner": ("sonnet", "high"),
+    "aifw-lead": ("sonnet", "medium"),
+    "aifw-worker": ("haiku", "medium"),
+    "aifw-senior": ("opus", "high"),
 }
 
 
@@ -38,7 +42,7 @@ def project(tmp_path):
     return tmp_path
 
 
-def test_enable_installs_the_five_subagents(project):
+def test_enable_installs_the_nine_subagents(project):
     result = enable_project(project)
     assert result["agents"] == [f".claude/agents/{n}.md" for n in AGENTS]
     for name, (model, effort) in EXPECTED.items():
@@ -174,8 +178,8 @@ def context(path, risk):
     [
         ("FAST", "L0", ["aifw-quick"]),
         ("WORK", "L1", ["aifw-executor"]),
-        ("PLANNED", "L2", ["aifw-executor", "aifw-quick", "aifw-adversary", "aifw-qa", "Opus planeja"]),
-        ("CRITICAL", "L3", ["aifw-executor", "aifw-quick", "aifw-adversary", "aifw-qa", "Opus planeja"]),
+        ("PLANNED", "L2", ["aifw-planner", "aifw-worker", "aifw-adversary", "aifw-qa"]),
+        ("CRITICAL", "L3", ["aifw-lead", "aifw-worker", "aifw-adversary", "aifw-qa", "Opus"]),
     ],
 )
 def test_path_context_names_the_subagents(path, risk, named):

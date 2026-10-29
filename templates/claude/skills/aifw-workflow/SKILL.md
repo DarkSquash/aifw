@@ -46,7 +46,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 ## Mudanças e evidências
 
 1. Classifique a alteração com `aifw change classify --diff` (sinais derivados dos arquivos alterados) mais os sinais reais que você observou e consulte os requisitos de L0–L3. Verifique se já existe uma mudança ativa adequada antes de criar outra.
-   - Com o recurso `tasks` ligado, cada pedido do usuário chega com o contexto "AIFW, avaliador de tarefas (modo ativo): caminho …" (ADR-0036, ADR-0037), que já nomeia o subagente do caminho (ADR-0038). Siga esse caminho na tabela de modelos (FAST, WORK, PLANNED, CRITICAL): subir é sempre permitido, descer nunca. A aprovação do plano em L2/L3 continua valendo. Se vier o aviso de indisponível, siga a classificação de sempre.
+   - Com o recurso `tasks` ligado, cada pedido do usuário chega com o contexto "AIFW, avaliador de tarefas (modo ativo): caminho …" (ADR-0036, ADR-0037), que traz o caminho pela complexidade (L0 FAST, L1 WORK, L2 PLANNED, L3 CRITICAL), a cascata de subagentes dele (ADR-0038, ADR-0042) e o risco por extenso (baixo, médio, alto, crítico). Siga esse caminho na tabela de modelos: subir é sempre permitido, descer nunca. A aprovação do plano com risco alto ou crítico continua valendo. Se vier o aviso de indisponível, siga a classificação de sempre.
    - Quando o início de sessão avisar que o relatório do avaliador está pronto, rode `aifw assess report` e mostre o relatório ao usuário. Os vereditos são aprovações dele: mostre os comandos `aifw assess verdict` para ele rodar no terminal.
 2. Para L2/L3, use `aifw spec new <id> --title ... --summary ... --level ...`. Preencha proposta, design, deltas, tarefas e traceabilidade em `.aifw/changes/active/<id>/`. L0/L1 mantêm registros e verificações proporcionais ao risco.
    - Antes do pedido de aprovação, liste nos `paths` do `tasks.yaml` tudo o que a mudança vai tocar: arquivos, pastas (`docs/`) ou padrões (`templates/*.md`), inclusive testes, documentação e CHANGELOG. Depois do "sim", editar fora deles pede confirmação, e os `paths` do `tasks.yaml` aprovado só mudam com confirmação; trocar o `status` de uma tarefa não pede (ADR-0039, ADR-0041). Para incluir um arquivo descoberto no caminho, acrescente-o ao `tasks.yaml` (uma confirmação) e siga.
@@ -76,29 +76,40 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 
 ## Modelos por classe
 
-Depois de `change classify` e `route explain`, distribua o trabalho pela linha mais alta que se aplicar:
+O caminho de execução vem da complexidade da tarefa (L0 trivial, L1 simples, L2 moderada, L3 alta), não do risco nem da importância. O risco (baixo, médio, alto, crítico; nos comandos do framework, `--level` e `change.yaml`, continua L0–L3) decide a governança e cria uma exceção. Siga o caminho que o avaliador indicar; sem ele, classifique por `change classify` e `route explain`.
 
-| Situação | Planeja | Executa | Revisa |
+| Complexidade (caminho) | Planeja | Executa | Revisa |
 | --- | --- | --- | --- |
-| impacto L3, caminho CRITICAL ou rota BRAIN | `opus` | `aifw-executor` com plano passo a passo; `aifw-quick` nas tarefas rápidas e mecânicas | `aifw-adversary`, depois `aifw-qa`, e plano aprovado no chat |
-| impacto L2 ou caminho PLANNED | `opus` | `aifw-executor`; `aifw-quick` nas tarefas rápidas e mecânicas | `aifw-adversary`, depois `aifw-qa` |
-| caminho ou rota WORK | — | `aifw-executor` | testes e gates |
-| caminho ou rota FAST | — | `aifw-quick` | testes e gates |
+| L0, trivial (FAST) | `aifw-quick` | `aifw-quick`, sozinho | testes e gates |
+| L1, simples (WORK) | `aifw-executor` | `aifw-executor`, sozinho | testes e gates |
+| L2, moderada (PLANNED) | `aifw-planner` | um ou mais `aifw-worker`, que o planner distribui e revisa | `aifw-adversary`, depois `aifw-qa` |
+| L3, alta (CRITICAL) | você (Opus) | um ou mais `aifw-lead`, que quebram a parte em tarefas para `aifw-worker` e revisam | `aifw-adversary`, depois `aifw-qa` |
+
+Exceção de risco: com risco alto ou crítico em L0, um `aifw-executor` (Sonnet) faz sozinho; em L1, um `aifw-senior` (Opus) faz sozinho. Depois, os dois revisores.
 
 | Subagente | Modelo | Esforço | Papel |
 | --- | --- | --- | --- |
 | `aifw-explorer` | haiku | low | busca só de leitura no código |
-| `aifw-quick` | haiku | low | tarefas do caminho FAST e tarefas rápidas e mecânicas de L2/L3 |
-| `aifw-executor` | sonnet | medium | caminho WORK e planos do Opus |
+| `aifw-quick` | haiku | low | L0: planeja e executa sozinho |
+| `aifw-executor` | sonnet | medium | L1: planeja e executa sozinho; exceção de L0 |
+| `aifw-planner` | sonnet | high | coordena L2: planeja, distribui aos workers, revisa e resume |
+| `aifw-lead` | sonnet | medium | coordena uma parte de L3: quebra, distribui aos workers, revisa e resume |
+| `aifw-worker` | haiku | medium | implementa uma tarefa pequena e relata |
+| `aifw-senior` | opus | high | exceção de L1: risco alto ou crítico, sozinho |
 | `aifw-adversary` | opus | high | revisão: tenta provar que a mudança está errada |
 | `aifw-qa` | sonnet | high | revisão: confere critérios, evidências e documentação |
 
-- Execute e revise por subagentes; a escolha é sua e não pede confirmação. Delegue pelo nome (`subagent_type`) sem passar `model`, para valer o modelo da definição; passe `model` só para subir. Planeje na própria sessão se ela já usa o modelo indicado; caso contrário, use um subagente. Para buscar no código, use o `aifw-explorer`.
-- Fora desses papéis (agentes de Workflow, Agent genérico, outra sessão), escolha o esforço pelo mesmo critério, nunca acima de `high`: planejar, revisar e papéis críticos `high`; executar e pesquisar `medium`; tarefas rápidas e busca `low`. Sem os subagentes em `.claude/agents/`, rode `aifw claude enable`; até lá, use o Agent genérico com o `model` da tabela.
-- O plano entregue ao executor nomeia arquivos, passos e verificações; o executor não decide arquitetura.
-- Os revisores recebem só o diff, a spec e os critérios, sem o contexto da implementação. O `aifw-adversary` faz o eixo Spec e o `aifw-qa` o eixo Standards do `code-review`, cada um no próprio contexto e sem lançar subagentes. Cada achado precisa de prova; o escopo é a spec, os critérios e o modelo de ameaça aceito. O hook nega a eles editar o projeto além do `independent-review.md` e rodar comando que escreve, commita ou muda o repositório.
-- A orquestração é obrigatória em L2 e L3 (ADR-0040): a sessão planeja e delega. A execução vai ao `aifw-executor`; subtarefas rápidas e mecânicas (renomear, ajuste pequeno de texto, busca) ao `aifw-quick` ou ao `aifw-explorer`; a revisão ao `aifw-adversary` e ao `aifw-qa`. Com uma mudança aprovada ativa, o hook nega à sessão principal editar arquivos do projeto (fora de `orchestration.sessionPaths` no `permissions.yaml`); subagentes, a pasta `.aifw/changes/active/` e arquivos fora do projeto seguem livres. Para corrigir um arquivo que o executor errou, melhore o plano ou delegue de novo; subir de modelo com `model` é permitido.
-- Fazer inline só vale em L0 e L1, sem mudança L2/L3 aprovada ativa: com uma ativa, o hook nega a edição pela sessão. Subir de modelo é sempre permitido; rebaixar L3 ou BRAIN, nunca.
+- Você só orquestra e nunca implementa, em nenhum nível (ADR-0042). Delegue pelo nome (`subagent_type`) sem passar `model`, para valer o modelo da definição; passe `model` só para subir. A escolha não pede confirmação. Para buscar no código, use o `aifw-explorer`.
+- L0 e L1: delegue a tarefa inteira ao `aifw-quick` ou ao `aifw-executor`, que planejam e executam sozinhos; sem revisor.
+- L2: chame o `aifw-planner` duas vezes. Na primeira, ele planeja; apresente o plano à pessoa (com `aifw spec request-approval` quando a governança pedir). Na segunda, passe o plano aprovado: ele distribui as partes aos `aifw-worker`, revisa até ficar satisfeito e devolve só o resumo. Depois chame os revisores.
+- L3: você planeja, divide o plano em partes e chama um ou mais `aifw-lead`, um por parte; cada lead quebra a sua em tarefas pequenas para os `aifw-worker`, revisa e devolve. Depois chame os revisores.
+- Revisores (`aifw-adversary`, depois `aifw-qa`): em L2 e L3, e em qualquer caminho com risco alto ou crítico. L0 e L1 de risco baixo ou médio não têm revisor; testes e gates continuam.
+- Governança pelo risco: risco alto ou crítico pede o plano aprovado no chat (`aifw spec request-approval`), spec e ADR, e os dois revisores, qualquer que seja a complexidade.
+- Fora desses papéis (agentes de Workflow, Agent genérico, outra sessão), escolha o esforço pelo mesmo critério, nunca acima de `high`: planejar, revisar e papéis críticos `high`; executar e pesquisar `medium`; tarefas rápidas e busca `low`. Sem os subagentes em `.claude/agents/`, rode `aifw claude enable`; até lá, use o Agent genérico com o `model` equivalente.
+- O plano entregue a quem executa nomeia arquivos, passos e verificações; quem executa não decide arquitetura. `aifw-planner` e `aifw-lead` têm a ferramenta Agent, para lançar os workers; `aifw-worker` e `aifw-senior` não lançam subagentes.
+- Os revisores recebem só o diff, a spec e os critérios, sem o contexto da implementação. O `aifw-adversary` faz o eixo Spec e o `aifw-qa` o eixo Standards do `code-review`, cada um no próprio contexto e sem lançar subagentes. Cada achado precisa de prova (ônus da prova); o escopo é a spec, os critérios e o modelo de ameaça aceito, e o limite de rodadas é o do item 7 de "Mudanças e evidências". O hook nega a eles editar o projeto além do `independent-review.md` e rodar comando que escreve, commita ou muda o repositório.
+- Com uma mudança aprovada ativa, o hook nega à sua sessão editar arquivos do projeto (fora de `orchestration.sessionPaths` no `permissions.yaml`, ADR-0040); subagentes, a pasta `.aifw/changes/active/` e arquivos fora do projeto seguem livres. Para corrigir um arquivo que quem executou errou, melhore o plano ou delegue de novo; subir de modelo com `model` é permitido.
+- Subir de caminho ou de modelo é sempre permitido; descer, nunca.
 - Testes e gates rodam em toda classe; revisão não substitui evidência.
 
 ## Limites da integração

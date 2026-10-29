@@ -12,16 +12,18 @@ Aliases não são competências garantidas e podem apontar para outros modelos e
 
 ## No Claude Code
 
-O Claude Code não troca o modelo da sessão a pedido do AIFW. A skill `aifw-workflow` distribui planejamento, execução e revisão entre os subagentes por papel que o `aifw claude enable` instala (ADR-0038), delegando pelo nome, sem passar `model`, para valer o modelo e o esforço da definição. Ela usa a linha mais alta que se aplicar:
+O Claude Code não troca o modelo da sessão a pedido do AIFW. A skill `aifw-workflow` distribui planejamento, execução e revisão entre os subagentes por papel que o `aifw claude enable` instala (ADR-0038), delegando pelo nome, sem passar `model`, para valer o modelo e o esforço da definição. O caminho vem da complexidade da tarefa (ADR-0042), e o agente principal só orquestra:
 
-| Situação | Planeja | Executa | Revisa |
+| Complexidade (caminho) | Planeja | Executa | Revisa |
 | --- | --- | --- | --- |
-| impacto L3 ou rota BRAIN | opus | `aifw-executor` (sonnet) com plano passo a passo; `aifw-quick` (haiku) nas tarefas rápidas e mecânicas | `aifw-adversary` (opus), depois `aifw-qa` (sonnet), + aprovação humana em L3 |
-| impacto L2 | opus | `aifw-executor` (sonnet); `aifw-quick` (haiku) nas tarefas rápidas e mecânicas | `aifw-adversary` (opus), depois `aifw-qa` (sonnet) |
-| rota WORK | — | `aifw-executor` (sonnet) | testes e gates |
-| rota FAST | — | `aifw-quick` (haiku) | testes e gates |
+| L0, trivial (FAST) | `aifw-quick` (haiku) | `aifw-quick`, sozinho | testes e gates |
+| L1, simples (WORK) | `aifw-executor` (sonnet) | `aifw-executor`, sozinho | testes e gates |
+| L2, moderada (PLANNED) | `aifw-planner` (sonnet) | `aifw-worker` (haiku), um ou mais, distribuídos e revisados pelo planner | `aifw-adversary` (opus), depois `aifw-qa` (sonnet) |
+| L3, alta (CRITICAL) | agente principal (opus) | `aifw-lead` (sonnet), um ou mais, que quebram a parte para `aifw-worker` (haiku) e revisam | `aifw-adversary`, depois `aifw-qa` |
 
-A revisão independente tem duas etapas: o `aifw-adversary` tenta provar que a mudança está errada e só reprova com um cenário concreto que falha; sem achado provado, o `aifw-qa` confere critérios, evidências e documentação. Revisão não substitui testes e gates, que rodam em toda classe. Em L2 e L3 a orquestração é obrigatória (ADR-0040): a sessão planeja e delega; trabalho inline só em L0 e L1. Subir de modelo é permitido; L3 ou BRAIN nunca é rebaixado. Os modelos e esforços de cada subagente estão em [Claude Code](claude-code.md#modelos).
+Exceção de risco: com risco alto ou crítico, L0 vai a um `aifw-executor` (sonnet) sozinho e L1 a um `aifw-senior` (opus) sozinho, seguidos dos dois revisores. Risco alto ou crítico também pede o plano aprovado no chat, spec e ADR. Subir de caminho é permitido; descer, nunca.
+
+A revisão independente tem duas etapas: o `aifw-adversary` tenta provar que a mudança está errada e só reprova com um cenário concreto que falha; sem achado provado, o `aifw-qa` confere critérios, evidências e documentação. Revisão não substitui testes e gates, que rodam em toda classe. A orquestração é obrigatória em todos os níveis (ADR-0040, ADR-0042): a sessão principal planeja (em L3) e delega, nunca implementa. Subir de modelo é permitido; L3 ou BRAIN nunca é rebaixado. Os modelos e esforços de cada subagente estão em [Claude Code](claude-code.md#modelos).
 
 ## Ativação
 
@@ -31,14 +33,16 @@ O roteamento fica sempre ligado (ADR-0037): `route explain` responde `executionM
 
 ## Avaliador de tarefas
 
-Com `spec.assessment.mode: shadow` em `aifw.yaml` e o recurso `tasks` ligado, cada pedido da pessoa com 5 palavras ou mais é avaliado automaticamente pelo hook `UserPromptSubmit` (ADR-0031), antes de o agente ler a mensagem; segredos reconhecidos são mascarados antes do envio. `aifw change assess --task "<pedido>"` faz o mesmo à mão. A avaliação manda três perguntas independentes ao `perplexity/pplx-decider-v1.2`, pelo OpenRouter: risco (L0–L3), importância e complexidade. Uma regra fixa transforma as respostas no caminho:
+Com `spec.assessment.mode: shadow` em `aifw.yaml` e o recurso `tasks` ligado, cada pedido da pessoa com 5 palavras ou mais é avaliado automaticamente pelo hook `UserPromptSubmit` (ADR-0031), antes de o agente ler a mensagem; segredos reconhecidos são mascarados antes do envio. `aifw change assess --task "<pedido>"` faz o mesmo à mão. A avaliação manda três perguntas independentes ao `perplexity/pplx-decider-v1.2`, pelo OpenRouter: risco (baixo, médio, alto ou crítico; L0–L3 nos comandos do framework), importância e complexidade. Só a complexidade escolhe o caminho (ADR-0042); o risco decide a governança e a exceção:
 
-| Caminho | Quando | Planeja | Executa | Revisa |
+| Caminho | Quando (complexidade) | Planeja | Executa | Revisa |
 | --- | --- | --- | --- | --- |
-| FAST | risco L0, complexidade trivial ou simples, importância baixa ou média | — | `aifw-quick` (haiku) | testes e gates |
-| WORK | risco L1; ou L0 com complexidade moderada ou alta, ou com importância alta ou crítica | — | `aifw-executor` (sonnet) | testes e gates |
-| PLANNED | risco L2; ou L1 com complexidade alta | opus | `aifw-executor` (sonnet), `aifw-quick` (haiku) nas tarefas rápidas | `aifw-adversary`, depois `aifw-qa` |
-| CRITICAL | risco L3 | opus | `aifw-executor` (sonnet), `aifw-quick` (haiku) nas tarefas rápidas | `aifw-adversary`, depois `aifw-qa`, e humano |
+| FAST | L0, trivial | `aifw-quick` (haiku) | `aifw-quick`, sozinho | testes e gates |
+| WORK | L1, simples | `aifw-executor` (sonnet) | `aifw-executor`, sozinho | testes e gates |
+| PLANNED | L2, moderada | `aifw-planner` (sonnet) | `aifw-worker` (haiku), distribuído e revisado pelo planner | `aifw-adversary`, depois `aifw-qa` |
+| CRITICAL | L3, alta | agente principal (opus) | `aifw-lead` (sonnet), que quebra a parte para `aifw-worker` | `aifw-adversary`, depois `aifw-qa` |
+
+- Com risco alto ou crítico em FAST, um `aifw-executor` faz sozinho; em WORK, um `aifw-senior` (opus) faz sozinho; depois, os dois revisores. Risco alto ou crítico também pede o plano aprovado no chat, spec e ADR. A importância é avaliada e registrada, mas não muda o caminho.
 
 - Com `--diff`, os fatos verificáveis do diff (autenticação, deploy, contratos, arquivos de controle) formam um piso: o risco final nunca fica abaixo dele.
 - Cada avaliação é gravada em `.aifw/assessments/shadow.jsonl`. Os outros recursos (`impasse`, `context`, `intake`, `traceability`, `decisions`) continuam em modo sombra: só registram.

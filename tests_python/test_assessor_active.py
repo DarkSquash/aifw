@@ -36,7 +36,7 @@ def test_the_path_reaches_the_agent_without_any_activation(project, monkeypatch)
     assert active(project)
     text = prompt(project, "Reescrever a busca do app para aceitar erros de digitação")
     context = text["hookSpecificOutput"]["additionalContext"]
-    assert "caminho PLANNED" in context and "Opus planeja" in context and "aifw-quick" in context
+    assert "caminho CRITICAL" in context and "aifw-lead" in context and "aifw-worker" in context
     assert assessment.read_lines(project / assessment.SHADOW_LOG)[-1]["mode"] == "active"
     assert prompt(project, "sim pode") is None  # short replies are not requests
 
