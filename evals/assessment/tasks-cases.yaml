@@ -23,13 +23,13 @@ cases:
   risk: L0
   importance: média
   complexity: simples
-  path: FAST
+  path: WORK
 - id: task-04
   task: Escrever o guia de arquitetura do sistema a partir do código, cobrindo todos os serviços.
   risk: L0
   importance: média
   complexity: moderada
-  path: WORK
+  path: PLANNED
 - id: task-05
   task: Corrigir o texto da página de termos de uso, que precisa ir ao ar amanhã por exigência legal.
   risk: L0
@@ -47,7 +47,7 @@ cases:
   risk: L1
   importance: baixa
   complexity: trivial
-  path: WORK
+  path: FAST
 - id: task-08
   task: Adicionar validação de CEP no formulário de endereço.
   risk: L1
@@ -65,7 +65,7 @@ cases:
   risk: L1
   importance: média
   complexity: moderada
-  path: WORK
+  path: PLANNED
 - id: task-11
   task: Adicionar um filtro por data no relatório interno.
   risk: L1
@@ -77,13 +77,13 @@ cases:
   risk: L1
   importance: alta
   complexity: alta
-  path: PLANNED
+  path: CRITICAL
 - id: task-13
   task: Adicionar o CPF do cliente ao cadastro e salvar no banco.
   risk: L2
   importance: alta
   complexity: simples
-  path: PLANNED
+  path: WORK
 - id: task-14
   task: Integrar um serviço pago de envio de SMS.
   risk: L2
@@ -101,13 +101,13 @@ cases:
   risk: L2
   importance: baixa
   complexity: simples
-  path: PLANNED
+  path: WORK
 - id: task-17
   task: Alterar a regra de quem pode ver os relatórios financeiros.
   risk: L2
   importance: alta
   complexity: simples
-  path: PLANNED
+  path: WORK
 - id: task-18
   task: Ajustar a configuração de autoscaling do ambiente de produção.
   risk: L2
@@ -119,7 +119,7 @@ cases:
   risk: L3
   importance: alta
   complexity: moderada
-  path: CRITICAL
+  path: PLANNED
 - id: task-20
   task: Apagar a tabela de pedidos antigos e migrar os dados para o novo esquema.
   risk: L3
@@ -137,16 +137,16 @@ cases:
   risk: L3
   importance: crítica
   complexity: simples
-  path: CRITICAL
+  path: WORK
 - id: task-23
   task: Mudar a constituição do projeto, que define as regras de aprovação.
   risk: L3
   importance: média
   complexity: simples
-  path: CRITICAL
+  path: WORK
 - id: task-24
   task: Desligar o servidor antigo e apagar os backups em produção.
   risk: L3
   importance: alta
   complexity: simples
-  path: CRITICAL
+  path: WORK

@@ -1,0 +1,32 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: cascade-orchestration
+artifacts:
+- id: TEST-CASCADE-ORCHESTRATION
+  type: test
+  path: .aifw/changes/archive/2026-10-29-cascade-orchestration/evidence/tests.txt
+  status: passed
+- id: DESIGN-CASCADE-ORCHESTRATION
+  type: design
+  path: .aifw/changes/archive/2026-10-29-cascade-orchestration/design.md
+  status: passed
+- id: ADR-0042
+  type: adr
+  path: docs/decisions/ADR-0042-cascade-orchestration.md
+  status: passed
+links:
+- from: SCN-ASSESSOR-COMPLEXITY-PATH
+  relation: verifiedBy
+  to: TEST-CASCADE-ORCHESTRATION
+- from: SCN-SUBAGENTS-CASCADE
+  relation: verifiedBy
+  to: TEST-CASCADE-ORCHESTRATION
+- from: SCN-SUBAGENTS-DELEGATION
+  relation: verifiedBy
+  to: TEST-CASCADE-ORCHESTRATION
+- from: REQ-ASSESSOR-COMPLEXITY-PATH
+  relation: designedBy
+  to: DESIGN-CASCADE-ORCHESTRATION
+- from: REQ-SUBAGENTS-CASCADE
+  relation: governedBy
+  to: ADR-0042

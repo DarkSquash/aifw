@@ -1,0 +1,19 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: sync-subagents-install-docs
+artifacts:
+- id: TEST-SYNC-SUBAGENTS-INSTALL-DOCS
+  type: test
+  path: .aifw/changes/archive/2026-10-29-sync-subagents-install-docs/evidence/tests.txt
+  status: passed
+- id: DESIGN-SYNC-SUBAGENTS-INSTALL-DOCS
+  type: design
+  path: .aifw/changes/archive/2026-10-29-sync-subagents-install-docs/design.md
+  status: passed
+links:
+- from: SCN-SUBAGENTS-INSTALL
+  relation: verifiedBy
+  to: TEST-SYNC-SUBAGENTS-INSTALL-DOCS
+- from: REQ-SUBAGENTS-INSTALL
+  relation: designedBy
+  to: DESIGN-SYNC-SUBAGENTS-INSTALL-DOCS

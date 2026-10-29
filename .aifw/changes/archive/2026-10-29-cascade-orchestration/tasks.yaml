@@ -1,0 +1,47 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: cascade-orchestration
+tasks:
+- id: TASK-CASCADE-ASSESSOR
+  title: Caminho pela complexidade e contexto com a cascata, a exceção e a governança
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-ASSESSOR-COMPLEXITY-PATH
+  - REQ-SUBAGENTS-DELEGATION
+  paths:
+  - python/aifw/assessment.py
+  - python/aifw/hooks.py
+  - evals/assessment/tasks-cases.yaml
+  - tests_python/test_assessment.py
+  - tests_python/test_assessor_active.py
+  - tests_python/test_role_subagents.py
+  - tests_python/test_cascade.py
+- id: TASK-CASCADE-ROLES
+  title: Papéis aifw-planner, aifw-lead, aifw-worker e aifw-senior
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-CASCADE
+  paths:
+  - templates/claude/agents/
+  - python/aifw/claude.py
+  - .claude/agents/
+  - tests_python/test_cascade.py
+- id: TASK-CASCADE-DOCS
+  title: Skill, documentação, CHANGELOG e ADR-0042
+  status: done
+  dependsOn:
+  - TASK-CASCADE-ASSESSOR
+  - TASK-CASCADE-ROLES
+  requirementIds:
+  - REQ-ASSESSOR-COMPLEXITY-PATH
+  - REQ-SUBAGENTS-CASCADE
+  paths:
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - .claude/skills/aifw-workflow/SKILL.md
+  - docs/claude-code.md
+  - docs/routing.md
+  - docs/decisions/ADR-0042-cascade-orchestration.md
+  - CHANGELOG.md
+  - README.md

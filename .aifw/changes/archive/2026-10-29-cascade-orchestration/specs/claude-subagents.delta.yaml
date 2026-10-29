@@ -1,0 +1,33 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: cascade-orchestration
+capability: claude-subagents
+title: Subagentes por papel
+purpose: Delegar cada papel do trabalho ao modelo certo, com o modelo fixo na definição do subagente, sem depender de o agente lembrar de passá-lo.
+operations:
+  added:
+  - id: REQ-SUBAGENTS-CASCADE
+    strength: MUST
+    statement: O aifw claude enable deve instalar os papéis da cascata, aifw-planner (sonnet, high, com Agent), aifw-lead (sonnet, medium, com Agent), aifw-worker (haiku, medium) e aifw-senior (opus, high), e a skill deve descrever a cascata de cada nível, com o Opus da conversa só orquestrando.
+    scenarios:
+    - id: SCN-SUBAGENTS-CASCADE
+      given:
+      - Um projeto com aifw.yaml.
+      when:
+      - aifw claude enable roda, e a skill aifw-workflow é lida.
+      then:
+      - Os quatro arquivos novos ficam com o modelo, o esforço e as ferramentas do template; o planner e o lead têm Agent, o worker não; aifw claude check confere todos.
+      - A skill descreve L0 (aifw-quick sozinho), L1 (aifw-executor sozinho), L2 (aifw-planner, aifw-worker, revisores), L3 (Opus planeja, aifw-lead, aifw-worker, revisores) e a exceção de risco em L0 e L1.
+  modified:
+  - id: REQ-SUBAGENTS-DELEGATION
+    strength: MUST
+    statement: O caminho entregue pelo avaliador e a tabela de modelos da skill devem nomear o subagente de cada papel da cascata (aifw-quick em L0, aifw-executor em L1, aifw-planner com aifw-worker em L2, aifw-lead com aifw-worker em L3, aifw-executor ou aifw-senior na exceção de risco), e a delegação por nome não deve passar model, para que valha o modelo da definição.
+    scenarios:
+    - id: SCN-SUBAGENTS-DELEGATION
+      given:
+      - O recurso tasks ligado e a skill aifw-workflow instalada.
+      when:
+      - O avaliador entrega o caminho FAST, WORK, PLANNED ou CRITICAL, com risco baixo ou alto.
+      then:
+      - O contexto cita aifw-quick (FAST), aifw-executor (WORK), aifw-planner e aifw-worker (PLANNED) e aifw-lead e aifw-worker (CRITICAL), com aifw-adversary e aifw-qa em PLANNED e CRITICAL; com risco alto ou crítico, cita aifw-executor (FAST) ou aifw-senior (WORK) sozinho e os revisores; a skill manda delegar por subagent_type sem model e só passar model para subir.
+  removed: []
