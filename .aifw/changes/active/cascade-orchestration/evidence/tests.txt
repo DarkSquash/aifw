@@ -27,3 +27,6 @@ Revisão, rodada 1 (evidence/independent-review-1.md): o adversário provou que 
 
 $ python -m pytest tests_python -q   (depois das correções)
 2791 passed in 111.95s (0:01:51)
+
+Cobertura acrescentada na rodada 2:
+- SCN-SUBAGENTS-DELEGATION (tests_python/test_cascade.py e test_role_subagents.py): o contexto cita aifw-quick (FAST), aifw-executor (WORK), aifw-planner e aifw-worker (PLANNED), aifw-lead e aifw-worker (CRITICAL), com os revisores em PLANNED e CRITICAL; com risco alto ou crítico, aifw-executor (FAST) ou aifw-senior (WORK) sozinho e os revisores, sem "sem revisor"; a skill cita os nove papéis.
