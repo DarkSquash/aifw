@@ -17,7 +17,7 @@ import sys
 import time
 
 from . import signing
-from .common import AifwError, now, read_yaml
+from .common import AifwError, now, parse_yaml, read_yaml
 from .impasse import case_file, load_cases, mutation_allowed
 from .permissions import decide_action, load_permission_policy, validate_break_glass
 from .shell import SECRET_FILE, analyze, domains_for, runs_tests, service_of, verification_visible
@@ -172,6 +172,30 @@ def session_edit(root, payload):
     )
 
 
+def widens_plan(path, tool_name, tool_input):
+    """Whether an edit changes the paths of any task in a tasks.yaml; when unsure, it does (ADR-0041)."""
+
+    def planned(text):
+        # The strict loader approved_plans uses: a duplicate key is an error here too, so it asks.
+        tasks = (parse_yaml(text, "tasks.yaml") or {}).get("tasks") or []
+        # Every task counts, a copied id or a task without one included.
+        return sorted((str(task.get("id")), json.dumps(task.get("paths") or [])) for task in tasks)
+
+    try:
+        before = after = Path(path).read_text(encoding="utf-8")
+        if tool_name == "Write":
+            after = tool_input["content"]
+        else:
+            for edit in tool_input["edits"] if tool_name == "MultiEdit" else [tool_input]:
+                old, new = edit["old_string"], edit["new_string"]
+                if not old or old not in after:
+                    return True
+                after = after.replace(old, new) if edit.get("replace_all") else after.replace(old, new, 1)
+        return planned(before) != planned(after)
+    except Exception:  # noqa: BLE001 - an edit the hook cannot apply or read keeps asking
+        return True
+
+
 def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None, scope=True):
     """The AIFW control file this call would change, if any; scope keeps the approved tasks.yaml in."""
     if tool_name in EDIT_TOOLS:
@@ -196,9 +220,13 @@ def control_target(root, tool_name, tool_input, mutation, protected=(), cwd=None
         if INSTALLED.search(text):
             matches.append(INSTALLED.search(text).group(2) + "/")
         plan = re.fullmatch(r"\.aifw/changes/active/([^/]+)/tasks\.yaml", text)
+        # The approved plan does not widen itself (ADR-0039); a status or a title may change (ADR-0041).
         if (
-            scope and plan and plan.group(1) in approved_plans(root)
-        ):  # the plan does not widen itself (ADR-0039)
+            scope
+            and plan
+            and plan.group(1) in approved_plans(root)
+            and widens_plan(target, tool_name, tool_input)
+        ):
             matches.append(f"tasks.yaml of the approved change {plan.group(1)}")
     elif tool_name in SHELL_TOOLS and mutation:
         text = tool_input.get("command", "").replace("\\", "/").lower()

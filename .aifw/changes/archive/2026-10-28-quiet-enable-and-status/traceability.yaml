@@ -1,0 +1,29 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: quiet-enable-and-status
+artifacts:
+- id: TEST-QUIET-ENABLE-AND-STATUS
+  type: test
+  path: .aifw/changes/archive/2026-10-28-quiet-enable-and-status/evidence/tests.txt
+  status: passed
+- id: DESIGN-QUIET-ENABLE-AND-STATUS
+  type: design
+  path: .aifw/changes/archive/2026-10-28-quiet-enable-and-status/design.md
+  status: passed
+- id: ADR-0041
+  type: adr
+  path: docs/decisions/ADR-0041-quiet-enable-and-status.md
+  status: passed
+links:
+- from: SCN-SUBAGENTS-EDITED-BACKUP
+  relation: verifiedBy
+  to: TEST-QUIET-ENABLE-AND-STATUS
+- from: SCN-AUTONOMY-APPROVED-SCOPE
+  relation: verifiedBy
+  to: TEST-QUIET-ENABLE-AND-STATUS
+- from: REQ-SUBAGENTS-EDITED-BACKUP
+  relation: designedBy
+  to: DESIGN-QUIET-ENABLE-AND-STATUS
+- from: REQ-AUTONOMY-APPROVED-SCOPE
+  relation: governedBy
+  to: ADR-0041

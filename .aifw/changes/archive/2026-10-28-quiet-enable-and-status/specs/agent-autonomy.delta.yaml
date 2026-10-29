@@ -1,0 +1,22 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: quiet-enable-and-status
+capability: agent-autonomy
+title: Autonomia do agente
+purpose: Deixar o agente trabalhar sem pedir confirmação no que fica registrado e é reversível, e manter a decisão humana só onde o efeito sai do projeto ou não volta atrás.
+operations:
+  added: []
+  modified:
+  - id: REQ-AUTONOMY-APPROVED-SCOPE
+    strength: MUST
+    statement: Com uma mudança aprovada ativa e changeScope ask, editar pelas ferramentas de edição um arquivo do projeto fora dos paths do tasks.yaml dela deve pedir confirmação, e editar o tasks.yaml aprovado deve pedir confirmação quando muda os paths de alguma tarefa.
+    scenarios:
+    - id: SCN-AUTONOMY-APPROVED-SCOPE
+      given:
+      - Uma mudança ativa aprovada cujo tasks.yaml lista python/aifw/claude.py, docs/ e templates/claude/agents/*.md.
+      when:
+      - O agente edita python/aifw/claude.py, docs/x.md, templates/claude/agents/aifw-qa.md, um arquivo da pasta da mudança, python/aifw/hooks.py, ou o tasks.yaml dela trocando um status, incluindo um path ou por sed -i.
+      then:
+      - Os arquivos do plano, a pasta da mudança e a troca de status no tasks.yaml não pedem; python/aifw/hooks.py, a inclusão de um path e o sed -i no tasks.yaml pedem confirmação, citando a mudança.
+      - Sem mudança aprovada ativa, ou com changeScope off, a edição de python/aifw/hooks.py não pede, e o tasks.yaml de uma mudança não aprovada também não.
+  removed: []

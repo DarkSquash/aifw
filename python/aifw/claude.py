@@ -1,7 +1,9 @@
 """Claude Code setup: a global /aifw command and per-project activation."""
 
 from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
+import re
 import shutil
 
 from . import __version__
@@ -41,6 +43,10 @@ def entries_for(event):
 
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
 STAMP = "<!-- aifw-version: {} -->"
+HASH = "<!-- aifw-sha256: {} -->"
+INSTALLED = re.compile(
+    r"(?P<body>.*)\n\n<!-- aifw-version: [^\n]* -->\n<!-- aifw-sha256: (?P<hash>[0-9a-f]{64}) -->\n", re.S
+)
 AGENTS = ("aifw-explorer", "aifw-quick", "aifw-executor", "aifw-adversary", "aifw-qa")
 
 
@@ -61,16 +67,21 @@ def ours(entry):
 
 
 def install_template(root, template, target):
-    """Copy a stamped template into the project; returns the backup path if an older copy was kept."""
+    """Copy a stamped template into the project; returns the backup path if an edited copy was kept."""
     path = project_path(root, target)
     path.parent.mkdir(parents=True, exist_ok=True)
     text = (assets() / template).read_text(encoding="utf-8")
-    content = text.rstrip("\n") + "\n\n" + STAMP.format(__version__) + "\n"
+    body = text.rstrip("\n")
+    digest = sha256(body.encode("utf-8")).hexdigest()
+    content = body + "\n\n" + STAMP.format(__version__) + "\n" + HASH.format(digest) + "\n"
     backup = None
     if path.is_file():
         existing = path.read_text(encoding="utf-8")
-        if existing != content:
-            # Someone edited the project copy, or it came from another version: keep it before replacing.
+        # The hash lets an untouched copy from another version be replaced silently.
+        found = INSTALLED.fullmatch(existing)
+        untouched = found and sha256(found["body"].encode("utf-8")).hexdigest() == found["hash"]
+        if existing != content and not untouched:
+            # Someone edited the project copy, or it has no hash: keep it before replacing.
             path.with_name(path.name + ".bak").write_text(existing, encoding="utf-8", newline="\n")
             backup = f"{target}.bak"
     path.write_text(content, encoding="utf-8", newline="\n")

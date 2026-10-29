@@ -13,3 +13,4 @@ Você procura no código e devolve o que achou. Não edita nada e não propõe m
 - Se a resposta depende de código que você não leu, diga isso em vez de presumir.
 
 <!-- aifw-version: 0.4.1 -->
+<!-- aifw-sha256: 4729671fee5dde9fe5cb30c66ec742c34d07c3878094582f272a965304775897 -->

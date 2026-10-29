@@ -1,0 +1,21 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: quiet-enable-and-status
+capability: claude-subagents
+title: Subagentes por papel
+purpose: Delegar cada papel do trabalho ao modelo certo, com o modelo fixo na definição do subagente, sem depender de o agente lembrar de passá-lo.
+operations:
+  added:
+  - id: REQ-SUBAGENTS-EDITED-BACKUP
+    strength: MUST
+    statement: O aifw claude enable deve guardar a cópia anterior da skill ou de um subagente em .bak só quando ela foi editada desde a instalação, ou quando foi instalada sem hash e difere do template.
+    scenarios:
+    - id: SCN-SUBAGENTS-EDITED-BACKUP
+      given:
+      - Um projeto com a skill e os subagentes instalados.
+      when:
+      - O template muda e o enable roda de novo, com a cópia intacta, editada ou sem a linha de hash.
+      then:
+      - A cópia intacta é trocada sem .bak; a editada e a sem hash diferente do template vão para .bak; aifw claude check passa depois.
+  modified: []
+  removed: []
