@@ -1,0 +1,13 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: assessor-metrics-nesting-check
+  title: Métricas do avaliador e checagem de aninhamento
+  level: L2
+  createdAt: '2026-11-01T16:23:23.998Z'
+summary: Redescreve criticalDemoted e pathBelowExpected como medidas do caminho pela complexidade, sem renomear, e faz o aifw claude check avisar quando o limite de aninhamento de subagentes impede o planner e o lead de lançar workers.
+status: draft
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-11-01T16:30:32.639Z'
+  record: .aifw/changes/active/assessor-metrics-nesting-check/approval.md

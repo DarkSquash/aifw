@@ -86,6 +86,7 @@ def test_verdicts_feed_the_report_and_the_activation_criteria(project):
     assert summary["criticalDemoted"] == [3] and not summary["criteriaMet"]
     text = render_report(report(project))
     assert "| 1 | tarefa L0 |" in text and "concorda" in text and "CRITICAL" in text
+    assert "Caminho CRITICAL (complexidade alta) rebaixado: 1" in text
     with pytest.raises(AifwError):
         record_verdicts(project, [9], "human:me")
 

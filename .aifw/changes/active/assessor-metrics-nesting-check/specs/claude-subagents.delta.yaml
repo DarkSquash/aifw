@@ -1,0 +1,28 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: assessor-metrics-nesting-check
+capability: claude-subagents
+title: Subagentes por papel
+purpose: Delegar cada papel do trabalho ao modelo certo, com o modelo fixo na definição do subagente, sem depender de o agente lembrar de passá-lo.
+operations:
+  added:
+  - id: REQ-SUBAGENTS-NESTING
+    strength: MUST
+    statement: O aifw claude check deve avisar quando CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH for um número menor que 2 no ambiente ou no env dos settings do projeto, local do projeto ou do usuário, porque o planner e o lead não conseguem lançar workers. O planner, o lead e a skill devem dizer que, sem a ferramenta Agent ou com falha ao lançar, o coordenador implementa a parte ele mesmo e avisa no resumo, sem devolver a implementação ao agente principal.
+    scenarios:
+    - id: SCN-SUBAGENTS-NESTING-CHECK
+      given:
+      - Um projeto com o Claude Code habilitado.
+      when:
+      - aifw claude check roda com a variável ausente, com 2 ou 3, com 1 no ambiente ou em cada um dos três settings, e com valores que não são inteiros positivos.
+      then:
+      - Ausente, 2 e 3 não geram aviso; 1 gera um aviso que diz onde está a variável; valores como abc e 0 e arquivos ausentes ou ilegíveis são ignorados.
+    - id: SCN-SUBAGENTS-NESTING-FALLBACK
+      given:
+      - Os templates aifw-planner e aifw-lead e a skill aifw-workflow.
+      when:
+      - O texto é lido depois de aifw claude enable.
+      then:
+      - Os três trazem o plano B de implementar a parte quando a ferramenta Agent não está disponível ou o lançamento falha, avisando no resumo.
+  modified: []
+  removed: []

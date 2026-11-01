@@ -1,0 +1,47 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: assessor-metrics-nesting-check
+tasks:
+- id: TASK-METRICS-WORDING
+  title: Redescrever criticalDemoted e pathBelowExpected como caminho pela complexidade
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-ASSESSOR-SHADOW-METRICS
+  paths:
+  - python/aifw/assessment.py
+  - python/aifw/assessment_eval.py
+  - tests_python/test_assessment.py
+  - docs/routing.md
+- id: TASK-NESTING-CHECK
+  title: Aviso do aifw claude check para CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH menor que 2
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-NESTING
+  paths:
+  - python/aifw/claude.py
+  - tests_python/test_cascade.py
+- id: TASK-NESTING-FALLBACK
+  title: Plano B do planner e do lead sem a ferramenta Agent
+  status: done
+  dependsOn:
+  - TASK-NESTING-CHECK
+  requirementIds:
+  - REQ-SUBAGENTS-NESTING
+  paths:
+  - templates/claude/agents/aifw-planner.md
+  - templates/claude/agents/aifw-lead.md
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - docs/claude-code.md
+  - tests_python/test_cascade.py
+- id: TASK-ADR
+  title: ADR-0043 e CHANGELOG
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-ASSESSOR-SHADOW-METRICS
+  - REQ-SUBAGENTS-NESTING
+  paths:
+  - docs/decisions/ADR-0043-assessor-metrics-and-nesting-check.md
+  - CHANGELOG.md

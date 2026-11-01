@@ -4,6 +4,11 @@
 
 ### Alterado
 
+- Métricas do avaliador e checagem de aninhamento (ADR-0043):
+  - `criticalDemoted` e `pathBelowExpected` passam a ser descritos como caminho pela complexidade (rótulo "Caminho CRITICAL (complexidade alta) rebaixado"); as chaves JSON não foram renomeadas.
+  - `aifw claude check` avisa quando `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` é menor que 2 no ambiente ou nos settings do projeto e do usuário; só aviso.
+  - `aifw-planner` e `aifw-lead` implementam a parte eles mesmos, uma tarefa por vez, se a ferramenta Agent faltar ou o lançamento falhar, e avisam no resumo (templates, skill `aifw-workflow` e `docs/claude-code.md`).
+  - O critério "nenhum CRITICAL rebaixado" da ativação do avaliador passa a proteger contra complexidade subestimada; o risco segue pelo piso do diff e por `exactByStage.risk`.
 - Orquestração em cascata pela complexidade (ADR-0042):
   - O caminho vem da complexidade (trivial L0 FAST, simples L1 WORK, moderada L2 PLANNED, alta L3 CRITICAL); a importância deixa de mudá-lo, e os nomes dos caminhos ficam.
   - L0: `aifw-quick` e L1: `aifw-executor` planejam e executam sozinhos; L2: `aifw-planner` planeja e distribui a `aifw-worker`; L3: o agente principal planeja e divide entre `aifw-lead`, que usam `aifw-worker`. Em L2 e L3 os dois revisores rodam depois.

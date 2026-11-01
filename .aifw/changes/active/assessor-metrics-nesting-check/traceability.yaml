@@ -1,0 +1,32 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: assessor-metrics-nesting-check
+artifacts:
+- id: TEST-ASSESSOR-METRICS-NESTING-CHECK
+  type: test
+  path: .aifw/changes/active/assessor-metrics-nesting-check/evidence/tests.txt
+  status: passed
+- id: DESIGN-ASSESSOR-METRICS-NESTING-CHECK
+  type: design
+  path: .aifw/changes/active/assessor-metrics-nesting-check/design.md
+  status: passed
+- id: ADR-0043
+  type: adr
+  path: docs/decisions/ADR-0043-assessor-metrics-and-nesting-check.md
+  status: passed
+links:
+- from: SCN-ASSESSOR-SHADOW-METRICS
+  relation: verifiedBy
+  to: TEST-ASSESSOR-METRICS-NESTING-CHECK
+- from: SCN-SUBAGENTS-NESTING-CHECK
+  relation: verifiedBy
+  to: TEST-ASSESSOR-METRICS-NESTING-CHECK
+- from: SCN-SUBAGENTS-NESTING-FALLBACK
+  relation: verifiedBy
+  to: TEST-ASSESSOR-METRICS-NESTING-CHECK
+- from: REQ-ASSESSOR-SHADOW-METRICS
+  relation: designedBy
+  to: DESIGN-ASSESSOR-METRICS-NESTING-CHECK
+- from: REQ-SUBAGENTS-NESTING
+  relation: governedBy
+  to: ADR-0043
