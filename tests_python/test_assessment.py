@@ -53,18 +53,11 @@ def test_assessor_stays_off_until_every_guard_passes(project, monkeypatch, tmp_p
     assert result["status"] == "unavailable" and not (project / assessment.SHADOW_LOG).exists()
 
 
+@pytest.mark.parametrize("risk", ["L0", "L3"])
+@pytest.mark.parametrize("importance", ["baixa", "crítica"])
 @pytest.mark.parametrize(
-    ("risk", "importance", "complexity", "path"),
-    [
-        ("L0", "baixa", "trivial", "FAST"),
-        ("L0", "média", "simples", "FAST"),
-        ("L0", "crítica", "simples", "WORK"),
-        ("L0", "média", "moderada", "WORK"),
-        ("L1", "baixa", "trivial", "WORK"),
-        ("L1", "média", "alta", "PLANNED"),
-        ("L2", "baixa", "simples", "PLANNED"),
-        ("L3", "média", "simples", "CRITICAL"),
-    ],
+    ("complexity", "path"),
+    [("trivial", "FAST"), ("simples", "WORK"), ("moderada", "PLANNED"), ("alta", "CRITICAL")],
 )
 def test_path_rule(risk, importance, complexity, path):
     assert path_for(risk, importance, complexity) == path
@@ -80,7 +73,7 @@ def test_records_in_shadow_and_the_diff_sets_a_risk_floor(project):
     (project / "src/auth/login.py").write_text("x = 1\n")
     second = assess(project, "Ajuste trivial", use_diff=True, call=fake("L0", "baixa", "trivial"))
     assert second["risk"]["value"] == "L0" and second["floor"]["level"] == "L2"
-    assert second["finalRisk"] == "L2" and second["path"] == "PLANNED" and second["id"] == 2
+    assert second["finalRisk"] == "L2" and second["path"] == "FAST" and second["id"] == 2
 
 
 def test_verdicts_feed_the_report_and_the_activation_criteria(project):

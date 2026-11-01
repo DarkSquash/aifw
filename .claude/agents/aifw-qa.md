@@ -22,7 +22,7 @@ Você confere se a mudança está completa e pronta. O adversário já tentou qu
 
 ## Saída
 
-Acrescente ao `independent-review.md` a seção `## QA`, com cada critério e a evidência que o cobre. Termine o arquivo com uma única linha `Resultado: aprovado`, `Resultado: aprovado com ressalvas` ou `Resultado: reprovado`.
+Acrescente ao `independent-review.md` a seção `## QA`, com cada critério e a evidência que o cobre. Termine o arquivo com uma única linha `Resultado: aprovado`, `Resultado: aprovado com ressalvas` ou `Resultado: reprovado`. Se o agente principal avisar que não há pasta de mudança, não escreva arquivo: devolva a seção `## QA` e a linha `Resultado:` na resposta.
 
 <!-- aifw-version: 0.4.1 -->
-<!-- aifw-sha256: ccc7ac26dedeb797f707582d1d1dba228285257c7a1c2bb323858f6aacfc1bda -->
+<!-- aifw-sha256: 07167cc2e1189c0c4a0535b2b051c6b83827dae4b76778530d28a8e2bda57817 -->

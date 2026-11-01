@@ -1,0 +1,27 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: sync-subagents-install-docs
+tasks:
+- id: TASK-SYNC-SPEC
+  title: Delta de REQ-SUBAGENTS-INSTALL com os nove subagentes
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-INSTALL
+  paths:
+  - .aifw/changes/active/sync-subagents-install-docs/
+  - .aifw/specs/current/claude-subagents.yaml
+- id: TASK-SYNC-DOCS
+  title: Revisores sem pasta de mudança e ordem da frase de L0 e L1
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-INSTALL
+  paths:
+  - templates/claude/agents/aifw-adversary.md
+  - templates/claude/agents/aifw-qa.md
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - docs/claude-code.md
+  - CHANGELOG.md
+  - .claude/agents/
+  - .claude/skills/aifw-workflow/SKILL.md

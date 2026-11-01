@@ -1,0 +1,196 @@
+{
+  "change": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "SpecChange",
+    "metadata": {
+      "id": "sync-subagents-install-docs",
+      "title": "Spec dos subagentes e docs dos revisores",
+      "level": "L1",
+      "createdAt": "2026-10-29T13:34:34.035Z"
+    },
+    "summary": "Atualiza REQ-SUBAGENTS-INSTALL para os nove subagentes, documenta o retorno dos revisores sem pasta de mudança e esclarece a frase de L0 e L1 sem revisor.",
+    "status": "draft"
+  },
+  "pass": true,
+  "findings": [],
+  "coverage": {
+    "requirements": {
+      "total": 1,
+      "linkedToTask": 1
+    },
+    "scenarios": {
+      "total": 1,
+      "verified": 1
+    },
+    "tasks": {
+      "total": 2,
+      "completed": 2
+    }
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "DESIGN-SYNC-SUBAGENTS-INSTALL-DOCS",
+        "type": "design",
+        "path": ".aifw/changes/active/sync-subagents-install-docs/design.md"
+      },
+      {
+        "id": "FILE:.aifw/changes/active/sync-subagents-install-docs/",
+        "type": "code",
+        "path": ".aifw/changes/active/sync-subagents-install-docs/"
+      },
+      {
+        "id": "FILE:.aifw/specs/current/claude-subagents.yaml",
+        "type": "code",
+        "path": ".aifw/specs/current/claude-subagents.yaml"
+      },
+      {
+        "id": "FILE:.claude/agents/",
+        "type": "code",
+        "path": ".claude/agents/"
+      },
+      {
+        "id": "FILE:.claude/skills/aifw-workflow/SKILL.md",
+        "type": "code",
+        "path": ".claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "id": "FILE:CHANGELOG.md",
+        "type": "code",
+        "path": "CHANGELOG.md"
+      },
+      {
+        "id": "FILE:docs/claude-code.md",
+        "type": "code",
+        "path": "docs/claude-code.md"
+      },
+      {
+        "id": "FILE:templates/claude/agents/aifw-adversary.md",
+        "type": "code",
+        "path": "templates/claude/agents/aifw-adversary.md"
+      },
+      {
+        "id": "FILE:templates/claude/agents/aifw-qa.md",
+        "type": "code",
+        "path": "templates/claude/agents/aifw-qa.md"
+      },
+      {
+        "id": "FILE:templates/claude/skills/aifw-workflow/SKILL.md",
+        "type": "code",
+        "path": "templates/claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "id": "REQ-SUBAGENTS-INSTALL",
+        "type": "requirement"
+      },
+      {
+        "id": "SCN-SUBAGENTS-INSTALL",
+        "type": "scenario"
+      },
+      {
+        "id": "TASK-SYNC-DOCS",
+        "type": "task"
+      },
+      {
+        "id": "TASK-SYNC-SPEC",
+        "type": "task"
+      },
+      {
+        "id": "TEST-SYNC-SUBAGENTS-INSTALL-DOCS",
+        "type": "test",
+        "path": ".aifw/changes/active/sync-subagents-install-docs/evidence/tests.txt"
+      }
+    ],
+    "links": [
+      {
+        "from": "REQ-SUBAGENTS-INSTALL",
+        "relation": "designedBy",
+        "to": "DESIGN-SYNC-SUBAGENTS-INSTALL-DOCS"
+      },
+      {
+        "from": "REQ-SUBAGENTS-INSTALL",
+        "relation": "hasScenario",
+        "to": "SCN-SUBAGENTS-INSTALL"
+      },
+      {
+        "from": "REQ-SUBAGENTS-INSTALL",
+        "relation": "implementedBy",
+        "to": "TASK-SYNC-DOCS"
+      },
+      {
+        "from": "REQ-SUBAGENTS-INSTALL",
+        "relation": "implementedBy",
+        "to": "TASK-SYNC-SPEC"
+      },
+      {
+        "from": "SCN-SUBAGENTS-INSTALL",
+        "relation": "verifiedBy",
+        "to": "TEST-SYNC-SUBAGENTS-INSTALL-DOCS"
+      },
+      {
+        "from": "TASK-SYNC-DOCS",
+        "relation": "changes",
+        "to": "FILE:.claude/agents/"
+      },
+      {
+        "from": "TASK-SYNC-DOCS",
+        "relation": "changes",
+        "to": "FILE:.claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "from": "TASK-SYNC-DOCS",
+        "relation": "changes",
+        "to": "FILE:CHANGELOG.md"
+      },
+      {
+        "from": "TASK-SYNC-DOCS",
+        "relation": "changes",
+        "to": "FILE:docs/claude-code.md"
+      },
+      {
+        "from": "TASK-SYNC-DOCS",
+        "relation": "changes",
+        "to": "FILE:templates/claude/agents/aifw-adversary.md"
+      },
+      {
+        "from": "TASK-SYNC-DOCS",
+        "relation": "changes",
+        "to": "FILE:templates/claude/agents/aifw-qa.md"
+      },
+      {
+        "from": "TASK-SYNC-DOCS",
+        "relation": "changes",
+        "to": "FILE:templates/claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "from": "TASK-SYNC-SPEC",
+        "relation": "changes",
+        "to": "FILE:.aifw/changes/active/sync-subagents-install-docs/"
+      },
+      {
+        "from": "TASK-SYNC-SPEC",
+        "relation": "changes",
+        "to": "FILE:.aifw/specs/current/claude-subagents.yaml"
+      }
+    ]
+  },
+  "assessment": {
+    "status": "cached",
+    "mode": "shadow",
+    "recorded": false,
+    "at": "2026-10-29T13:40:42.120Z",
+    "model": "perplexity/pplx-decider-v1.2",
+    "change": "sync-subagents-install-docs",
+    "specs": "3545198f9ba8e81a525a2b2109cfc7feb9861b5fde67ec7ae59e1034b172c3db",
+    "pairs": [
+      {
+        "requirement": "REQ-SUBAGENTS-INSTALL",
+        "scenario": "SCN-SUBAGENTS-INSTALL",
+        "probability": 0.994
+      }
+    ],
+    "weakTraces": [],
+    "cost": 8.24e-06,
+    "id": 15
+  }
+}

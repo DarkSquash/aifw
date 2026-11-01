@@ -1,0 +1,10 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: sync-subagents-install-docs
+  title: Spec dos subagentes e docs dos revisores
+  level: L1
+  createdAt: '2026-10-29T13:34:34.035Z'
+summary: Atualiza REQ-SUBAGENTS-INSTALL para os nove subagentes, documenta o retorno dos revisores sem pasta de mudança e esclarece a frase de L0 e L1 sem revisor.
+status: archived
+archivedAt: '2026-10-29T14:15:10.857Z'

@@ -167,8 +167,9 @@ def session_edit(root, payload):
     if in_paths(text, orchestration.get("sessionPaths") or []):
         return None
     return (
-        f"the approved change {', '.join(plans)} is orchestrated: delegate this edit to aifw-executor, "
-        "or to aifw-quick for a quick one (ADR-0040); only the person changes orchestration in permissions.yaml"
+        f"the approved change {', '.join(plans)} is orchestrated: delegate this edit through the cascade "
+        "(aifw-quick, aifw-executor, aifw-planner, aifw-lead or aifw-senior, ADR-0040, ADR-0042); "
+        "only the person changes orchestration in permissions.yaml"
     )
 
 

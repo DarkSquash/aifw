@@ -47,7 +47,17 @@ HASH = "<!-- aifw-sha256: {} -->"
 INSTALLED = re.compile(
     r"(?P<body>.*)\n\n<!-- aifw-version: [^\n]* -->\n<!-- aifw-sha256: (?P<hash>[0-9a-f]{64}) -->\n", re.S
 )
-AGENTS = ("aifw-explorer", "aifw-quick", "aifw-executor", "aifw-adversary", "aifw-qa")
+AGENTS = (
+    "aifw-explorer",
+    "aifw-quick",
+    "aifw-executor",
+    "aifw-adversary",
+    "aifw-qa",
+    "aifw-planner",
+    "aifw-lead",
+    "aifw-worker",
+    "aifw-senior",
+)
 
 
 def install_command(home=None):

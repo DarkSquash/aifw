@@ -25,5 +25,7 @@ No arquivo indicado (o `independent-review.md` da mudança), escreva a seção `
 - Com achado provado, termine o arquivo com a linha `Resultado: reprovado`.
 - Sem achado provado, não escreva nenhuma linha começando com `Resultado`: a revisão segue para o `aifw-qa`.
 
+Se o agente principal avisar que não há pasta de mudança, não escreva arquivo: devolva a mesma seção `## Adversário` (e a linha `Resultado:`, quando houver achado provado) na resposta.
+
 <!-- aifw-version: 0.4.1 -->
-<!-- aifw-sha256: c307ff7bfff523f7da2a3b81a584f8ca6f3c1b841ea96240ec04c9ccebe4ca65 -->
+<!-- aifw-sha256: e171f1c6f2a434be5d23b967ec973f6fbfab1d77e7cdd04c16dc955330a13b7a -->
