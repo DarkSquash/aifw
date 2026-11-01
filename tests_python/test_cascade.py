@@ -1,5 +1,6 @@
 """Cascade orchestration: the path comes from the complexity, the risk adds governance (ADR-0042)."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -93,3 +94,80 @@ def test_new_templates_and_enable(tmp_path):
             assert data["disallowedTools"] == "Agent" and "tools" not in data
     assert len(AGENTS) == 9
     assert not any("subagent" in f for f in check_project(tmp_path, tmp_path / "home")["findings"])
+
+
+SPAWN = "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"
+
+
+def spawn_findings(root, home):
+    return [f for f in check_project(root, home)["findings"] if "SPAWN_DEPTH" in f]
+
+
+def set_env(file, value):
+    file.parent.mkdir(parents=True, exist_ok=True)
+    data = json.loads(file.read_text(encoding="utf-8")) if file.is_file() else {}
+    data["env"] = {**data.get("env", {}), SPAWN: value}
+    file.write_text(json.dumps(data), encoding="utf-8")
+
+
+@pytest.mark.parametrize("value", [None, "2", "3"])
+def test_spawn_depth_ok_in_environment(tmp_path, monkeypatch, value):
+    init(tmp_path)
+    enable_project(tmp_path)
+    monkeypatch.delenv(SPAWN, raising=False)
+    if value:
+        monkeypatch.setenv(SPAWN, value)
+    assert not spawn_findings(tmp_path, tmp_path / "home")
+
+
+def test_spawn_depth_one_in_environment(tmp_path, monkeypatch):
+    init(tmp_path)
+    enable_project(tmp_path)
+    monkeypatch.delenv(SPAWN, raising=False)
+    monkeypatch.setenv(SPAWN, "1")
+    findings = spawn_findings(tmp_path, tmp_path / "home")
+    assert len(findings) == 1 and "environment" in findings[0]
+
+
+@pytest.mark.parametrize(
+    "path", [".claude/settings.local.json", ".claude/settings.json", "home/.claude/settings.json"]
+)
+def test_spawn_depth_one_in_settings(tmp_path, monkeypatch, path):
+    init(tmp_path)
+    enable_project(tmp_path)
+    monkeypatch.delenv(SPAWN, raising=False)
+    file = tmp_path / path
+    set_env(file, "1")
+    findings = spawn_findings(tmp_path, tmp_path / "home")
+    assert len(findings) == 1 and str(file) in findings[0]
+
+
+@pytest.mark.parametrize("value", ["abc", "0", ""])
+def test_spawn_depth_ignored_values(tmp_path, monkeypatch, value):
+    init(tmp_path)
+    enable_project(tmp_path)
+    monkeypatch.delenv(SPAWN, raising=False)
+    monkeypatch.setenv(SPAWN, value)
+    set_env(tmp_path / ".claude/settings.local.json", value)
+    assert not spawn_findings(tmp_path, tmp_path / "home")
+
+
+def test_spawn_depth_unreadable_settings_ignored(tmp_path, monkeypatch):
+    init(tmp_path)
+    enable_project(tmp_path)
+    monkeypatch.delenv(SPAWN, raising=False)
+    (tmp_path / ".claude/settings.local.json").write_text("{nope", encoding="utf-8")
+    assert not spawn_findings(tmp_path, tmp_path / "home")
+
+
+def test_planner_lead_and_skill_carry_the_fallback(tmp_path):
+    init(tmp_path)
+    enable_project(tmp_path)
+    texts = {
+        name: (tmp_path / ".claude" / name).read_text(encoding="utf-8")
+        for name in ["agents/aifw-planner.md", "agents/aifw-lead.md", "skills/aifw-workflow/SKILL.md"]
+    }
+    for text in texts.values():
+        assert "sem worker" in text
+    for name in ["agents/aifw-planner.md", "agents/aifw-lead.md"]:
+        assert "agente principal" in texts[name]

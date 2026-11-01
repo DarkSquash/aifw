@@ -1,0 +1,22 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: assessor-metrics-nesting-check
+capability: task-assessor
+title: Avaliador de tarefas
+purpose: Avaliar cada pedido da pessoa e, depois da ativação humana, entregar ao agente o caminho de execução, sem nunca rebaixar a aprovação humana.
+operations:
+  added:
+  - id: REQ-ASSESSOR-SHADOW-METRICS
+    strength: MUST
+    statement: O relatório da sombra e o eval do avaliador devem medir o caminho pela complexidade e manter os nomes criticalDemoted e pathBelowExpected. criticalDemoted lista os pedidos em que a pessoa deu o caminho CRITICAL e o modelo sugeriu um caminho menor; pathBelowExpected conta as respostas do eval cujo caminho ficou abaixo do esperado; o texto do relatório diz que se trata do caminho pela complexidade.
+    scenarios:
+    - id: SCN-ASSESSOR-SHADOW-METRICS
+      given:
+      - Um veredito CRITICAL da pessoa sobre uma sugestão WORK e um caso do eval em que a complexidade é subestimada.
+      when:
+      - O relatório da sombra e o assess eval rodam.
+      then:
+      - O resumo do relatório traz criticalDemoted com o id do pedido, e o eval traz pathBelowExpected igual a 1, com as mesmas chaves de antes.
+      - O texto do relatório cita o caminho CRITICAL como complexidade alta.
+  modified: []
+  removed: []

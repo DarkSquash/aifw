@@ -53,6 +53,7 @@ Com `spec.assessment.mode: shadow` em `aifw.yaml` e o recurso `tasks` ligado, ca
 
   Sem isso, responde `unavailable` e não chama a API. Custo aproximado: US$ 0,00001 por pedido.
 - `aifw assess report` mostra as perguntas, as respostas de cada pedido e os seus vereditos.
+- `criticalDemoted` (no relatório, "Caminho CRITICAL (complexidade alta) rebaixado") e `pathBelowExpected` (no eval) medem o caminho pela complexidade, não o risco. Os nomes ficam por serem JSON público. O risco segue protegido pelo piso do diff e por `exactByStage.risk` no eval.
 - `aifw assess verdict --id 1,2 --agree --by human:<nome>`, ou `--value <caminho>`, registra se você concorda. É uma aprovação humana, rodada só no seu terminal.
 - **Modo ativo (ADR-0036, ADR-0037):**
   - O recurso `tasks` é sempre ativo, sem comando de ativação: cada pedido chega ao agente com o caminho (FAST, WORK, PLANNED ou CRITICAL), que ele segue na tabela de modelos. Subir é permitido, descer nunca; a escolha do modelo não pede confirmação.

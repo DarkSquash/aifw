@@ -3,6 +3,8 @@
 from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
+import json
+import os
 import re
 import shutil
 
@@ -43,6 +45,7 @@ def entries_for(event):
 
 REQUIRED_SKILLS = ("grilling", "grill-me", "code-review", "setup-matt-pocock-skills", "handoff")
 STAMP = "<!-- aifw-version: {} -->"
+SPAWN_DEPTH = "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"
 HASH = "<!-- aifw-sha256: {} -->"
 INSTALLED = re.compile(
     r"(?P<body>.*)\n\n<!-- aifw-version: [^\n]* -->\n<!-- aifw-sha256: (?P<hash>[0-9a-f]{64}) -->\n", re.S
@@ -140,6 +143,33 @@ def enable_project(root):
     )
 
 
+def env_value(file, name):
+    try:
+        data = json.loads(file.read_text(encoding="utf-8-sig"))
+    except (json.JSONDecodeError, OSError, UnicodeDecodeError):
+        return None
+    env = data.get("env") if isinstance(data, dict) else None
+    return env.get(name) if isinstance(env, dict) else None
+
+
+def nesting_findings(root, home):
+    """Warn when the spawn depth is 1: the planner and lead then cannot launch workers."""
+    sources = {"environment": os.environ.get(SPAWN_DEPTH)}
+    files = [
+        root / ".claude/settings.local.json",
+        root / ".claude/settings.json",
+        home / ".claude/settings.json",
+    ]
+    for file in files:
+        sources[str(file)] = env_value(file, SPAWN_DEPTH)
+    return [
+        f"{SPAWN_DEPTH}=1 in {source}: aifw-planner and aifw-lead cannot launch aifw-worker "
+        "(they need 2 or more; Claude Code default is 3)"
+        for source, value in sources.items()
+        if re.fullmatch(r"0*1", str(value))
+    ]
+
+
 def check_project(root, home=None):
     """Report what is missing for Claude Code to run AIFW in this project; never changes files."""
     root, home = Path(root), Path(home or Path.home())
@@ -174,4 +204,5 @@ def check_project(root, home=None):
         for name in REQUIRED_SKILLS
         if not (home / ".claude/skills" / name / "SKILL.md").is_file()
     ]
+    findings += nesting_findings(root, home)
     return dict(status="pass" if not findings else "warning", findings=findings)
