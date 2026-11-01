@@ -4,11 +4,11 @@ changeId: assessor-metrics-nesting-check
 artifacts:
 - id: TEST-ASSESSOR-METRICS-NESTING-CHECK
   type: test
-  path: .aifw/changes/active/assessor-metrics-nesting-check/evidence/tests.txt
+  path: .aifw/changes/archive/2026-11-01-assessor-metrics-nesting-check/evidence/tests.txt
   status: passed
 - id: DESIGN-ASSESSOR-METRICS-NESTING-CHECK
   type: design
-  path: .aifw/changes/active/assessor-metrics-nesting-check/design.md
+  path: .aifw/changes/archive/2026-11-01-assessor-metrics-nesting-check/design.md
   status: passed
 - id: ADR-0043
   type: adr
