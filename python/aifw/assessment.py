@@ -652,6 +652,7 @@ def report(root, feature="tasks"):
     rows = [dict(e, suggestion=suggestion(feature, e), verdict=verdicts.get(e["id"])) for e in entries]
     judged = [r for r in rows if r["verdict"]]
     agreed = [r for r in judged if r["verdict"]["value"] == r["suggestion"]]
+    # O veredito da pessoa é de caminho, que vem da complexidade; não mede erro de risco.
     demoted = [r for r in judged if r["verdict"]["value"] == "CRITICAL" and r["suggestion"] != "CRITICAL"]
     agreement = len(agreed) / len(judged) if judged else 0
     ready = len(judged) >= ACTIVATION["requests"] and agreement >= ACTIVATION["agreement"] and not demoted
@@ -691,7 +692,7 @@ def render_report(value):
     ]
     if feature == "tasks":
         lines.append(
-            f"- CRITICAL rebaixados: {len(s['criticalDemoted'])} {s['criticalDemoted'] or ''}".rstrip()
+            f"- Caminho CRITICAL (complexidade alta) rebaixado: {len(s['criticalDemoted'])} {s['criticalDemoted'] or ''}".rstrip()
         )
     lines += [
         f"- Critério de ativação atingido: {'sim' if s['criteriaMet'] else 'não'}",

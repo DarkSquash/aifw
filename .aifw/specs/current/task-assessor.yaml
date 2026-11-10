@@ -38,3 +38,15 @@ requirements:
     - A pessoa envia um pedido, ou o serviço de decisão está fora.
     then:
     - O hook entrega o caminho com risco, importância e complexidade, ou só um aviso de indisponível; uma mensagem automática não é avaliada.
+- id: REQ-ASSESSOR-SHADOW-METRICS
+  strength: MUST
+  statement: O relatório da sombra e o eval do avaliador devem medir o caminho pela complexidade e manter os nomes criticalDemoted e pathBelowExpected. criticalDemoted lista os pedidos em que a pessoa deu o caminho CRITICAL e o modelo sugeriu um caminho menor; pathBelowExpected conta as respostas do eval cujo caminho ficou abaixo do esperado; o texto do relatório diz que se trata do caminho pela complexidade.
+  scenarios:
+  - id: SCN-ASSESSOR-SHADOW-METRICS
+    given:
+    - Um veredito CRITICAL da pessoa sobre uma sugestão WORK e um caso do eval em que a complexidade é subestimada.
+    when:
+    - O relatório da sombra e o assess eval rodam.
+    then:
+    - O resumo do relatório traz criticalDemoted com o id do pedido, e o eval traz pathBelowExpected igual a 1, com as mesmas chaves de antes.
+    - O texto do relatório cita o caminho CRITICAL como complexidade alta.

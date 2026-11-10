@@ -85,6 +85,7 @@ def run_tasks(root, model, suite, call):
         )
 
     rows = pool_map(one, suite["cases"])
+    # pathBelowExpected mede o caminho pela complexidade abaixo do esperado (o nome é JSON público).
     stages = {
         k: sum(r["got"][k] == r["expected"][k] for r in rows) for k in ("risk", "importance", "complexity")
     }
