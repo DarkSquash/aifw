@@ -4,11 +4,11 @@ changeId: post-review-cleanup
 artifacts:
 - id: TEST-POST-REVIEW-CLEANUP
   type: test
-  path: .aifw/changes/active/post-review-cleanup/evidence/tests.txt
+  path: .aifw/changes/archive/2026-11-12-post-review-cleanup/evidence/tests.txt
   status: passed
 - id: DESIGN-POST-REVIEW-CLEANUP
   type: design
-  path: .aifw/changes/active/post-review-cleanup/design.md
+  path: .aifw/changes/archive/2026-11-12-post-review-cleanup/design.md
   status: passed
 - id: ADR-0044
   type: adr

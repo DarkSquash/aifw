@@ -30,16 +30,16 @@ requirements:
     - Também pedem heads/main, refs/heads/*, --branches, tags por nome, git -c ... push, -fu, um push sem destino que a configuração leva à main, um remoto sem HEAD conhecido e escritas na API do GitHub fora de PR, issue e comentário.
 - id: REQ-AUTONOMY-CHAT-APPROVAL
   strength: MUST
-  statement: A aprovação de uma mudança L2 ou L3 deve vir da resposta da pessoa ao plano no chat, gravada pelo hook de pedidos, sem assinatura, e nunca de uma mensagem automática nem do próprio agente.
+  statement: A aprovação de uma mudança L2 ou L3 deve vir da resposta da pessoa ao plano no chat, gravada pelo hook de pedidos, sem assinatura, e nunca de uma mensagem automática, de um comando de barra nem do próprio agente.
   scenarios:
   - id: SCN-AUTONOMY-CHAT-APPROVAL
     given:
     - O agente apresentou o plano e rodou aifw spec request-approval para uma única mudança.
     when:
-    - A pessoa responde "sim", "aprovo", "ok" ou "pode seguir", ou responde outra coisa, ou chega uma mensagem automática.
+    - A pessoa responde "sim", "aprovo", "ok" ou "pode seguir", ou responde outra coisa, ou chega uma mensagem automática, ou a pessoa digita um comando de barra como /ponytail:ponytail ultra.
     then:
-    - Só a resposta de aprovação sem pergunta grava approval.md com a mensagem citada e aprova a mudança, mesmo com requireSignedCommit; outra resposta cancela o pedido; a mensagem automática não aprova nem cancela; com dois pedidos pendentes nenhum é aprovado; uma resposta em outra sessão não aprova nem cancela.
-    - Enquanto o pedido espera, o hook nega qualquer ferramenta daquela sessão, e a resposta, qualquer que seja, a destrava.
+    - Só a resposta de aprovação sem pergunta grava approval.md com a mensagem citada e aprova a mudança, mesmo com requireSignedCommit; outra resposta cancela o pedido; a mensagem automática e o comando de barra não aprovam nem cancelam, e um "sim" seguinte ainda aprova; com dois pedidos pendentes nenhum é aprovado; uma resposta em outra sessão não aprova nem cancela.
+    - Enquanto o pedido espera, o hook nega qualquer ferramenta daquela sessão, e a resposta da pessoa ao plano, qualquer que seja, a destrava; a mensagem automática e o comando de barra não.
     - O agente não escreve approval.md nem change.yaml sem confirmação, nem por padrões de shell; rodar aifw-hook, python -m aifw.hooks, claude -p ou código que monta UserPromptSubmit é negado.
 - id: REQ-AUTONOMY-EXTERNAL-WRITES
   strength: MUST

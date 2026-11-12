@@ -6,8 +6,9 @@ metadata:
   level: L2
   createdAt: '2026-11-10T14:00:26.692Z'
 summary: Comando de barra não responde ao pedido de aprovação; gatilhos nos comentários shortcut; remove .aifw/legacy; fecha ressalvas de revisões arquivadas.
-status: draft
+status: archived
 approval:
   approvedBy: human:DarkSquash
   approvedAt: '2026-11-11T15:25:40.651Z'
   record: .aifw/changes/active/post-review-cleanup/approval.md
+archivedAt: '2026-11-12T04:34:28.694Z'
