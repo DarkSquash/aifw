@@ -1,0 +1,60 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: graphify-default
+capability: claude-graphify
+title: Graphify por padrão no enable
+purpose: Deixar o grafo de conhecimento do graphify pronto e atualizado nos projetos com AIFW quando a ferramenta existe na máquina, sem mudar o comportamento de quem não a tem e sem nunca derrubar o aifw claude enable.
+operations:
+  added:
+  - id: REQ-GRAPHIFY-ENABLE
+    strength: MUST
+    statement: Com o graphify no PATH (executável fora da raiz do projeto), o aifw claude enable deve acrescentar graphify-out/ ao .gitignore (salvo se a pasta já existir), rodar graphify update . uma vez quando não há graphify-out/graph.json e rodar graphify hook install quando o projeto tem .git e core.hooksPath não está definido, nessa ordem, sem shell e com tempo limite. Sem o graphify no PATH, deve fazer só o que fazia e acrescentar ao resultado a linha graphify informando que pulou, sem rodar subprocesso nem alterar o .gitignore por causa dele.
+    scenarios:
+    - id: SCN-GRAPHIFY-ENABLE
+      given:
+      - Um projeto git com aifw.yaml, sem graphify-out/ e sem core.hooksPath.
+      - Dublê do graphify no PATH que registra as chamadas.
+      when:
+      - O aifw claude enable roda duas vezes seguidas.
+      then:
+      - Na primeira execução, o .gitignore ganha graphify-out/, depois chega graphify update . com cwd na raiz do projeto e depois graphify hook install, nessa ordem, e o resultado traz a chave graphify descrevendo as duas etapas.
+      - Na segunda execução, com graphify-out/graph.json já criado pelo dublê, nenhum update roda, o .gitignore não muda e graphify hook install roda de novo sem erro.
+    - id: SCN-GRAPHIFY-ENABLE-ABSENT
+      given:
+      - Um projeto com aifw.yaml e o graphify fora do PATH.
+      when:
+      - O aifw claude enable roda.
+      then:
+      - 'Nenhum subprocesso roda, o .gitignore fica igual ao que o enable já gravava, e o resultado é o de antes mais a chave graphify com "graphify not found on PATH: skipped".'
+    - id: SCN-GRAPHIFY-ENABLE-SKIPS
+      given:
+      - Projetos com graphify no PATH e, um por vez, core.hooksPath definido, sem .git, graphify-out/ já existente, o executável do graphify dentro da raiz do projeto, ou o enable chamado com --no-graphify.
+      when:
+      - O aifw claude enable roda.
+      then:
+      - Com core.hooksPath ou sem .git, graphify hook install não roda e a linha diz por quê; com graphify-out/ existente, o .gitignore não muda (o update só é pulado quando graphify-out/graph.json existe); com --no-graphify, nenhuma chamada ao graphify acontece; com o executável achado dentro da raiz do projeto (ou por caminho relativo), nada do graphify roda e a linha diz que foi pulado. Em todos o enable termina com sucesso e as demais chaves do resultado não mudam.
+  - id: REQ-GRAPHIFY-NEVER-FAILS
+    strength: MUST
+    statement: Falha, código de saída diferente de zero, tempo esgotado ou erro de execução do graphify não devem fazer o aifw claude enable falhar nem desfazer o que ele já gravou; o resultado deve dizer qual comando rodar à mão. O aifw claude check não deve relatar a presença ou a ausência do graphify, e o aifw claude enable não deve rodar graphify claude install.
+    scenarios:
+    - id: SCN-GRAPHIFY-NEVER-FAILS
+      given:
+      - Um projeto com graphify no PATH cujo update ou hook install retorna 1, estoura o tempo ou lança OSError, ou cujo .gitignore não pode ser gravado.
+      when:
+      - O aifw claude enable e depois o aifw claude check rodam.
+      then:
+      - O enable termina com sucesso, hooks, skill e subagentes continuam gravados, o resultado traz a linha com o comando a rodar à mão (ou com o aviso de que o .gitignore não foi atualizado), e nenhuma chamada a graphify claude install acontece.
+      - O check devolve o mesmo status e as mesmas findings com e sem o graphify no PATH.
+  - id: REQ-GRAPHIFY-HOOK-UNCHANGED
+    strength: MUST
+    statement: O hook do Claude Code não deve ganhar regra para o graphify; os comandos graphify digitados pelo agente não devem ser negados nem pedir confirmação por causa dele.
+    scenarios:
+    - id: SCN-GRAPHIFY-HOOK-UNCHANGED
+      given:
+      - Um projeto com opaqueCode allow no permissions.yaml.
+      when:
+      - O agente roda graphify query "x" e graphify update . pela ferramenta Bash.
+      then:
+      - O hook não nega nem pede confirmação; sem a chave opaqueCode o resultado é o mesmo, como antes da mudança.
+  modified: []
+  removed: []
