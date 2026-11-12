@@ -8,7 +8,7 @@
 
 ## Contexto
 
-Com um pedido de aprovação pendente (`aifw spec request-approval`), o hook `UserPromptSubmit` tratava toda mensagem da pessoa que não fosse automática como resposta ao plano. Um comando de barra (`/clear`, `/ponytail:ponytail ultra`) contava como "outra resposta" e cancelava o pedido, o que obrigava a pessoa a pedir o plano de novo. O comando é do harness, não uma resposta ao plano. O avaliador de tarefas já ignorava esses comandos (`is_request`).
+Com um pedido de aprovação pendente (`aifw spec request-approval`), o hook `UserPromptSubmit` tratava toda mensagem da pessoa que não fosse automática como resposta ao plano. Um comando de barra (`/model`, `/ponytail:ponytail ultra`) contava como "outra resposta" e cancelava o pedido, o que obrigava a pessoa a pedir o plano de novo. O comando é do harness, não uma resposta ao plano. O avaliador de tarefas já ignorava esses comandos (`is_request`).
 
 ## Decisão
 

@@ -571,7 +571,7 @@ def awaiting_reply(root, payload):
 
 
 def pre_tool_use(root, payload):
-    # The agent stays frozen until the person answers the plan, so the next message is that answer.
+    # The agent stays frozen until the person answers the plan; slash commands and automatic messages are not answers.
     waiting = awaiting_reply(root, payload)
     if waiting:
         return dict(
