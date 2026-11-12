@@ -15,7 +15,7 @@ Use o núcleo Python como ferramenta de governança. O Claude executa o trabalho
 4. Para trabalho de implementação, confira `aifw intake status --json`, `aifw map check --json` e `aifw resolve check --json`. Não transforme uma consulta simples em um ciclo completo de implementação.
 
 O que exige a aprovação do usuário (ADR-0037):
-- começar uma mudança L2 ou L3: apresente o plano no chat e rode `aifw spec request-approval <id>` como última ação do turno. A partir daí o hook nega qualquer ferramenta até a resposta da pessoa: termine a resposta e espere, sem fazer outra pergunta. Um "sim" (ou "aprovo", "pode seguir") é registrado sozinho pelo hook `UserPromptSubmit` e aprova a mudança inteira; depois disso, não peça de novo para as alterações seguintes dela. Qualquer outra resposta cancela o pedido: ajuste o plano e peça de novo;
+- começar uma mudança L2 ou L3: apresente o plano no chat e rode `aifw spec request-approval <id>` como última ação do turno. A partir daí o hook nega qualquer ferramenta até a resposta da pessoa: termine a resposta e espere, sem fazer outra pergunta. Um "sim" (ou "aprovo", "pode seguir") é registrado sozinho pelo hook `UserPromptSubmit` e aprova a mudança inteira; depois disso, não peça de novo para as alterações seguintes dela. Qualquer outra resposta cancela o pedido: ajuste o plano e peça de novo. Um comando de barra não aprova nem cancela: o pedido continua esperando;
 - instalar pacote, biblioteca, programa ou projeto novo;
 - push para a branch padrão, force push, apagar branch remota, tags, merge de PR, deploy de produção e publicar pacote;
 - escrever num serviço externo fora de `spec.externalAllowlist`: quando um domínio parecer parte do projeto, pergunte uma vez se pode incluí-lo na lista e, com o sim, inclua;

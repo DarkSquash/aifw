@@ -20,11 +20,10 @@ import time
 import urllib.error
 import urllib.request
 
-from .common import AifwError, digest, now, read_yaml, require
+from .common import FEATURES, AifwError, digest, now, read_yaml, require
 
 URL = "https://openrouter.ai/api/alpha/decisions"
 DEFAULT_MODEL = "perplexity/pplx-decider-v1.2"
-FEATURES = ("tasks", "impasse", "context", "intake", "traceability", "decisions")
 LOGS = {
     "tasks": (".aifw/assessments/shadow.jsonl", ".aifw/assessments/verdicts.jsonl"),
     "impasse": (".aifw/assessments/impasse.jsonl", ".aifw/assessments/impasse-verdicts.jsonl"),

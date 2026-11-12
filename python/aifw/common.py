@@ -13,6 +13,7 @@ import yaml
 
 API = "aifw.dev/v1alpha1"
 SLUG = re.compile(r"^[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$")
+FEATURES = ("tasks", "impasse", "context", "intake", "traceability", "decisions")
 
 
 class AifwError(Exception):

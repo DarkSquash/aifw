@@ -253,7 +253,9 @@ def preload_requests(name, args, allowlist, depth, cwd):
         if value.startswith((".", "/", "\\")) or re.match(r"[A-Za-z]:[\\/]", value):
             file = local_file(cwd, value, SCRIPT_SUFFIXES)
             found += file_requests(file, allowlist, depth, cwd, "node") if file else opaque()
-    return found  # shortcut: preloaded packages by name are installed code, not read
+    # shortcut: preloaded packages by name are installed code and are not read,
+    # read them if installed packages start being read for the script itself
+    return found
 
 
 def script_requests(name, args, runner, piped, allowlist, depth, cwd):
