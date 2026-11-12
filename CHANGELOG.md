@@ -4,6 +4,13 @@
 
 ### Alterado
 
+- Comando de barra não responde à aprovação (ADR-0044):
+  - Com um pedido de aprovação pendente, um `/comando` não aprova nem cancela: o pedido e o congelamento continuam, e um "sim" seguinte ainda aprova. "/sim" não aprova; digite "sim".
+  - Limpeza: removido `.aifw/legacy/` (TypeScript antigo; segue no histórico do git).
+  - Testes: asserção do plano B em `test_planner_lead_and_skill_carry_the_fallback` e NotebookEdit testado só com `notebook_path`, ambos mais fortes.
+  - `cli.py` usa `assessment.FEATURES`, sem mudar a CLI.
+  - `docs/claude-code.md` registra o padrão 1 do limite de aninhamento nas versões 2.1.217 e 2.1.218.
+  - Comentários `shortcut:` de `hooks.py` e `indirect.py` ganham gatilho de atualização.
 - Métricas do avaliador e checagem de aninhamento (ADR-0043):
   - `criticalDemoted` e `pathBelowExpected` passam a ser descritos como caminho pela complexidade (rótulo "Caminho CRITICAL (complexidade alta) rebaixado"); as chaves JSON não foram renomeadas.
   - `aifw claude check` avisa quando `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` é menor que 2 no ambiente ou nos settings do projeto e do usuário; só aviso.

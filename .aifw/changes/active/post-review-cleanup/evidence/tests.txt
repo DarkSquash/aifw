@@ -1,0 +1,20 @@
+post-review-cleanup — evidência de testes (2026-11-11)
+
+python -m pytest -q -p no:cacheprovider tests_python
+  2806 passed in 113.95s
+
+python -m ruff check .            -> All checks passed!
+python -m ruff format --check .   -> 306 files already formatted
+
+SCN-AUTONOMY-CHAT-APPROVAL
+  tests_python/test_agent_autonomy.py: comando de barra (/ponytail:ponytail ultra, /clear, "  /compact")
+  não aprova nem cancela; o pedido continua, a sessão segue congelada e um "sim" seguinte aprova.
+  Contra o hooks.py de HEAD (cópia) as 3 entradas falham; com a correção passam.
+
+Ressalvas de revisão
+  test_cascade.py: a asserção nova falha quando o trecho do plano B sai do template (a antiga passava).
+  test_orchestration.py: NotebookEdit só com notebook_path falha sem o tratamento no hook (o antigo passava).
+  cli.py: help de assess eval/report/verdict idêntico antes e depois; generate_cli_reference.py --check rc=0.
+
+Não verificado
+  Se o Claude Code entrega o texto cru "/comando" ao UserPromptSubmit em uso real (só coberto por teste do hook).

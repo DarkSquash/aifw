@@ -26,13 +26,10 @@ def set_orchestration(root, orchestration):
 
 
 def edit(root, path, tool="Edit", agent_id=None):
-    tool_input = dict(
-        file_path=str(root / path),
-        old_string="a",
-        new_string="b",
-        content="x",
-        notebook_path=str(root / path),
-    )
+    if tool == "NotebookEdit":
+        tool_input = dict(notebook_path=str(root / path), new_source="b")
+    else:
+        tool_input = dict(file_path=str(root / path), old_string="a", new_string="b", content="x")
     payload = dict(cwd=str(root), session_id="s", tool_name=tool, tool_input=tool_input)
     if agent_id:
         payload["agent_id"] = agent_id
@@ -98,6 +95,7 @@ def test_multiedit_and_notebookedit_follow_the_same_rule(project):
     for tool in ("MultiEdit", "NotebookEdit"):
         assert edit(project, "python/aifw/claude.py", tool=tool)["permissionDecision"] == "deny"
         assert edit(project, "python/aifw/claude.py", tool=tool, agent_id="sub") is None
+    assert edit(project, "python/aifw/hooks.py", tool="NotebookEdit") is None
 
 
 @pytest.mark.parametrize(

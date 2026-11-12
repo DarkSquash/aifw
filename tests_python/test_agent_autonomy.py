@@ -103,6 +103,17 @@ def test_automatic_messages_never_approve(change):
     assert approval(change) is not None  # the automatic message did not consume the request
 
 
+@pytest.mark.parametrize("command", ["/ponytail:ponytail ultra", "/clear", "  /compact"])
+def test_slash_commands_neither_approve_nor_drop_the_request(change, command):
+    requested(change, "big")
+    say(change, command)
+    assert approval(change) is None
+    assert (specs.change_dir(change, "big") / specs.APPROVAL_REQUEST).is_file()  # request still pending
+    assert call(change, "Bash", command="git status") == "deny"  # still frozen
+    say(change, "sim")
+    assert approval(change) is not None  # the slash command did not consume the request
+
+
 def test_two_pending_plans_approve_neither(change):
     specs.create_change(change, dict(id="other", title="O", summary="S", level="L2", createdAt=AT))
     requested(change, "big")

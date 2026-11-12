@@ -34,6 +34,6 @@ O wheel em `dist/aifw_cli-0.3.0-py3-none-any.whl` inclui schemas, templates, pol
 
 As fixtures `tests_python/fixtures/legacy-parity.json` e `cli-parity.json` foram capturadas da implementação TypeScript corrigida, antes da substituição. Os testes de Python não executam Node para consumir essas referências. Testes adicionais exercitam adoção, decisões, intake, gates, validação, instalação isolada e falhas de filesystem durante archive.
 
-O código TypeScript original está em `.aifw/legacy/typescript/`, fora da execução e da distribuição Python. A evidência da migração está na mudança arquivada `python-cli-core`; o checkpoint local anterior foi descartado em 2026-10-11.
+O código TypeScript original saiu da árvore de trabalho e continua no histórico do git, fora da execução e da distribuição Python. A evidência da migração está na mudança arquivada `python-cli-core`; o checkpoint local anterior foi descartado em 2026-10-11.
 
 A decisão autorizada está no [ADR-0011](decisions/ADR-0011-python-runtime.md). A matriz de CI cobre Windows e Ubuntu com Python 3.11–3.13; resultados locais desta entrega não substituem uma execução remota dessa matriz.

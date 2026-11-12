@@ -90,7 +90,9 @@ def pattern_files(root, cwd, word):
     base, top = Path(cwd or root), Path(root).resolve()
     for pattern in words:
         if pattern.lstrip("./").startswith("**"):
-            continue  # shortcut: a pattern recursive from the top is not expanded, it would walk node_modules
+            # shortcut: a pattern recursive from the top is not expanded (it would walk node_modules),
+            # expand it if an agent reaches a control file through one
+            continue
         path = Path(pattern)
         if path.is_absolute() and not path.is_relative_to(top):
             continue
@@ -847,7 +849,8 @@ def user_prompt(root, payload):
 
     prompt = (payload.get("prompt") or "").strip()
     context = []
-    if not AUTOMATIC_PROMPT.match(prompt):  # only the person's own messages approve
+    # only the person's own messages approve; a slash command is not an answer and leaves the request waiting
+    if not (prompt.startswith("/") or AUTOMATIC_PROMPT.match(prompt)):
         try:
             reply = record_chat_approval(root, prompt, now(), requested_here(root, payload))
         except AifwError as error:

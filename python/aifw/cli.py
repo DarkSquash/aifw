@@ -8,6 +8,7 @@ import sys
 
 from . import __version__
 
+from .assessment import FEATURES
 from .common import (
     AifwError,
     assets,
@@ -182,7 +183,7 @@ def create_parser():
         leaf,
         "--feature",
         required=True,
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
+        choices=FEATURES,
     )
     option(leaf, "--cases")
     option(leaf, "--output")
@@ -193,14 +194,14 @@ def create_parser():
         leaf,
         "--feature",
         default="tasks",
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
+        choices=FEATURES,
     )
     leaf = command("assess verdict", "record whether you agree with shadow assessments")
     option(
         leaf,
         "--feature",
         default="tasks",
-        choices=["tasks", "impasse", "context", "intake", "traceability", "decisions"],
+        choices=FEATURES,
     )
     option(leaf, "--id", required=True)
     option(leaf, "--agree", action="store_true")

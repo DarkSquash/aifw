@@ -170,4 +170,4 @@ def test_planner_lead_and_skill_carry_the_fallback(tmp_path):
     for text in texts.values():
         assert "sem worker" in text
     for name in ["agents/aifw-planner.md", "agents/aifw-lead.md"]:
-        assert "agente principal" in texts[name]
+        assert "não devolva a implementação ao agente principal" in texts[name]

@@ -1,0 +1,64 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: post-review-cleanup
+tasks:
+- id: TASK-SLASH-TEST
+  title: 'Teste: comando de barra não aprova nem cancela o pedido de aprovação (falha antes da correção)'
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AUTONOMY-CHAT-APPROVAL
+  paths:
+  - tests_python/test_agent_autonomy.py
+- id: TASK-SLASH-APPROVAL
+  title: 'Sessão principal: user_prompt ignora mensagem que começa com / na aprovação'
+  status: done
+  dependsOn:
+  - TASK-SLASH-TEST
+  requirementIds:
+  - REQ-AUTONOMY-CHAT-APPROVAL
+  paths:
+  - python/aifw/hooks.py
+- id: TASK-SHORTCUT-TRIGGERS
+  title: 'Sessão principal: gatilho nos comentários shortcut de hooks.py e indirect.py'
+  status: done
+  dependsOn:
+  - TASK-SLASH-APPROVAL
+  requirementIds: []
+  paths:
+  - python/aifw/hooks.py
+  - python/aifw/indirect.py
+- id: TASK-REMOVE-LEGACY
+  title: Apagar .aifw/legacy e ajustar docs/python-migration.md
+  status: done
+  dependsOn: []
+  requirementIds: []
+  paths:
+  - .aifw/legacy/
+  - docs/python-migration.md
+- id: TASK-REVIEW-TESTS
+  title: 'Ressalvas 4b e 4c: asserção do plano B e NotebookEdit só com notebook_path'
+  status: done
+  dependsOn: []
+  requirementIds: []
+  paths:
+  - tests_python/test_cascade.py
+  - tests_python/test_orchestration.py
+- id: TASK-CLI-FEATURES
+  title: 'Ressalva 4e: cli.py usa assessment.FEATURES'
+  status: done
+  dependsOn: []
+  requirementIds: []
+  paths:
+  - python/aifw/cli.py
+- id: TASK-DOCS-ADR
+  title: Docs (4a e comando de barra), ADR-0044 e CHANGELOG
+  status: done
+  dependsOn:
+  - TASK-SLASH-APPROVAL
+  requirementIds:
+  - REQ-AUTONOMY-CHAT-APPROVAL
+  paths:
+  - docs/claude-code.md
+  - docs/decisions/ADR-0044-slash-commands-and-approval.md
+  - CHANGELOG.md
