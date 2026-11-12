@@ -91,7 +91,7 @@ def test_happy_path_in_git_project(tmp_path, graphify):
     assert "graphify-out/" in ignored(root)
     assert graphify.subcommands() == [["update", "."], ["hook", "install"]]
     assert Path(graphify.calls[0][1]) == root
-    assert "graph built" in result["graphify"] and "hook" in result["graphify"]
+    assert "graph built" in result["graphify"] and "git hooks installed" in result["graphify"]
 
 
 def test_second_run_skips_update_and_reinstalls_hook(tmp_path, graphify):
@@ -238,6 +238,5 @@ def test_hook_without_opaque_code_key_documents_current_behavior(tmp_path, comma
     init(tmp_path)
     policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
     write_yaml(tmp_path / ".aifw/permissions.yaml", {k: v for k, v in policy.items() if k != "opaqueCode"})
-    # Today a plain `graphify ...` is not flagged at all (no decision), not even "ask": the design.md
-    # claim that it asks without the key does not hold for these commands.
+    # Without the opaqueCode key, a plain `graphify ...` yields no decision (neither deny nor ask).
     assert decision(tmp_path, command) is None

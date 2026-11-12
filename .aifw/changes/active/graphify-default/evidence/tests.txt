@@ -31,3 +31,10 @@ Rodada de correção 1 (achados A1, A2 e ressalva R1 do adversário)
   python -m pytest -q -p no:cacheprovider tests_python -> 2829 passed in 116.75s
   python -m ruff check . -> All checks passed!   ruff format --check . -> 316 files already formatted
   Não verificado: graphify.cmd real na raiz do projeto e .gitignore realmente somente leitura (dublês).
+
+Depois da revisão do QA (aprovado com ressalvas)
+  conftest.py: a fixture não usa mais raising=False (renomear GRAPHIFY passa a quebrar a suíte, em vez de
+  deixá-la rodar o graphify real). test_happy_path_in_git_project exige "graph built" e "git hooks installed".
+  design.md alinhado à rodada de correção 1. Ajustes posteriores à revisão, não vistos pelos revisores.
+  python -m pytest -q -p no:cacheprovider tests_python -> 2829 passed in 122.90s
+  python -m ruff check . -> All checks passed!   ruff format --check . -> 316 files already formatted

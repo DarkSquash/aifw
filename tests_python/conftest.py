@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture(autouse=True)
 def no_real_graphify(monkeypatch):
     """enable_project would run the graphify installed on the developer's machine; point it nowhere."""
-    monkeypatch.setattr("aifw.claude.GRAPHIFY", "graphify-absent-in-tests", raising=False)
+    monkeypatch.setattr("aifw.claude.GRAPHIFY", "graphify-absent-in-tests")
 
 
 if sys.platform == "win32":
