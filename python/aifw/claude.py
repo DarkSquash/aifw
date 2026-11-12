@@ -118,9 +118,15 @@ def enable_graphify(root):
     exe = shutil.which(GRAPHIFY)
     if not exe:
         return "graphify not found on PATH: skipped"
+    # On Windows `which` also looks in the current directory: never run a binary planted in the project.
+    if not os.path.isabs(exe) or Path(exe).resolve().is_relative_to(Path(root).resolve()):
+        return "graphify found inside the project: skipped"
     out, notes = root / "graphify-out", []
     if not out.is_dir():
-        ignore_local_logs(root, ("graphify-out/",))
+        try:
+            ignore_local_logs(root, ("graphify-out/",))
+        except OSError:
+            notes.append("could not update .gitignore: add `graphify-out/` yourself")
     if (out / "graph.json").is_file():
         notes.append("graph already exists")
     else:

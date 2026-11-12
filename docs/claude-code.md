@@ -28,7 +28,7 @@ Os dois rodam `aifw claude enable`, que grava no próprio projeto:
 - `.claude/settings.json`: o hook `aifw-hook`, mesclado com o que já existir no arquivo;
 - `.claude/skills/aifw-workflow/SKILL.md`: o fluxo do AIFW para o Claude seguir neste projeto;
 - `.claude/agents/aifw-*.md`: os subagentes por papel, com modelo e esforço fixos (veja [Modelos](#modelos));
-- graphify, só se o `graphify` estiver no PATH: `graphify-out/` no `.gitignore` (salvo se a pasta já existir), o grafo inicial (`graphify update .`, só sem `graphify-out/graph.json`) e os git hooks (`graphify hook install`, só com `.git` e sem `core.hooksPath`). Não toca em `.claude/settings.json` nem em `CLAUDE.md`. O `hook install` também grava o merge driver em `.git/config` e acrescenta a linha do merge driver ao `.gitattributes` versionado.
+- graphify, só se o `graphify` estiver no PATH fora da raiz do projeto (um executável achado dentro do projeto é pulado, com aviso): `graphify-out/` no `.gitignore` (salvo se a pasta já existir), o grafo inicial (`graphify update .`, só sem `graphify-out/graph.json`) e os git hooks (`graphify hook install`, só com `.git` e sem `core.hooksPath`). Não toca em `.claude/settings.json` nem em `CLAUDE.md`. O `hook install` também grava o merge driver em `.git/config` e acrescenta a linha do merge driver ao `.gitattributes` versionado.
 
 Se você editou a skill ou um subagente, o `enable` guarda a sua versão em `<arquivo>.bak` antes de substituí-la, só quando a cópia foi editada: uma cópia intacta de outra versão é trocada sem `.bak` (o carimbo traz o sha256 do corpo instalado). Abra uma nova sessão depois de habilitar, para o hook e a skill carregarem. Se o projeto usa git, versione a pasta `.claude/`: quem clonar o projeto recebe a mesma configuração.
 

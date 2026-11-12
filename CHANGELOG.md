@@ -6,8 +6,8 @@
 
 - Graphify por padrão no `aifw claude enable` (ADR-0045):
   - Com o `graphify` no PATH, o `enable` acrescenta `graphify-out/` ao `.gitignore` (salvo se a pasta já existir), roda `graphify update .` uma vez quando não há `graphify-out/graph.json` e roda `graphify hook install` se há `.git` e `core.hooksPath` não está definido.
-  - Sem o `graphify` no PATH, o resultado ganha só a chave `graphify` com uma linha.
-  - Falha, tempo esgotado ou erro de execução viram uma linha com o comando a rodar à mão; nunca derrubam o `enable`.
+  - Sem o `graphify` no PATH, o resultado ganha só a chave `graphify` com uma linha; um executável achado dentro do projeto não é executado.
+  - Falha, tempo esgotado, erro de execução ou `.gitignore` não gravável viram uma linha com o comando a rodar à mão; nunca derrubam o `enable`.
   - `--no-graphify` pula tudo, só naquela execução.
   - `graphify claude install` não roda e `aifw claude check` não relata o graphify.
   - O hook não mudou.

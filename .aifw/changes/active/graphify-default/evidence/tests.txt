@@ -23,3 +23,11 @@ Prova com o graphify 0.9.107 real: evidence/smoke-real-graphify.md (8 cenários,
 Não verificado
   Linux e macOS; projeto grande; processos órfãos após o timeout no Windows; chamadas de rede do graphify;
   rebuild do grafo pelo hook de git numa alteração estrutural (o commit de teste só mudou um comentário).
+
+Rodada de correção 1 (achados A1, A2 e ressalva R1 do adversário)
+  3 testes novos em test_graphify_default.py: .gitignore não gravável vira nota; executável do graphify
+  dentro do projeto (caminho dentro da raiz e caminho relativo) não é executado.
+  Antes da correção: 3 failed, 20 passed. Depois: 23 passed.
+  python -m pytest -q -p no:cacheprovider tests_python -> 2829 passed in 116.75s
+  python -m ruff check . -> All checks passed!   ruff format --check . -> 316 files already formatted
+  Não verificado: graphify.cmd real na raiz do projeto e .gitignore realmente somente leitura (dublês).

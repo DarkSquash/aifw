@@ -1,6 +1,7 @@
 """aifw claude enable sets up graphify when it is on PATH (change graphify-default); doubles only."""
 
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -14,7 +15,7 @@ from aifw.hooks import handle
 from test_workflows import init
 
 NAME = "graphify-fake-for-tests"
-FAKE = "/fake/bin/graphify-fake"
+FAKE = os.path.abspath("/fake/bin/graphify-fake")  # absolute on Windows too
 REAL_RUN = subprocess.run
 REAL_WHICH = shutil.which
 
@@ -124,6 +125,39 @@ def test_existing_graphify_out_keeps_gitignore_but_still_updates(tmp_path, graph
     enable_project(root)
     assert "graphify-out/" not in ignored(root)
     assert ["update", "."] in graphify.subcommands()
+
+
+def test_gitignore_not_writable_is_a_note_not_a_crash(tmp_path, graphify, monkeypatch):
+    import aifw.claude as claude
+
+    original = claude.ignore_local_logs
+
+    def guarded(root, *args, **kwargs):
+        if args == (("graphify-out/",),):
+            raise PermissionError("read-only .gitignore")
+        return original(root, *args, **kwargs)
+
+    monkeypatch.setattr(claude, "ignore_local_logs", guarded)
+    root = git_project(tmp_path)
+    result = enable_project(root)
+    assert result["status"] == "enabled"
+    assert "could not update .gitignore: add `graphify-out/` yourself" in result["graphify"]
+    assert graphify.subcommands() == [["update", "."], ["hook", "install"]]
+
+
+@pytest.mark.parametrize("planted", ["inside", "relative"])
+def test_executable_found_inside_the_project_is_not_run(tmp_path, graphify, monkeypatch, planted):
+    planted = str(tmp_path / "graphify.cmd") if planted == "inside" else r".\graphify.CMD"
+    monkeypatch.setattr(shutil, "which", lambda cmd, *a, **k: planted if cmd == NAME else REAL_WHICH(cmd))
+    spy = []
+    monkeypatch.setattr(
+        subprocess, "run", lambda argv, *a, **k: spy.append(argv) or graphify.run(argv, *a, **k)
+    )
+    root = git_project(tmp_path)
+    result = enable_project(root)
+    assert "inside the project" in result["graphify"]
+    assert graphify.calls == [] and not [c for c in spy if planted in c]
+    assert not any("graphify-out" in line for line in ignored(root))
 
 
 @pytest.mark.parametrize(

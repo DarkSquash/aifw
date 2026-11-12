@@ -14,13 +14,13 @@ Há uma decisão de segurança: o `aifw claude enable` passa a EXECUTAR um progr
 
 ## Decisão
 
-1. O `enable` só age quando o `graphify` está no PATH. Sem ele, o resultado ganha a chave `graphify` com uma linha e nada mais muda.
+1. O `enable` só age quando o `graphify` está no PATH, achado fora da raiz do projeto e por caminho absoluto; um `graphify` instalado dentro do projeto (p.ex. numa `.venv`) é pulado e a linha avisa. Sem ele, o resultado ganha a chave `graphify` com uma linha e nada mais muda.
 2. Roda apenas `graphify update .` e `graphify hook install`. Ficam de fora `graphify extract`, `graphify watch`, `cluster-only` e `label` (usam modelo, custam ou deixam processo residente).
 3. O `update` roda só quando não existe `graphify-out/graph.json`: o `enable` se repete a cada versão do AIFW, e os hooks de git já mantêm o grafo. Limite de 300 s; estourado, a linha diz o comando para rodar à mão.
 4. `graphify claude install` não roda: gravaria o caminho absoluto da máquina em `.claude/settings.json` (versionado e usado pelo AIFW para reconhecer os próprios hooks), adicionaria mais hooks `PreToolUse`, criaria um `CLAUDE.md` que concorre com o bloco gerenciado por `aifw instructions` e deixaria `.graphify-bak`. A skill global já cobre a consulta.
 5. `graphify-out/` entra no `.gitignore` (gerado, local, 17 MB no repositório do AIFW), salvo se a pasta já existir: nesse caso a decisão já foi da pessoa ou do projeto.
 6. Hooks de git: `graphify hook install` acrescenta ao hook existente e é idempotente. É pulado, com nota, se `core.hooksPath` está definido (os hooks iriam para uma pasta versionada, com caminho da máquina) ou se não há `.git` (o graphify lança traceback). O `.gitattributes` versionado ganha a linha `graphify-out/graph.json merge=graphify` e o `.git/config` registra o merge driver.
-7. Qualquer falha, tempo esgotado ou erro de execução vira uma linha com o comando a rodar à mão. Nenhuma exceção sai do `enable`.
+7. Qualquer falha, tempo esgotado ou erro de execução vira uma linha com o comando a rodar à mão. Um `.gitignore` não gravável também vira uma linha (`add graphify-out/ yourself`). Nenhuma exceção sai do `enable`.
 8. `aifw claude check` não relata o graphify: a ferramenta é opcional, e o `check` viraria aviso para todo usuário sem ela.
 9. `--no-graphify` pula tudo. Vale só para aquela execução e não desfaz o que uma execução anterior instalou.
 10. O núcleo do hook (`hooks.py`, `shell.py`, `indirect.py`) não muda. O hook hoje não devolve decisão para `graphify query` nem para `graphify update .`, com ou sem `opaqueCode`, medido por teste; não há lista de permissão nova para um programa de terceiros. Vale o modelo de ameaça dos ADR-0034 e ADR-0037: o hook protege contra engano do agente, e quem controla o PATH e põe um `graphify` falso já controla a máquina.
