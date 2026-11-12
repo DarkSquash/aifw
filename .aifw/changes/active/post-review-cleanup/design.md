@@ -11,8 +11,8 @@
 - **Item 3 (worker).** `git rm -r .aifw/legacy` e reescrever a frase de `docs/python-migration.md` sem apontar para o diretório (o código TypeScript original fica no histórico do git; a evidência da migração segue em `python-cli-core`). Depois: `aifw map check`, `aifw context check` e a suíte.
 - **Item 4a, ADR e CHANGELOG (worker).** `docs/claude-code.md`: no parágrafo do limite de aninhamento, acrescentar que nas versões 2.1.217 e 2.1.218 o padrão era 1 e que o `check` só avisa com a variável definida; na tabela do UserPromptSubmit e em Aprovações, citar o comando de barra junto das mensagens automáticas. ADR-0044 curto (contexto, decisão, consequência) e linha no CHANGELOG.
 - **Itens 4b e 4c (worker).** Só testes: troca da asserção; `edit` manda só `notebook_path` para `NotebookEdit`. Cada um é conferido quebrando a condição em uma cópia temporária (remover o trecho do plano B do texto lido; tirar `notebook_path` do hook), nunca no arquivo do projeto.
-- **Item 4e (worker).** `from .assessment import FEATURES` em `cli.py` e `choices=FEATURES` nos três lugares. `aifw assess report --help` e `docs/cli-reference.generated.md` conferidos antes e depois.
-- Os `paths` do `tasks.yaml` cobrem tudo o que será tocado. As cópias instaladas em `.claude/` não mudam (nenhum template muda).
+- **Item 4e (worker).** `FEATURES` passa a morar em `common.py`; `assessment.py` e `cli.py` importam de lá e `cli.py` usa `choices=FEATURES` nos três lugares. Importar de `assessment` no topo de `cli.py` carregaria `urllib.request` e `concurrent.futures` em todo comando (cerca de 130 ms a mais, medido na revisão). `aifw assess report --help` e `docs/cli-reference.generated.md` conferidos antes e depois.
+- Os `paths` do `tasks.yaml` cobrem tudo o que será tocado. Em `.claude/` só muda a cópia de `skills/aifw-workflow/SKILL.md`, regenerada por `aifw claude enable` depois que o template ganhou a frase do comando de barra (ressalva da revisão adversária).
 
 ## Decisions
 

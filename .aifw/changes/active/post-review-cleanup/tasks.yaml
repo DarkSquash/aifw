@@ -51,6 +51,8 @@ tasks:
   requirementIds: []
   paths:
   - python/aifw/cli.py
+  - python/aifw/common.py
+  - python/aifw/assessment.py
 - id: TASK-DOCS-ADR
   title: Docs (4a e comando de barra), ADR-0044 e CHANGELOG
   status: done
@@ -62,3 +64,5 @@ tasks:
   - docs/claude-code.md
   - docs/decisions/ADR-0044-slash-commands-and-approval.md
   - CHANGELOG.md
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - .claude/skills/aifw-workflow/SKILL.md

@@ -18,3 +18,12 @@ Ressalvas de revisão
 
 Não verificado
   Se o Claude Code entrega o texto cru "/comando" ao UserPromptSubmit em uso real (só coberto por teste do hook).
+
+Depois da revisão (2026-11-12)
+  Ressalvas do adversário: /clear -> /model na doc e no ADR-0044; skill aifw-workflow cita o comando de barra;
+  comentário de pre_tool_use atualizado.
+  Ressalva do QA: FEATURES movido para common.py (não revisado pelos revisores; 3 linhas).
+    python -X importtime -c "import aifw.cli": ~207 ms antes, ~107 ms depois (3 medições: 111, 105, 110);
+    aifw.assessment, urllib.request e concurrent.futures não são mais carregados.
+  python -m pytest -q -p no:cacheprovider tests_python -> 2806 passed in 128.97s
+  python -m ruff check . -> All checks passed!   ruff format --check . -> 307 files already formatted

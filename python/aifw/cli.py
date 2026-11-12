@@ -8,8 +8,8 @@ import sys
 
 from . import __version__
 
-from .assessment import FEATURES
 from .common import (
+    FEATURES,
     AifwError,
     assets,
     json_text,
