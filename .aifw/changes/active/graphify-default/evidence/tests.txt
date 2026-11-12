@@ -1,0 +1,25 @@
+graphify-default — evidência de testes (2026-11-12)
+
+python -m pytest -q -p no:cacheprovider tests_python
+  2826 passed in 115.56s
+
+python -m ruff check .            -> All checks passed!
+python -m ruff format --check .   -> 315 files already formatted
+
+tests_python/test_graphify_default.py (20 testes, dublê do graphify)
+  Antes da implementação: 15 failed, 5 passed (KeyError 'graphify', TypeError por graphify=,
+  "unrecognized arguments: --no-graphify"). Depois: 20 passed.
+  Cobre: graphify ausente, caminho feliz, repetição, core.hooksPath, sem .git, graphify-out/ existente,
+  falhas (código de saída, timeout, erro de execução), --no-graphify, check inalterado e o hook do AIFW
+  com `graphify query` e `graphify update .`.
+  Nenhum teste faz git commit nem git tag.
+
+tests_python/conftest.py
+  Fixture autouse aponta aifw.claude.GRAPHIFY para um nome inexistente: a suíte não roda o graphify real.
+  Depois da suíte, o repositório não tem graphify-out/ nem linha de graphify em .gitignore/.gitattributes.
+
+Prova com o graphify 0.9.107 real: evidence/smoke-real-graphify.md (8 cenários, clones descartáveis).
+
+Não verificado
+  Linux e macOS; projeto grande; processos órfãos após o timeout no Windows; chamadas de rede do graphify;
+  rebuild do grafo pelo hook de git numa alteração estrutural (o commit de teste só mudou um comentário).

@@ -1,5 +1,14 @@
 import sys
 
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def no_real_graphify(monkeypatch):
+    """enable_project would run the graphify installed on the developer's machine; point it nowhere."""
+    monkeypatch.setattr("aifw.claude.GRAPHIFY", "graphify-absent-in-tests", raising=False)
+
+
 if sys.platform == "win32":
     import ctypes
     import msvcrt

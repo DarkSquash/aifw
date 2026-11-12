@@ -7,6 +7,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 
 from . import __version__
 from .common import assets, ignore_local_logs, project_path, read_json, require, write_json
@@ -101,7 +102,53 @@ def install_template(root, template, target):
     return backup
 
 
-def enable_project(root):
+GRAPHIFY = "graphify"
+
+
+def run(args, root, timeout=60):
+    """Run a third-party command without a shell; the CompletedProcess, or None when it cannot run."""
+    try:
+        return subprocess.run(args, cwd=root, stdin=subprocess.DEVNULL, capture_output=True, timeout=timeout)
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def enable_graphify(root):
+    """Set up graphify when it is on PATH (graph, .gitignore, git hooks); one line of notes, never raises."""
+    exe = shutil.which(GRAPHIFY)
+    if not exe:
+        return "graphify not found on PATH: skipped"
+    out, notes = root / "graphify-out", []
+    if not out.is_dir():
+        ignore_local_logs(root, ("graphify-out/",))
+    if (out / "graph.json").is_file():
+        notes.append("graph already exists")
+    else:
+        built = run([exe, "update", "."], root, 300)
+        notes.append(
+            "graph built"
+            if built and built.returncode == 0
+            else "graph build failed: run `graphify update .`"
+        )
+    if not (root / ".git").exists():
+        notes.append("no .git: git hooks skipped")
+    else:
+        hooks_path = run(["git", "config", "--get", "core.hooksPath"], root)
+        if hooks_path and hooks_path.stdout.strip():
+            notes.append(
+                "core.hooksPath set: git hooks skipped (run `graphify hook install` if you want them)"
+            )
+        else:
+            hook = run([exe, "hook", "install"], root)
+            notes.append(
+                "git hooks installed"
+                if hook and hook.returncode == 0
+                else "git hooks failed: run `graphify hook install`"
+            )
+    return "; ".join(notes)
+
+
+def enable_project(root, graphify=True):
     """Add the AIFW hooks, workflow skill and role subagents to this project's .claude folder, idempotently."""
     root = Path(root)
     require((root / "aifw.yaml").is_file(), "Run aifw init before enabling Claude Code.", "NOT_READY")
@@ -130,7 +177,7 @@ def enable_project(root):
             )
         )
     ]
-    return dict(
+    result = dict(
         status="enabled",
         hooksChanged=changed,
         gitignored=ignore_local_logs(root),  # also for projects initialized before the logs were ignored
@@ -141,6 +188,8 @@ def enable_project(root):
         agentBackups=agent_backups,
         nextAction="Open a new Claude Code session in this project so the hooks and skill load.",
     )
+    result["graphify"] = enable_graphify(root) if graphify else "skipped (--no-graphify)"
+    return result
 
 
 def env_value(file, name):

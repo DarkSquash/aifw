@@ -1,0 +1,54 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTraceability
+changeId: graphify-default
+artifacts:
+- id: TEST-GRAPHIFY-DEFAULT
+  path: .aifw/changes/active/graphify-default/evidence/tests.txt
+  type: test
+  status: passed
+- id: EVIDENCE-GRAPHIFY-SMOKE
+  path: .aifw/changes/active/graphify-default/evidence/smoke-real-graphify.md
+  type: evidence
+  status: passed
+- id: DESIGN-GRAPHIFY-DEFAULT
+  type: design
+  path: .aifw/changes/active/graphify-default/design.md
+  status: passed
+- id: ADR-0045
+  path: docs/decisions/ADR-0045-graphify-default.md
+  type: adr
+  status: passed
+links:
+- from: SCN-GRAPHIFY-ENABLE
+  relation: verifiedBy
+  to: TEST-GRAPHIFY-DEFAULT
+- from: SCN-GRAPHIFY-ENABLE-ABSENT
+  relation: verifiedBy
+  to: TEST-GRAPHIFY-DEFAULT
+- from: SCN-GRAPHIFY-ENABLE-SKIPS
+  relation: verifiedBy
+  to: TEST-GRAPHIFY-DEFAULT
+- from: SCN-GRAPHIFY-NEVER-FAILS
+  relation: verifiedBy
+  to: TEST-GRAPHIFY-DEFAULT
+- from: SCN-GRAPHIFY-HOOK-UNCHANGED
+  relation: verifiedBy
+  to: TEST-GRAPHIFY-DEFAULT
+- from: SCN-GRAPHIFY-ENABLE
+  relation: provedBy
+  to: EVIDENCE-GRAPHIFY-SMOKE
+- from: REQ-GRAPHIFY-ENABLE
+  relation: designedBy
+  to: DESIGN-GRAPHIFY-DEFAULT
+- from: REQ-GRAPHIFY-NEVER-FAILS
+  relation: designedBy
+  to: DESIGN-GRAPHIFY-DEFAULT
+- from: REQ-GRAPHIFY-HOOK-UNCHANGED
+  relation: designedBy
+  to: DESIGN-GRAPHIFY-DEFAULT
+- from: REQ-GRAPHIFY-ENABLE
+  relation: governedBy
+  to: ADR-0045
+- from: REQ-GRAPHIFY-NEVER-FAILS
+  relation: governedBy
+  to: ADR-0045
