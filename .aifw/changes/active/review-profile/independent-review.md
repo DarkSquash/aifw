@@ -1,34 +1,96 @@
 ## Adversário
 
-Escopo: `git diff main..HEAD` (branch `feat/review-profile`), delta `specs/claude-subagents.delta.yaml` contra `.aifw/specs/current/claude-subagents.yaml`, `proposal.md`, `design.md`, `tasks.yaml`, ADR-0046 e `evidence/tests.txt`. Lidos também `python/aifw/gates.py` (`review_result`, `validate_change`), `specs.LEVEL_ARTIFACTS`, os textos não alterados da skill (tabela de "Modelos por classe", item 7) e as referências a "duas etapas" e "dois revisores" em docs e ADRs. Para os textos de agente, apliquei os critérios do brief: cada instrução tem sujeito e ação clara, nenhum par de instruções se contradiz para o mesmo caso, e a exceção fica junto da regra que ela excepciona.
+### Rodada de correção 1
+
+Escopo: `git diff HEAD~1..HEAD`, o commit `ee579b8` sobre `507c032`. Conferi o achado 1 da rodada anterior e as ressalvas, e procurei contradição nova entre a "Saída" e o item 1 do `aifw-qa`, a skill, o delta, o design, o ADR-0046 e `docs/routing.md` / `docs/claude-code.md`.
 
 Rodado:
-- `pytest tests_python/test_review_profile.py test_cascade.py test_reviewer_guardrails.py`: 183 passed.
-- `aifw spec validate review-profile`: sem achados. `aifw spec analyze review-profile`: `weakTraces: []`.
-- Comparei `templates/claude/{agents/aifw-qa.md,skills/aifw-workflow/SKILL.md}` com as cópias em `.claude/`, sem as linhas de carimbo: a única diferença é uma linha em branco antes do carimbo. `git diff --stat -- .claude` mostra só esses dois arquivos.
-- `path_context` (assessment.py:290-316): a frase entra só com `path in {PLANNED, CRITICAL}` e `final` em L0/L1, e não contém `revisam`. Os 16 casos de caminho x risco estão cobertos por `test_review_profile.py`, e as asserções negativas não são fracas: a frase não existia antes, e os 7 testes positivos falham sem a mudança, como registra `evidence/tests.txt`.
+- `pytest tests_python/test_review_profile.py test_cascade.py test_reviewer_guardrails.py`: 188 passed.
+- `aifw claude check`: status pass. `aifw spec validate review-profile`: sem achados.
+- Comparei templates e cópias em `.claude/` (`agents/aifw-qa.md` e `skills/aifw-workflow/SKILL.md`) sem as linhas de carimbo: a única diferença é a linha em branco antes do carimbo, como na rodada anterior. `git diff HEAD~1..HEAD --stat -- .claude` mostra só esses dois arquivos.
 
-### Achado 1: o template do `aifw-qa` dá duas instruções opostas para a devolução do perfil leve, e a exceção fica longe da regra
+Achado 1 (contradição entre a "Saída" e o item 1 de "Perfil leve" do `aifw-qa`): **corrigido**. A "Saída" (`templates/claude/agents/aifw-qa.md:33`) traz a exceção junto da regra, nos dois ramos: com arquivo ("salvo na devolução por diff fora do perfil leve (item 1 de "Perfil leve"), que fica sem linha `Resultado:`") e sem pasta ("a resposta traz só a seção `## QA`"). Agora concorda com o item 1 (linha 22), com o REQ-SUBAGENTS-REVIEW-PROFILE (delta, linha 11), com o SCN-SUBAGENTS-REVIEW-PROFILE-TEXT ("exceção expressa na Saída") e com a decisão 6 do ADR-0046. O teste `test_qa_output_excepts_the_diff_return_from_the_result_line` lê só o trecho depois de `## Saída`; sem a correção, ele falha.
 
-- Arquivos: `templates/claude/agents/aifw-qa.md:22` (e a cópia em `.claude/agents/aifw-qa.md`) contra `templates/claude/agents/aifw-qa.md:33`.
-- Spec: o REQ-SUBAGENTS-REVIEW-PROFILE (delta, linha 11) diz que, "se o diff não couber, ele não escreve Resultado e o agente principal chama o aifw-adversary". O SCN-SUBAGENTS-REVIEW-PROFILE-TEXT (delta, linha 23) pede que o aifw-qa mande "devolver sem Resultado quando o diff não couber".
-- Cenário. O caso comum do perfil leve é sem pasta, porque L2/L3 de risco baixo ou médio não criam uma (design.md, Context, último item). Entrada: brief com `Perfil de revisão: texto` e o aviso "não há pasta de mudança"; o diff mexe numa função Python e por isso não cabe no perfil. Duas instruções do mesmo template se aplicam a esse caso ao pé da letra:
-  - linha 22 (Perfil leve, item 1): "não escreva a linha `Resultado:` e devolva ao agente principal";
-  - linha 33 (Saída): "Termine o arquivo com uma única linha `Resultado: ...`. Se o agente principal avisar que não há pasta de mudança, não escreva arquivo: devolva a seção `## QA` e a linha `Resultado:` na resposta."
-  A Saída não traz exceção nem remete ao item 1. Isso viola os critérios 2 e 3 do brief: há duas instruções opostas para o mesmo caso, e a exceção não está junto da regra.
-- Resultado errado possível. O QA segue a Saída e devolve `Resultado: reprovado`, achando que "fora do perfil" é um defeito. O agente principal então segue o item 7 da skill: corrige achados, move o arquivo e conta uma rodada de correção. Não chama o adversário, ao contrário do que pedem o REQ e a decisão 6 do ADR-0046 ("a rodada de correção não é gasta").
-- Evidência: textual, nas linhas citadas. O comportamento do agente não foi executado; o defeito está no texto, julgado pelos critérios de escrita fixados para esta revisão.
-- Severidade: média. A correção é uma oração na Saída, algo como "salvo na devolução do item 1 de 'Perfil leve', em que não há linha `Resultado:`", mais um teste da frase.
+Ressalvas da rodada anterior:
+- R1 (laço na devolução): fechada. A skill (linha 109) diz "o perfil passa a `completo` e você chama o `aifw-adversary` e depois o `aifw-qa`, este com `Perfil de revisão: completo` no brief". Com esse brief, a seção "Perfil leve" do QA não se aplica, porque ela vale só para `interface` ou `texto`. O QA segue o fluxo normal e escreve o `Resultado:` final. Delta (REQ e SCN-TEXT), design (decisão 6) e ADR-0046 (decisão 6) dizem o mesmo.
+- R3 (âmbito da declaração): fechada. O bullet começa com "em mudança L2 ou L3 (complexidade) de risco baixo ou médio", como no REQ.
+- R4 (exceção longe da tabela): fechada. Há um parágrafo logo abaixo do parágrafo "Exceção de risco" da skill, e `docs/routing.md` traz a frase nos dois lugares (linhas 24 e 45).
+- R5 (definição de `texto` em dois formatos): fechada. O item 1 do QA usa a mesma cláusula geral da skill.
+- R2 (gate aceita perfil leve com `change.yaml` em L2/L3) e R6 (rastreio de `SCN-SUBAGENTS-REVIEW-FLOW`): mantidas por decisão, continuam ressalvas e não reprovam.
 
-### Ressalvas (sem prova de falha; não reprovam)
+Contradição nova: não achei.
+- A frase "A rodada de correção de um perfil leve volta ao `aifw-qa`" continua certa: depois da devolução o perfil já é `completo`, então a rodada de correção desse caso segue o item 7 e vai ao adversário.
+- O "Na dúvida, e com risco alto ou crítico, o perfil é `completo`" não conflita com o novo âmbito da declaração: com risco alto não se declara, e as regras de revisores e de governança já mandam os dois revisores.
+- O `docs/claude-code.md`, que não mudou nesta rodada ("o agente principal chama os dois revisores"), está de acordo.
 
-1. **Laço na devolução** (skill, linha 107; template do QA, linhas 20 e 22). Depois da devolução, a skill manda chamar "o `aifw-adversary` e depois o `aifw-qa` de novo", e antes manda "no brief, diga o perfil". Não diz que o perfil passa a ser `completo`. Se o segundo brief repetir `Perfil de revisão: texto`, o QA lê "o adversário não rodou", o que agora é falso, refaz o item 1 e devolve de novo. A devolução não consome rodada (decisão 6), então nada no texto interrompe o laço. O `docs/claude-code.md` ("chama os dois revisores") e a decisão 6 ("que escreve o `Resultado:` final") pressupõem a troca, mas a skill não a manda. Sugestão: "... e depois o `aifw-qa` de novo, com `Perfil de revisão: completo` no brief".
-2. **Perfil leve num risco que exige `completo`.** O gate só lê `independent-review.md` quando o `level` da mudança é L2 ou L3 (gates.py:410, `specs.LEVEL_ARTIFACTS`). Esse `level` é o risco alto ou crítico (skill, linha 79), justamente onde o perfil leve é proibido. Logo, todo `independent-review.md` de perfil leve que o gate chegar a ler está num estado que a skill proíbe, e o gate o aceita (`test_gate_accepts_a_single_qa_section`). O item 1 do QA confere só a natureza do diff, não o risco. Um erro honesto que troque risco por complexidade, a confusão que a linha 79 da skill tenta evitar, passa sem adversário. O spec (SCN-SUBAGENTS-REVIEW-PROFILE-GATE) e a decisão 10 pedem o gate inalterado, então não é violação. Uma guarda barata seria o item 1 do QA também conferir que, havendo pasta, o `level` do `change.yaml` é L0 ou L1.
-3. **Âmbito da declaração.** A skill (linha 107) diz "antes de delegar, escreva no chat a linha `Perfil de revisão: ...`" sem dizer em que nível. Lida ao pé da letra, vale também em L0/L1 e com risco alto. O REQ (delta, linha 11) restringe a "L2 ou L3 de risco baixo ou médio", e o `docs/claude-code.md` também. O efeito seria uma linha a mais no chat em toda tarefa, inofensiva.
-4. **Exceção longe da tabela.** A tabela da skill (linhas 85-86) e as tabelas de `docs/routing.md` (21-22, 42-43) dizem "`aifw-adversary`, depois `aifw-qa`" para PLANNED e CRITICAL. A exceção de risco vem logo abaixo (linha 88), mas a do perfil só aparece na linha 107, sem remissão a partir da tabela.
-5. **Definição de `texto` em dois formatos.** A skill exclui "o que um agente ou o hook lê como regra (skill, subagente, política, spec)", uma cláusula geral com exemplos. O QA só traz a lista fechada "sem skill, subagente, política nem spec". O qualificador comum "que pessoas leem" cobre a maior parte, mas um diff só em `AGENTS.md`, ou só numa string de `PATH_RULE` ou `LIGHT_REVIEW`, é mais fácil de aceitar como `texto` pelo texto do QA do que pelo da skill.
-6. **Rastreio.** Em `traceability.yaml`, `SCN-SUBAGENTS-REVIEW-FLOW` aponta para `evidence/tests.txt`, que descreve só os 25 testes do perfil. O cenário de fluxo (rodadas, eixos, ausência de `Agent`) é coberto por testes anteriores da suíte, que o `tests.txt` cita só como contagem total.
+Ressalva menor nova: `test_routing_doc_states_the_single_reviewer_twice` exige `count >= 2`, mas `docs/routing.md` já tinha uma ocorrência da frase (linha 26) e agora tem três. O teste continuaria passando se só uma das duas remissões novas fosse removida.
 
-Não verificado: o comportamento real de `aifw-qa` e do agente principal no perfil leve (só o texto foi lido). A suíte inteira e o ruff não foram rodados de novo. O `aifw validate --change` com um `independent-review.md` de perfil leve num `change.yaml` L2 foi deduzido do código (gates.py:408-412), não executado.
+Não verificado: o comportamento real dos agentes, porque só o texto foi lido. A suíte inteira e o ruff não foram rodados de novo nesta rodada; a contagem de 2859 testes vem de `evidence/tests.txt`. O "4 failed antes das edições" é relato do worker e não foi reproduzido.
 
-Resultado: reprovado
+### Rodada inicial (resumo)
+
+Achado 1 (média): o template do `aifw-qa` mandava, para a mesma devolução por diff fora do perfil sem pasta, não escrever `Resultado:` (item 1) e devolver a linha `Resultado:` na resposta ("Saída"). A exceção ficava longe da regra. Corrigido na rodada 1.
+
+Ressalvas: R1 laço na devolução; R2 o gate aceita perfil leve com `change.yaml` em L2/L3 (gates.py:410), onde o risco exige `completo`; R3 âmbito da declaração; R4 exceção longe das tabelas; R5 duas definições de `texto`; R6 rastreio de `SCN-SUBAGENTS-REVIEW-FLOW` em `evidence/tests.txt`. R1, R3, R4 e R5 foram fechadas na rodada 1; R2 e R6 ficaram por decisão.
+
+## QA
+
+Perfil de revisão: completo (declarado no brief). Escopo: `git diff main..HEAD` (507c032 e ee579b8), delta `specs/claude-subagents.delta.yaml` contra `.aifw/specs/current/claude-subagents.yaml`, `proposal.md`, `design.md`, `tasks.yaml`, `traceability.yaml`, ADR-0046, CHANGELOG, `docs/claude-code.md`, `docs/routing.md`, `evidence/tests.txt`. Skills carregadas: `code-review` (fontes de padrão e lista de smells) e `writing-for-agents` (texto lido por agentes).
+
+### Gates e suíte (rodados agora, no HEAD com o working tree atual)
+
+- `python -m pytest -q -p no:cacheprovider tests_python`: 2859 passed (148s). Bate com `evidence/tests.txt`.
+- `python -m ruff check .`: All checks passed. `ruff format --check .`: 324 files already formatted.
+- `aifw claude check`: status pass, sem achados. Templates e cópias em `.claude/` diferem só pela linha em branco antes do carimbo (conferido por `diff` sem as linhas `aifw-version`/`aifw-sha256`).
+- `aifw spec validate review-profile`: pass, sem achados. `aifw spec analyze review-profile`: pass; requisitos 2/2 ligados a tarefa, cenários 4/4 verificados, tarefas 7/7 concluídas.
+- `aifw validate --change review-profile --json` (sem `--write`; o hook nega escrita a revisor): build, cli-docs, conformance, context-integrity, lint, manifest, project-map, secret-scan, session-conformance, tests e typecheck em pass; `missingArtifacts` vazio; sem warnings. Único bloqueio: `independent-review`, por falta da linha de veredito, que esta seção escreve.
+
+### Critérios de aceitação (proposal.md)
+
+1. Skill instalada declara `Perfil de revisão: completo|interface|texto` antes de delegar, sem pedir aprovação, define os perfis, chama só o `aifw-qa` com risco baixo ou médio, `completo` na dúvida e com risco alto: entregue em `templates/claude/skills/aifw-workflow/SKILL.md` (bullet "Perfil de revisão", parágrafo após "Exceção de risco", item 7) e na cópia `.claude/skills/aifw-workflow/SKILL.md`. Evidência: `test_skill_template_declares_the_profile`, `test_skill_sends_the_complete_profile_back_to_the_qa`, `test_text_profile_names_what_is_read_as_rule`, `test_installed_copies_carry_the_profile`.
+2. `aifw-qa` confere o diff contra o perfil, devolve sem veredito, faz o eixo Spec, carrega as skills do brief, ferramentas sem `Agent` e com `Skill`: entregue em `templates/claude/agents/aifw-qa.md` (seção "Perfil leve" e "Saída") e cópia. Evidência: `test_qa_template_covers_the_light_profile`, `test_qa_output_excepts_the_diff_return_from_the_result_line`, `test_installed_copies_carry_the_profile`.
+3. Aviso do avaliador em PLANNED/CRITICAL com risco L0/L1 e ausente em L2/L3 e em FAST/WORK: `python/aifw/assessment.py` (`LIGHT_REVIEW`, `path_context`). Evidência: 16 casos parametrizados em `test_notice_on_larger_tasks_with_low_or_medium_risk`, `test_no_notice_on_high_risk`, `test_no_notice_on_small_tasks`. A frase não contém `revisam` (restrição de `test_governance_follows_the_risk`, que passa na suíte).
+4. Gate aceita arquivo só com `## QA` e veredito aprovado, falha sem a linha: `test_gate_accepts_a_single_qa_section`. Gate não mudou (`gates.py` fora do diff).
+5. Nenhum template nomeia skill de front end: `test_templates_do_not_name_front_end_skills` (4 nomes).
+6. Suíte, lint, `claude check`, spec validate/analyze e os dois revisores: ver "Gates e suíte" e a seção do adversário.
+
+### Cenários da spec
+
+- SCN-SUBAGENTS-REVIEW-PROFILE-TEXT, -MESSAGE, -GATE: ligados a `evidence/tests.txt` em `traceability.yaml`; cobertos pelos testes acima. A segunda cláusula de -GATE (guardas do hook iguais para o `aifw-qa` sem o adversário) é coberta por `tests_python/test_reviewer_guardrails.py` (já existente, passa na suíte), e o hook não está no diff.
+- SCN-SUBAGENTS-REVIEW-FLOW: cenário inalterado; o REQ ganhou "Salvo no perfil leve". Rastreio para a evidência do perfil mantido por decisão (R6).
+
+### Pontos pedidos no brief
+
+- `paths` de `tasks.yaml`: cobrem todo arquivo do diff, inclusive a rodada de correção (design.md, delta, evidence e independent-review em TASK-EVIDENCE pela pasta da mudança; ADR e `docs/routing.md` em TASK-DOCS; templates, cópias e teste nas tarefas próprias). TASK-INSTALL declara também `.claude/settings.json` e `.gitignore`, que o diff não toca: sobra inofensiva.
+- design.md, delta e ADR-0046 acompanham o texto final: o bullet da skill e a seção "Perfil leve" em design.md são iguais ao template; a "Saída", a troca para `completo` no brief da devolução e a definição de `texto` aparecem no delta (REQ e SCN-TEXT), no design (decisão 6, seção do `aifw-qa`) e no ADR-0046 (decisões 6 e 7). Divergência só no teste: design.md diz que "passa só pelo `aifw-qa`" aparece "duas vezes em `docs/routing.md`", e o arquivo tem três (linhas 24, 26 e 45).
+- Teste de `docs/routing.md` (ressalva do adversário): confirmada. Contei 3 ocorrências; `>= 2` não trava a remoção de uma das duas remissões novas. Ressalva: o teste fica mais forte com `== 3` ou checando cada parágrafo.
+- Desvio de processo (arquivo não movido para `evidence/independent-review-1.md`): não fere gate nem critério. O gate (`gates.py:356-373`) lê só a primeira linha de veredito do `independent-review.md`, e nenhum gate, critério ou cenário lê `evidence/independent-review-<n>.md`; `aifw validate --change` não acusou artefato faltando. O risco que o item 7 evita, um `Resultado: reprovado` antigo vencer o veredito novo por ser o primeiro, não ocorre: a reescrita removeu essa linha. Duas observações: (a) a ordem de mover é do agente principal (item 7 da skill fala com ele), e o hook não deixaria o revisor criar arquivo em `evidence/`; (b) o texto integral da rodada inicial existe só no commit `ee579b8` (`git show ee579b8:.aifw/changes/active/review-profile/independent-review.md`); no arquivo fica um resumo. Ressalva: antes do commit, gravar esse conteúdo em `evidence/independent-review-1.md` restaura o rastro na pasta que será arquivada.
+
+### Standards (padrões do repositório, `principle-catalogs/`, smells)
+
+- CONSTITUTION §8/§112: cópias em `.claude/` regeneradas por `aifw claude enable --no-graphify`, não editadas à mão (`claude check` pass, carimbos novos). Testes vermelhos antes da implementação registrados em `evidence/tests.txt` (os "7 failed" e "4 failed" são relato do worker; não reproduzi).
+- `assessment.py`: constante e comentário de uma linha em inglês, no mesmo formato de `EXCEPTION` logo acima; condição no padrão de `high`/`swapped`. Sem smell relevante; nenhuma abstração nova.
+- `test_review_profile.py`: reaproveita `init` de `test_workflows` e `enable_project`; sem duplicação relevante.
+- Possível Shotgun Surgery (juízo): a mesma regra aparece em skill, template do QA, aviso do avaliador, `docs/claude-code.md`, `docs/routing.md` (3 vezes), CHANGELOG e ADR. É o padrão do repositório para regra de cascata (a skill é a fonte e as docs remetem), e a skill mantém uma fonte (o bullet) com dois ponteiros. Sem violação.
+
+### Texto para agentes (writing-for-agents)
+
+Instruções têm sujeito e ação ("escreva no chat", "chame só o `aifw-qa`", "confira primeiro", "aponte arquivo e trecho", "devolva"); proibições vêm pareadas com a ação positiva; a exceção do QA está junto da regra na abertura e na "Saída". Não achei contradição que eu possa provar. Ressalvas de juízo:
+
+1. Eixo Spec parcial no QA. `templates/claude/agents/aifw-qa.md:20` resume o eixo Spec em "requisito ou critério que falta ou está parcial, e comportamento que ninguém pediu". O eixo Spec do `code-review` tem três itens; falta "requisito que parece implementado mas está errado", que o `aifw-adversary` (linha 13) traz. No perfil leve ninguém recebe esse item por escrito. Além disso, "O que conferir" diz "Carregue a skill `code-review` só para ler as fontes de padrão e a lista de smells", e o QA leve precisa do eixo Spec; o "Além de" resolve na prática, mas o "só" fica impreciso.
+2. Exceção de rodada longe da regra. Item 7 da skill manda "passe ao adversário só o diff desde a revisão anterior"; a exceção "A rodada de correção de um perfil leve volta ao `aifw-qa`" está no bullet de "Modelos por classe". O item 7 aponta para "os perfis leves de 'Modelos por classe'" na frase de cabeçalho, o que mitiga. O template do `aifw-qa` não tem instrução para rodada de correção (o do adversário tem, linha 18).
+3. Redundância no bullet da skill: o âmbito "de risco baixo ou médio" abre o bullet e reaparece em "Em `interface` e `texto`, com risco baixo ou médio" e "Na dúvida, e com risco alto ou crítico". Não contradiz; alonga um bullet de ~10 frases.
+
+### Outras ressalvas
+
+- Cobertura parcial de SCN-TEXT por teste: "sem pedir aprovação" / "siga sem perguntar" e "nomeie também as skills de front end" na skill não têm frase travada em `test_review_profile.py`. O texto existe (skill, linha 109); o ADR-0046 já registra que os testes travam frases, não comportamento.
+- `README.md:41` ainda descreve "a revisão em duas etapas, adversário e QA" sem citar o perfil leve. Continua verdadeiro como padrão; fora do escopo listado na proposta.
+- Ressalvas mantidas por decisão: R2 (gate não distingue perfil) e R6 (rastreio de SCN-FLOW).
+
+### Não verificado
+
+- Comportamento real do `aifw-qa` e do agente principal num perfil leve (só texto lido; esta mudança é `completo`).
+- Checagem visual via `Bash` sob a trava dos revisores.
+- Contagens "vermelho antes" dos testes (relato do worker).
+
+Resultado: aprovado com ressalvas

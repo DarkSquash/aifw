@@ -58,7 +58,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
    - L2 exige, na pasta da mudança: `design.md` com as seções de abordagem e rollback preenchidas e `independent-review.md` com o resultado da revisão independente, feita em duas etapas (ADR-0038), ou em uma só nos perfis leves de "Modelos por classe" (ADR-0046):
      1. Delegue ao subagente `aifw-adversary`, passando só o diff, a spec, os critérios e o caminho do arquivo. Ele tenta provar que a mudança está errada e, com um achado provado por um cenário concreto que falha, termina o arquivo em `Resultado: reprovado`.
      2. Sem achado provado, delegue ao `aifw-qa`, que confere critérios, evidências, testes, gates e documentação e termina o arquivo com `Resultado: aprovado`, `Resultado: aprovado com ressalvas` ou `Resultado: reprovado`.
-     O gate `independent-review` lê essa linha: sem ela, ou com `reprovado`, ele falha. Corrija os achados e peça nova revisão em vez de editar o resultado: mova o arquivo para `evidence/independent-review-<n>.md` e passe ao adversário só o diff desde a revisão anterior e os achados dela. Ressalva sem prova não reabre rodada. Depois de duas rodadas de correção, uma terceira reprovação para a revisão: leve o caso à pessoa.
+     O gate `independent-review` lê essa linha: sem ela, ou com `reprovado`, ele falha. Corrija os achados e peça nova revisão em vez de editar o resultado: mova o arquivo para `evidence/independent-review-<n>.md` e passe ao adversário só o diff desde a revisão anterior e os achados dela; no perfil leve, a rodada de correção volta ao `aifw-qa`, que é o único revisor. Ressalva sem prova não reabre rodada. Depois de duas rodadas de correção, uma terceira reprovação para a revisão: leve o caso à pessoa.
    - L3 exige, além disso: `proposal.md` com critérios de aceitação, `threat-model.md`, `migration.md` (pode dizer por que não se aplica) e um artefato `adr` com caminho em `traceability.yaml`.
 8. Quando entradas do catálogo ou da resolução mudarem, use `map build` ou `resolve build` e confira novamente. Não edite manualmente suas projeções para esconder drift.
 
@@ -130,4 +130,4 @@ Com o hook `aifw-hook` instalado, cada ação passa por `.aifw/permissions.yaml`
 - Alterações no framework precisam estar dentro da autorização real do usuário, não ser uma saída improvisada para seus bloqueios.
 
 <!-- aifw-version: 0.4.1 -->
-<!-- aifw-sha256: 18f0df94dcd2f4b99f84d16ce4a61a8d48f0fbc2ac92ec06fa4d3f17ef62b66b -->
+<!-- aifw-sha256: e39676fe40ba895e2a991982f04e7e67970f99bef4f2c828a6add031ddb8ab36 -->

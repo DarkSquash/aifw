@@ -127,6 +127,6 @@ def test_skill_sends_the_complete_profile_back_to_the_qa():
         assert phrase in text, phrase
 
 
-def test_routing_doc_states_the_single_reviewer_twice():
+def test_routing_doc_states_the_single_reviewer_three_times():
     docs = (TEMPLATES.parent.parent / "docs/routing.md").read_text(encoding="utf-8")
-    assert docs.count("passa só pelo `aifw-qa`") >= 2
+    assert docs.count("passa só pelo `aifw-qa`") == 3

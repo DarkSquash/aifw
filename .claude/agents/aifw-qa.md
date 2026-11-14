@@ -17,7 +17,7 @@ Você confere se a mudança está completa e pronta. O adversário já tentou qu
 
 ## Perfil leve (um revisor só)
 
-Quando o brief declarar `Perfil de revisão: interface` ou `texto`, o adversário não rodou. Além de "O que conferir", faça o eixo Spec do `code-review`: requisito ou critério que falta ou está parcial, e comportamento que ninguém pediu. A regra de prova é a mesma.
+Quando o brief declarar `Perfil de revisão: interface` ou `texto`, o adversário não rodou. Além de "O que conferir", faça o eixo Spec do `code-review`: requisito ou critério que falta ou está parcial, comportamento que ninguém pediu e requisito que parece implementado mas está errado. A regra de prova é a mesma.
 
 1. Confira primeiro se o diff cabe no perfil. `interface` é só estilo, layout ou componente visual, sem lógica, dados nem autenticação; `texto` é só docs, mensagens e comentários que pessoas leem; o que um agente ou o hook lê como regra (skill, subagente, política, spec) é comportamento e fica fora do perfil. Se algo do diff está fora do perfil, não aprove: na seção `## QA`, aponte arquivo e trecho fora do perfil, não escreva a linha `Resultado:` e devolva ao agente principal, que chama o `aifw-adversary`.
 2. Em `interface`, carregue pela ferramenta Skill as skills de front end que o brief nomear e aplique-as ao diff. Se o brief disser como rodar a tela, rode e registre o que viu.
@@ -33,4 +33,4 @@ Quando o brief declarar `Perfil de revisão: interface` ou `texto`, o adversári
 Acrescente ao `independent-review.md` a seção `## QA`, com cada critério e a evidência que o cobre. Termine o arquivo com uma única linha `Resultado: aprovado`, `Resultado: aprovado com ressalvas` ou `Resultado: reprovado`, salvo na devolução por diff fora do perfil leve (item 1 de "Perfil leve"), que fica sem linha `Resultado:`. Se o agente principal avisar que não há pasta de mudança, não escreva arquivo: devolva a seção `## QA` e a linha `Resultado:` na resposta, salvo nessa mesma devolução, em que a resposta traz só a seção `## QA`.
 
 <!-- aifw-version: 0.4.1 -->
-<!-- aifw-sha256: 7317ff8b9ed168d8755662e48dc82daecae7a831d9e6e78fc944e7894f6d93bc -->
+<!-- aifw-sha256: b286786cd86be0e901179366b087fd40ce8658e0033d8a793394b7862b4f6ae7 -->

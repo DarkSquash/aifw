@@ -24,3 +24,13 @@ Rodada de correção 1 (achado 1 e ressalvas R1, R3, R4 e R5 do adversário)
   python -m pytest -q -p no:cacheprovider tests_python -> 2859 passed in 103.06s
   python -m ruff check . -> All checks passed!   ruff format --check . -> 324 files already formatted
   aifw claude check -> status pass
+
+Depois da revisão do QA (aprovado com ressalvas)
+  aifw-qa.md: o resumo do eixo Spec no perfil leve ganha "requisito que parece implementado mas está errado".
+  SKILL.md item 7: no perfil leve a rodada de correção volta ao aifw-qa.
+  test_routing_doc_states_the_single_reviewer_three_times: contagem exata de 3 em docs/routing.md.
+  evidence/independent-review-1.md: revisão reprovada da primeira passada (commit ee579b8).
+  Ajustes posteriores à revisão, não vistos pelos revisores.
+  python -m pytest -q -p no:cacheprovider tests_python -> 2859 passed in 131.03s
+  python -m ruff check . -> All checks passed!   ruff format --check . -> 325 files already formatted
+  aifw claude check -> status pass
