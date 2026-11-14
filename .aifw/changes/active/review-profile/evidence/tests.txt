@@ -16,3 +16,11 @@ tests_python/test_review_profile.py (25 testes)
 Não verificado
   O comportamento real do aifw-qa num perfil leve (os testes travam as frases, não o agente; esta mudança é
   perfil completo). A checagem visual pelo Bash do QA com playwright-cli sob a trava dos revisores.
+
+Rodada de correção 1 (achado 1 e ressalvas R1, R3, R4 e R5 do adversário)
+  4 testes novos em test_review_profile.py: a "Saída" do aifw-qa excepciona a devolução por diff fora do perfil;
+  o QA usa a mesma definição de `texto` da skill; a skill manda o perfil `completo` na devolução; docs/routing.md
+  remete ao perfil leve nos dois lugares. Antes das edições (relato do worker): 4 failed. Depois: todos passam.
+  python -m pytest -q -p no:cacheprovider tests_python -> 2859 passed in 103.06s
+  python -m ruff check . -> All checks passed!   ruff format --check . -> 324 files already formatted
+  aifw claude check -> status pass

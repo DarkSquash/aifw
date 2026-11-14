@@ -104,3 +104,29 @@ def test_gate_accepts_a_single_qa_section(tmp_path):
     assert gates.review_result(tmp_path, "independent-review.md")["status"] == "pass"
     review.write_text("## QA\n\nPerfil de revisão: texto, declarado no chat.\n", encoding="utf-8")
     assert gates.review_result(tmp_path, "independent-review.md")["status"] == "fail"
+
+
+def test_qa_output_excepts_the_diff_return_from_the_result_line():
+    saida = template(QA).split("## Saída")[1]
+    assert "salvo na devolução por diff fora do perfil leve" in saida
+    assert "só a seção `## QA`" in saida
+
+
+@pytest.mark.parametrize("name", [QA, SKILL])
+def test_text_profile_names_what_is_read_as_rule(name):
+    assert "o que um agente ou o hook lê como regra" in template(name)
+
+
+def test_skill_sends_the_complete_profile_back_to_the_qa():
+    text = template(SKILL)
+    for phrase in (
+        "com `Perfil de revisão: completo` no brief",
+        "em mudança L2 ou L3 (complexidade) de risco baixo ou médio",
+        "passa só pelo `aifw-qa`",
+    ):
+        assert phrase in text, phrase
+
+
+def test_routing_doc_states_the_single_reviewer_twice():
+    docs = (TEMPLATES.parent.parent / "docs/routing.md").read_text(encoding="utf-8")
+    assert docs.count("passa só pelo `aifw-qa`") >= 2

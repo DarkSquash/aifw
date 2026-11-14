@@ -21,7 +21,7 @@ O Claude Code não troca o modelo da sessão a pedido do AIFW. A skill `aifw-wor
 | L2, moderada (PLANNED) | `aifw-planner` (sonnet) | `aifw-worker` (haiku), um ou mais, distribuídos e revisados pelo planner | `aifw-adversary` (opus), depois `aifw-qa` (sonnet) |
 | L3, alta (CRITICAL) | agente principal (opus) | `aifw-lead` (sonnet), um ou mais, que quebram a parte para `aifw-worker` (haiku) e revisam | `aifw-adversary`, depois `aifw-qa` |
 
-Exceção de risco: com risco alto ou crítico, L0 vai a um `aifw-executor` (sonnet) sozinho e L1 a um `aifw-senior` (opus) sozinho, seguidos dos dois revisores. Risco alto ou crítico também pede o plano aprovado no chat, spec e ADR. Subir de caminho é permitido; descer, nunca.
+Exceção de risco: com risco alto ou crítico, L0 vai a um `aifw-executor` (sonnet) sozinho e L1 a um `aifw-senior` (opus) sozinho, seguidos dos dois revisores. Risco alto ou crítico também pede o plano aprovado no chat, spec e ADR. Subir de caminho é permitido; descer, nunca. Perfil de revisão (ADR-0046): em L2 e L3 de risco baixo ou médio, uma mudança só de interface ou só de texto passa só pelo `aifw-qa`.
 
 A revisão independente tem duas etapas: o `aifw-adversary` tenta provar que a mudança está errada e só reprova com um cenário concreto que falha; sem achado provado, o `aifw-qa` confere critérios, evidências e documentação. Em L2 e L3 de risco baixo ou médio, uma mudança só de interface ou só de texto, declarada no chat antes de delegar, passa só pelo `aifw-qa` (ADR-0046); risco alto ou crítico e a dúvida mantêm os dois revisores. Revisão não substitui testes e gates, que rodam em toda classe. A orquestração é obrigatória em todos os níveis (ADR-0040, ADR-0042): a sessão principal planeja (em L3) e delega, nunca implementa. Subir de modelo é permitido; L3 ou BRAIN nunca é rebaixado. Os modelos e esforços de cada subagente estão em [Claude Code](claude-code.md#modelos).
 
@@ -42,7 +42,7 @@ Com `spec.assessment.mode: shadow` em `aifw.yaml` e o recurso `tasks` ligado, ca
 | PLANNED | L2, moderada | `aifw-planner` (sonnet) | `aifw-worker` (haiku), distribuído e revisado pelo planner | `aifw-adversary`, depois `aifw-qa` |
 | CRITICAL | L3, alta | agente principal (opus) | `aifw-lead` (sonnet), que quebra a parte para `aifw-worker` | `aifw-adversary`, depois `aifw-qa` |
 
-- Com risco alto ou crítico em FAST, um `aifw-executor` faz sozinho; em WORK, um `aifw-senior` (opus) faz sozinho; depois, os dois revisores. Risco alto ou crítico também pede o plano aprovado no chat, spec e ADR. A importância é avaliada e registrada, mas não muda o caminho.
+- Com risco alto ou crítico em FAST, um `aifw-executor` faz sozinho; em WORK, um `aifw-senior` (opus) faz sozinho; depois, os dois revisores. Risco alto ou crítico também pede o plano aprovado no chat, spec e ADR. A importância é avaliada e registrada, mas não muda o caminho. Perfil de revisão (ADR-0046): em L2 e L3 de risco baixo ou médio, uma mudança só de interface ou só de texto passa só pelo `aifw-qa`.
 
 - Com `--diff`, os fatos verificáveis do diff (autenticação, deploy, contratos, arquivos de controle) formam um piso: o risco final nunca fica abaixo dele.
 - Cada avaliação é gravada em `.aifw/assessments/shadow.jsonl`. Os outros recursos (`impasse`, `context`, `intake`, `traceability`, `decisions`) continuam em modo sombra: só registram.

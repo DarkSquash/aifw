@@ -8,7 +8,7 @@ operations:
   added:
   - id: REQ-SUBAGENTS-REVIEW-PROFILE
     strength: MUST
-    statement: Em mudança L2 ou L3 de risco baixo ou médio, o agente principal deve declarar no chat, antes de delegar e sem pedir aprovação, o perfil de revisão (completo, interface ou texto); nos perfis interface e texto só o aifw-qa revisa, conferindo primeiro que o diff cabe no perfil e fazendo também o eixo Spec, e, se o diff não couber, ele não escreve Resultado e o agente principal chama o aifw-adversary e depois o aifw-qa de novo. Risco alto ou crítico e a dúvida ficam no perfil completo, com os dois revisores. A skill, o aviso do avaliador e o template do aifw-qa devem dizer isso sem fixar nome de skill de front end, e nenhuma guarda do hook nem o gate independent-review passa a depender de o adversário ter rodado.
+    statement: Em mudança L2 ou L3 de risco baixo ou médio, o agente principal deve declarar no chat, antes de delegar e sem pedir aprovação, o perfil de revisão (completo, interface ou texto); nos perfis interface e texto só o aifw-qa revisa, conferindo primeiro que o diff cabe no perfil e fazendo também o eixo Spec, e, se o diff não couber, ele não escreve Resultado e o agente principal chama o aifw-adversary e depois o aifw-qa com perfil completo. Risco alto ou crítico e a dúvida ficam no perfil completo, com os dois revisores. A skill, o aviso do avaliador e o template do aifw-qa devem dizer isso sem fixar nome de skill de front end, e nenhuma guarda do hook nem o gate independent-review passa a depender de o adversário ter rodado.
     scenarios:
     - id: SCN-SUBAGENTS-REVIEW-PROFILE-TEXT
       given:
@@ -16,8 +16,8 @@ operations:
       when:
       - A skill aifw-workflow e o aifw-qa instalados são lidos.
       then:
-      - A skill manda declarar no chat, antes de delegar e sem pedir aprovação, a linha Perfil de revisão (completo, interface ou texto), define interface e texto, manda chamar só o aifw-qa nesses dois com risco baixo ou médio, manda nomear no brief as skills de front end em interface, e fixa o perfil completo na dúvida e com risco alto ou crítico.
-      - O aifw-qa manda conferir primeiro o diff contra o perfil, devolver sem Resultado quando o diff não couber, fazer também o eixo Spec e carregar as skills de front end que o brief nomear; nenhum dos dois textos cita nome de skill de front end.
+      - A skill manda declarar no chat, antes de delegar e sem pedir aprovação, a linha Perfil de revisão (completo, interface ou texto), define interface e texto, manda chamar só o aifw-qa nesses dois com risco baixo ou médio, manda nomear no brief as skills de front end em interface, manda trocar o perfil para completo na devolução do aifw-qa, e fixa o perfil completo na dúvida e com risco alto ou crítico.
+      - O aifw-qa manda conferir primeiro o diff contra o perfil, devolver sem Resultado quando o diff não couber (exceção expressa na Saída), fazer também o eixo Spec e carregar as skills de front end que o brief nomear; nenhum dos dois textos cita nome de skill de front end.
       - 'As ferramentas do aifw-qa não mudam: sem Agent, com Skill.'
     - id: SCN-SUBAGENTS-REVIEW-PROFILE-MESSAGE
       given:
