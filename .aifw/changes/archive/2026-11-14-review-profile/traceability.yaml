@@ -3,12 +3,12 @@ kind: ChangeTraceability
 changeId: review-profile
 artifacts:
 - id: TEST-REVIEW-PROFILE
-  path: .aifw/changes/active/review-profile/evidence/tests.txt
+  path: .aifw/changes/archive/2026-11-14-review-profile/evidence/tests.txt
   type: test
   status: passed
 - id: DESIGN-REVIEW-PROFILE
   type: design
-  path: .aifw/changes/active/review-profile/design.md
+  path: .aifw/changes/archive/2026-11-14-review-profile/design.md
   status: passed
 - id: ADR-0046
   path: docs/decisions/ADR-0046-review-profile.md
