@@ -255,7 +255,11 @@ def create_parser():
     option(leaf, "--output")
     option(command("runs show", "summarize recorded Claude sessions against the workflow rules"), "--session")
     command("claude install", "install the /aifw command in ~/.claude (it activates nothing by itself)")
-    command("claude enable", "add the AIFW hooks and workflow skill to this project's .claude folder")
+    option(
+        command("claude enable", "add the AIFW hooks and workflow skill to this project's .claude folder"),
+        "--no-graphify",
+        action="store_true",
+    )
     command("claude check", "report what Claude Code still needs to run AIFW in this project")
     leaf = command("impasse open", "start tracking correction attempts for a problem")
     option(leaf, "--id", required=True)
@@ -663,7 +667,9 @@ def execute(args, root):
         if action == "claude check":
             value = claude.check_project(root)
             return value, 0 if value["status"] == "pass" else 2
-        return (claude.install_command() if action == "claude install" else claude.enable_project(root)), 0
+        if action == "claude install":
+            return claude.install_command(), 0
+        return claude.enable_project(root, graphify=not args.no_graphify), 0
     if action.startswith("impasse "):
         from . import impasse
 

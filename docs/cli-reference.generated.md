@@ -758,13 +758,14 @@ options:
 ## `aifw claude enable`
 
 ```text
-usage: aifw claude enable [-h] [--json]
+usage: aifw claude enable [-h] [--json] [--no-graphify]
 
 add the AIFW hooks and workflow skill to this project's .claude folder
 
 options:
-  -h, --help  show this help message and exit
-  --json      emit stable machine-readable JSON
+  -h, --help     show this help message and exit
+  --json         emit stable machine-readable JSON
+  --no-graphify  no graphify
 ```
 
 ## `aifw claude check`

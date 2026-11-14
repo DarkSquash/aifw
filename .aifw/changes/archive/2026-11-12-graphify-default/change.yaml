@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: graphify-default
+  title: Graphify por padrão no aifw claude enable
+  level: L2
+  createdAt: '2026-11-12T14:09:10.055Z'
+summary: O aifw claude enable passa a montar o grafo do graphify e a instalar os hooks de git dele, quando o graphify está no PATH; --no-graphify desliga.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-11-12T14:18:09.883Z'
+  record: .aifw/changes/active/graphify-default/approval.md
+archivedAt: '2026-11-12T14:57:43.260Z'

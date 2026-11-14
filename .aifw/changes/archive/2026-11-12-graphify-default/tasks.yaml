@@ -1,0 +1,49 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: graphify-default
+tasks:
+- id: TASK-TESTS
+  title: 'Worker: fixture autouse que desliga o graphify real na suíte e testes novos de enable (vermelhos antes da implementação)'
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-GRAPHIFY-ENABLE
+  - REQ-GRAPHIFY-NEVER-FAILS
+  - REQ-GRAPHIFY-HOOK-UNCHANGED
+  paths:
+  - tests_python/conftest.py
+  - tests_python/test_graphify_default.py
+- id: TASK-ENABLE
+  title: 'Worker: enable_graphify em claude.py, entradas em ignore_local_logs e opção --no-graphify'
+  status: done
+  dependsOn:
+  - TASK-TESTS
+  requirementIds:
+  - REQ-GRAPHIFY-ENABLE
+  - REQ-GRAPHIFY-NEVER-FAILS
+  paths:
+  - python/aifw/claude.py
+  - python/aifw/common.py
+  - python/aifw/cli.py
+- id: TASK-DOCS
+  title: 'Worker: ADR-0045, CHANGELOG, docs/claude-code.md e referência gerada da CLI'
+  status: done
+  dependsOn:
+  - TASK-ENABLE
+  requirementIds:
+  - REQ-GRAPHIFY-ENABLE
+  paths:
+  - docs/decisions/ADR-0045-graphify-default.md
+  - CHANGELOG.md
+  - docs/claude-code.md
+  - docs/cli-reference.generated.md
+- id: TASK-SMOKE
+  title: 'Worker: prova com o graphify 0.9.107 real em clones descartáveis, registrada em evidence/tests.txt'
+  status: done
+  dependsOn:
+  - TASK-ENABLE
+  requirementIds:
+  - REQ-GRAPHIFY-ENABLE
+  - REQ-GRAPHIFY-NEVER-FAILS
+  paths:
+  - .aifw/changes/active/graphify-default/evidence/
