@@ -1,0 +1,18 @@
+review-profile — evidência de testes (2026-11-14)
+
+python -m pytest -q -p no:cacheprovider tests_python
+  2854 passed in 100.19s
+
+python -m ruff check .            -> All checks passed!
+python -m ruff format --check .   -> 323 files already formatted
+aifw claude check                 -> status pass (cópias de .claude/ regeneradas por `aifw claude enable --no-graphify`)
+
+tests_python/test_review_profile.py (25 testes)
+  Num `git archive HEAD` em pasta temporária, antes das edições: 7 failed, 18 passed. Com as edições: 25 passed.
+  Cobre: a skill declara os três perfis e a regra "declara e segue"; a mensagem do avaliador cita o perfil leve
+  só em PLANNED e CRITICAL com risco baixo ou médio; o template do aifw-qa traz a seção "Perfil leve" e mantém
+  as ferramentas; o gate independent-review aceita um arquivo só com a seção QA e `Resultado:` e recusa sem ela.
+
+Não verificado
+  O comportamento real do aifw-qa num perfil leve (os testes travam as frases, não o agente; esta mudança é
+  perfil completo). A checagem visual pelo Bash do QA com playwright-cli sob a trava dos revisores.

@@ -154,6 +154,10 @@ EXCEPTION = {
     "FAST": "aifw-executor (Sonnet) planeja e executa sozinho, e depois aifw-adversary e aifw-qa revisam",
     "WORK": "aifw-senior (Opus) planeja e executa sozinho, e depois aifw-adversary e aifw-qa revisam",
 }
+# Low or medium risk on a larger task may take one reviewer; the chat declares the profile (ADR-0046).
+LIGHT_REVIEW = (
+    "Perfil de revisão interface ou texto declarado no chat: só o aifw-qa revisa; sem declaração, os dois."
+)
 
 
 def settings(root):
@@ -298,6 +302,8 @@ def path_context(result):
         f"risco {RISK_WORD[final]} ({final}{raised}), importância {result['importance']['value']}. "
         f"{rule}."
     ]
+    if path in {"PLANNED", "CRITICAL"} and not high:
+        parts.append(LIGHT_REVIEW)
     if high:
         parts.append(
             f"Risco {RISK_WORD[final]}: apresente o plano e peça a aprovação no chat "

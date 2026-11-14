@@ -23,7 +23,7 @@ O Claude Code não troca o modelo da sessão a pedido do AIFW. A skill `aifw-wor
 
 Exceção de risco: com risco alto ou crítico, L0 vai a um `aifw-executor` (sonnet) sozinho e L1 a um `aifw-senior` (opus) sozinho, seguidos dos dois revisores. Risco alto ou crítico também pede o plano aprovado no chat, spec e ADR. Subir de caminho é permitido; descer, nunca.
 
-A revisão independente tem duas etapas: o `aifw-adversary` tenta provar que a mudança está errada e só reprova com um cenário concreto que falha; sem achado provado, o `aifw-qa` confere critérios, evidências e documentação. Revisão não substitui testes e gates, que rodam em toda classe. A orquestração é obrigatória em todos os níveis (ADR-0040, ADR-0042): a sessão principal planeja (em L3) e delega, nunca implementa. Subir de modelo é permitido; L3 ou BRAIN nunca é rebaixado. Os modelos e esforços de cada subagente estão em [Claude Code](claude-code.md#modelos).
+A revisão independente tem duas etapas: o `aifw-adversary` tenta provar que a mudança está errada e só reprova com um cenário concreto que falha; sem achado provado, o `aifw-qa` confere critérios, evidências e documentação. Em L2 e L3 de risco baixo ou médio, uma mudança só de interface ou só de texto, declarada no chat antes de delegar, passa só pelo `aifw-qa` (ADR-0046); risco alto ou crítico e a dúvida mantêm os dois revisores. Revisão não substitui testes e gates, que rodam em toda classe. A orquestração é obrigatória em todos os níveis (ADR-0040, ADR-0042): a sessão principal planeja (em L3) e delega, nunca implementa. Subir de modelo é permitido; L3 ou BRAIN nunca é rebaixado. Os modelos e esforços de cada subagente estão em [Claude Code](claude-code.md#modelos).
 
 ## Ativação
 

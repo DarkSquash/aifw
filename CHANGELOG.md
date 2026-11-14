@@ -4,6 +4,10 @@
 
 ### Alterado
 
+- Perfil de revisão pela natureza da mudança (ADR-0046):
+  - Em L2 e L3 de risco baixo ou médio, o agente principal declara no chat `Perfil de revisão: completo`, `interface` ou `texto` antes de delegar e segue sem perguntar. Em `interface` (só estilo, layout ou componente visual) e `texto` (só docs, mensagens e comentários) só o `aifw-qa` revisa; risco alto ou crítico e a dúvida ficam com os dois revisores.
+  - O `aifw-qa` confere primeiro se o diff cabe no perfil e faz também o eixo Spec; se não couber, devolve sem `Resultado:` e o agente principal chama o `aifw-adversary`.
+  - O aviso do avaliador cita a exceção em PLANNED e CRITICAL com risco baixo ou médio. Gate, hook e demais subagentes não mudaram; não há campo novo.
 - Graphify por padrão no `aifw claude enable` (ADR-0045):
   - Com o `graphify` no PATH, o `enable` acrescenta `graphify-out/` ao `.gitignore` (salvo se a pasta já existir), roda `graphify update .` uma vez quando não há `graphify-out/graph.json` e roda `graphify hook install` se há `.git` e `core.hooksPath` não está definido.
   - Sem o `graphify` no PATH, o resultado ganha só a chave `graphify` com uma linha; um executável achado dentro do projeto não é executado.
