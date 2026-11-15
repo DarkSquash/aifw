@@ -1,0 +1,79 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: review-profile
+tasks:
+- id: TASK-TESTS
+  title: 'Worker (skill test-driven-development): tests_python/test_review_profile.py com as frases e o gate, vermelhos antes da implementação'
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-PROFILE
+  paths:
+  - tests_python/test_review_profile.py
+- id: TASK-ASSESSOR
+  title: 'Worker: LIGHT_REVIEW e a frase em path_context (assessment.py), só em PLANNED e CRITICAL com risco baixo ou médio'
+  status: done
+  dependsOn:
+  - TASK-TESTS
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-PROFILE
+  paths:
+  - python/aifw/assessment.py
+- id: TASK-SKILL
+  title: 'Worker (skill writing-for-agents): três edições na skill aifw-workflow, com o texto de design.md'
+  status: done
+  dependsOn:
+  - TASK-TESTS
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-PROFILE
+  - REQ-SUBAGENTS-REVIEW-FLOW
+  paths:
+  - templates/claude/skills/aifw-workflow/SKILL.md
+- id: TASK-QA
+  title: 'Worker (skill writing-for-agents): description, parágrafo e seção Perfil leve no template aifw-qa, com o texto de design.md'
+  status: done
+  dependsOn:
+  - TASK-TESTS
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-PROFILE
+  - REQ-SUBAGENTS-REVIEW-FLOW
+  paths:
+  - templates/claude/agents/aifw-qa.md
+- id: TASK-INSTALL
+  title: 'Worker: regenerar as cópias com aifw claude enable --no-graphify (nunca à mão) e conferir aifw claude check e o git diff'
+  status: done
+  dependsOn:
+  - TASK-SKILL
+  - TASK-QA
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-PROFILE
+  paths:
+  - .claude/skills/aifw-workflow/SKILL.md
+  - .claude/agents/aifw-qa.md
+  - .claude/settings.json
+  - .gitignore
+- id: TASK-DOCS
+  title: 'Worker (skill architecture-decision-records para o ADR): ADR-0046, CHANGELOG, docs/claude-code.md e docs/routing.md'
+  status: done
+  dependsOn:
+  - TASK-ASSESSOR
+  - TASK-SKILL
+  - TASK-QA
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-PROFILE
+  paths:
+  - docs/decisions/ADR-0046-review-profile.md
+  - CHANGELOG.md
+  - docs/claude-code.md
+  - docs/routing.md
+- id: TASK-EVIDENCE
+  title: 'Worker: suíte inteira, ruff, aifw claude check, spec validate/analyze, evidence/tests.txt e artefatos em traceability.yaml'
+  status: done
+  dependsOn:
+  - TASK-INSTALL
+  - TASK-DOCS
+  requirementIds:
+  - REQ-SUBAGENTS-REVIEW-PROFILE
+  - REQ-SUBAGENTS-REVIEW-FLOW
+  paths:
+  - .aifw/changes/active/review-profile/

@@ -1,0 +1,14 @@
+apiVersion: aifw.dev/v1alpha1
+kind: SpecChange
+metadata:
+  id: review-profile
+  title: Perfil de revisão pela natureza da mudança
+  level: L2
+  createdAt: '2026-11-14T19:41:33.581Z'
+summary: Mudança só de interface ou só de texto, em risco baixo ou médio, passa por um revisor só (aifw-qa); o resto segue com adversário e QA.
+status: archived
+approval:
+  approvedBy: human:DarkSquash
+  approvedAt: '2026-11-14T20:06:49.380Z'
+  record: .aifw/changes/active/review-profile/approval.md
+archivedAt: '2026-11-14T21:23:47.247Z'

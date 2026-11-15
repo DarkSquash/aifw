@@ -92,7 +92,7 @@ requirements:
     - Os três trazem o plano B de implementar a parte quando a ferramenta Agent não está disponível ou o lançamento falha, avisando no resumo.
 - id: REQ-SUBAGENTS-REVIEW-FLOW
   strength: MUST
-  statement: A revisão independente de L2 e L3 deve ter duas etapas, o aifw-adversary tentando provar que a mudança está errada pelo eixo Spec e, só sem achado provado, o aifw-qa conferindo critérios, evidências, documentação e o eixo Standards, cada um no próprio contexto e sem lançar subagentes, com ônus da prova e um limite de rodadas de correção.
+  statement: Salvo no perfil leve (REQ-SUBAGENTS-REVIEW-PROFILE), a revisão independente de L2 e L3 deve ter duas etapas, o aifw-adversary tentando provar que a mudança está errada pelo eixo Spec e, só sem achado provado, o aifw-qa conferindo critérios, evidências, documentação e o eixo Standards, cada um no próprio contexto e sem lançar subagentes, com ônus da prova e um limite de rodadas de correção.
   scenarios:
   - id: SCN-SUBAGENTS-REVIEW-FLOW
     given:
@@ -104,6 +104,35 @@ requirements:
     - Sem achado provado, o aifw-qa acrescenta a sua seção e escreve o Resultado final.
     - Uma terceira reprovação para a revisão e leva o caso à pessoa.
     - O adversário cobre o eixo Spec e o QA o eixo Standards do code-review; nenhum dos dois tem a ferramenta Agent.
+- id: REQ-SUBAGENTS-REVIEW-PROFILE
+  strength: MUST
+  statement: Em mudança L2 ou L3 de risco baixo ou médio, o agente principal deve declarar no chat, antes de delegar e sem pedir aprovação, o perfil de revisão (completo, interface ou texto); nos perfis interface e texto só o aifw-qa revisa, conferindo primeiro que o diff cabe no perfil e fazendo também o eixo Spec, e, se o diff não couber, ele não escreve Resultado e o agente principal chama o aifw-adversary e depois o aifw-qa com perfil completo. Risco alto ou crítico e a dúvida ficam no perfil completo, com os dois revisores. A skill, o aviso do avaliador e o template do aifw-qa devem dizer isso sem fixar nome de skill de front end, e nenhuma guarda do hook nem o gate independent-review passa a depender de o adversário ter rodado.
+  scenarios:
+  - id: SCN-SUBAGENTS-REVIEW-PROFILE-GATE
+    given:
+    - 'Um independent-review.md só com a seção QA, a linha Perfil de revisão e Resultado: aprovado, e outro igual sem a linha Resultado.'
+    when:
+    - O gate independent-review lê cada arquivo, e o hook avalia chamadas com agent_type aifw-qa sem que o aifw-adversary tenha rodado.
+    then:
+    - O gate passa com o primeiro arquivo e falha com o segundo.
+    - As guardas de revisor negam ao aifw-qa as mesmas chamadas de antes, e o aifw-qa escreve o independent-review.md da mudança.
+  - id: SCN-SUBAGENTS-REVIEW-PROFILE-MESSAGE
+    given:
+    - O recurso tasks ligado.
+    when:
+    - O avaliador entrega o caminho PLANNED ou CRITICAL com risco baixo, médio, alto ou crítico, e FAST ou WORK com qualquer risco.
+    then:
+    - Em PLANNED e CRITICAL com risco baixo ou médio, o contexto cita a exceção do perfil de revisão interface ou texto, só o aifw-qa e, sem declaração, os dois.
+    - Com risco alto ou crítico, e em FAST e WORK, o contexto não cita a exceção.
+  - id: SCN-SUBAGENTS-REVIEW-PROFILE-TEXT
+    given:
+    - Um projeto com aifw.yaml e o aifw claude enable executado.
+    when:
+    - A skill aifw-workflow e o aifw-qa instalados são lidos.
+    then:
+    - A skill manda declarar no chat, antes de delegar e sem pedir aprovação, a linha Perfil de revisão (completo, interface ou texto), define interface e texto, manda chamar só o aifw-qa nesses dois com risco baixo ou médio, manda nomear no brief as skills de front end em interface, manda trocar o perfil para completo na devolução do aifw-qa, e fixa o perfil completo na dúvida e com risco alto ou crítico.
+    - O aifw-qa manda conferir primeiro o diff contra o perfil, devolver sem Resultado quando o diff não couber (exceção expressa na Saída), fazer também o eixo Spec e carregar as skills de front end que o brief nomear; nenhum dos dois textos cita nome de skill de front end.
+    - 'As ferramentas do aifw-qa não mudam: sem Agent, com Skill.'
 - id: REQ-SUBAGENTS-REVIEWER-GUARD
   strength: MUST
   statement: O hook deve negar a um subagente revisor (aifw-adversary, aifw-qa) a edição de arquivos do projeto além do independent-review.md da mudança e o comando de shell que escreve arquivos de forma explícita, faz commit ou altera o repositório, mesmo quando a avaliação da política falha, deixando seguir leitura, testes, aifw, código opaco, programas desconhecidos e arquivos fora do projeto.
