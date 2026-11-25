@@ -1,4 +1,4 @@
-<!-- aifw:project-map digest=a387a7241e589f57c32d778e29f74942f9f5d30698904112b27030cf65289219 -->
+<!-- aifw:project-map digest=883bf5174dbec252d14b66a6e86d1a2b956592abebf01f6ba64898d0ca4caa42 -->
 # PROJECT_MAP — AI Software Engineering Framework
 
 > Compiled entrypoint. Edit authoritative sources, then regenerate this file.
@@ -60,9 +60,8 @@ Tornar desenvolvimento com agentes reproduzível, seguro e independente de forne
 | component:claude-hooks | Component | Claude Code hook | framework:adapters | public | manual | confirmed | not-recorded | python/aifw/hooks.py | aifw-hook aplica a política em cada ação, registra a sessão, bloqueia conclusão sem verificação e informa o estado ao abrir a sessão (ADR-0015, ADR-0018). |
 | component:claude-skill | Component | Claude Code skill | framework:adapters | public | manual | confirmed | not-recorded | templates/claude/skills/aifw/SKILL.md | Comando /aifw (new, adopt) que habilita o AIFW por projeto; a skill aifw-workflow do projeto guia o Claude (ADR-0016). |
 | component:cli | Component | Control-plane CLI | framework:core | public | manual | confirmed | not-recorded | python/aifw/cli.py | Interface determinística usada por agentes, humanos e CI. |
-| component:conformance | Component | Agent conformance evaluator | framework:quality | public | manual | confirmed | not-recorded | python/aifw/conformance.py | Avalia traces contra eventos, ordem, aprovações e evidência esperados. |
 | component:context-intelligence | Component | Context intelligence | framework:core | public | manual | confirmed | not-recorded | python/aifw/context.py | Selects documentation, validates references and detects factual snapshot drift. |
-| component:core | Component | Vendor-neutral core | framework:core | public | manual | confirmed | not-recorded | python/aifw/ | Intake, authority, lifecycle, gates, map, permissions, impasse, routing e conformance. |
+| component:core | Component | Vendor-neutral core | framework:core | public | manual | confirmed | not-recorded | python/aifw/ | Intake, authority, lifecycle, gates, map, permissions, impasse e routing. |
 | component:decision-engine | Component | Architecture decision engine | framework:core | public | manual | confirmed | not-recorded | python/aifw/catalogs.py | Classifica alternativas, expõe incerteza e exige aprovação humana com ADR antes de registrar uma escolha. |
 | component:principle-review | Component | Engineering principle catalog | framework:quality | public | manual | confirmed | not-recorded | python/aifw/catalogs.py | Publica os princípios versionados; a revisão do diff é feita pela skill code-review (ADR-0013). |
 | component:spec-lifecycle | Component | Executable spec lifecycle | framework:core | public | manual | confirmed | not-recorded | python/aifw/specs.py | Valida capability deltas, rastreabilidade e archive atômico contra a verdade comportamental atual. |
@@ -91,7 +90,7 @@ Tornar desenvolvimento com agentes reproduzível, seguro e independente de forne
 | profile:web | Resource | Web profile | framework:profiles | public | manual | confirmed | not-recorded | profiles/web-ts/ | Regras de arquitetura, contratos, design, segurança e observabilidade para React, JavaScript, TypeScript e outras stacks Web. |
 | resource:context-intelligence | Resource | Context guide | framework:core | public | manual | confirmed | not-recorded | docs/context-intelligence.md | Documents context commands, metadata, limits and opt-in gates. |
 | resource:decision-catalogs | Resource | Global decision catalogs | framework:architecture | public | manual | confirmed | not-recorded | decision-catalogs/ | Alternativas arquiteturais comparáveis por sinais explícitos, com conflitos, trade-offs e fontes. |
-| resource:evals | Resource | Conformance fixtures | framework:quality | public | manual | confirmed | not-recorded | evals/ | Casos e traces de fumaça para validar o evaluator. |
+| resource:evals | Resource | Evaluation cases | framework:quality | public | manual | confirmed | not-recorded | evals/ | Casos de roteamento e do avaliador de tarefas. |
 | resource:existing-project-adoption | Resource | Existing-project adoption guide | framework:docs | public | manual | confirmed | not-recorded | docs/existing-project-adoption.md | Fluxo factual de analyze, apply e human approval para projetos brownfield. |
 | resource:github-workflows-ci-yml | Resource | .github/workflows/ci.yml | human:DarkSquash | internal | discovered | confirmed | 2026-10-11T22:15:58.585Z | .github/workflows/ci.yml | Discovered continuous-integration configuration at .github/workflows/ci.yml. |
 | resource:how-to-use | Resource | AIFW operational guide | framework:docs | public | manual | confirmed | not-recorded | HOW_TO_USE.md | Instalação, fluxos recomendados, referência completa da CLI e comandos da extensão do Pi. |
@@ -116,8 +115,6 @@ Tornar desenvolvimento com agentes reproduzível, seguro e independente de forne
 | component:cli | dependsOn | component:core |
 | component:cli | documentedBy | resource:how-to-use |
 | component:cli | partOf | system:aifw |
-| component:conformance | consumes | resource:evals |
-| component:conformance | partOf | component:core |
 | component:context-intelligence | partOf | system:aifw |
 | component:core | partOf | system:aifw |
 | component:core | provides | contract:schemas |

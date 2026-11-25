@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import subprocess
 
-from .common import AifwError, read_yaml
+from .common import AifwError, read_yaml, require
 
 ALIASES = {"FAST": "haiku", "WORK": "sonnet", "BRAIN": "opus"}
 
@@ -177,3 +177,41 @@ def derive_signals(root, base=None):
     elif files:
         mark("behaviorChange", f"{len(files) - len(docs)} non-documentation files changed")
     return dict(files=files, signals=signals, reasons=sorted(set(reasons)))
+
+
+def evaluate_routing_cases(file):
+    value = read_yaml(file)
+    require(
+        isinstance(value, dict) and isinstance(value.get("cases"), list),
+        "Routing evaluation requires a cases array.",
+    )
+    cases = value["cases"]
+    for case in cases:
+        require(
+            isinstance(case.get("id"), str)
+            and isinstance(case.get("critical"), bool)
+            and case.get("expectedRoute") in {"FAST", "WORK", "BRAIN"}
+            and isinstance(case.get("input"), dict),
+            "Malformed routing case.",
+        )
+    require(len({c["id"] for c in cases}) == len(cases), "Routing case IDs must be unique.")
+    failures = []
+    for case in cases:
+        actual = route_task(case["input"])["route"]
+        if actual != case["expectedRoute"]:
+            failures.append(
+                dict(
+                    id=case["id"],
+                    expectedRoute=case["expectedRoute"],
+                    actualRoute=actual,
+                    critical=case["critical"],
+                )
+            )
+    passed = len(cases) - len(failures)
+    return dict(
+        cases=len(cases),
+        passed=passed,
+        passRate=passed / len(cases) if cases else 0,
+        criticalFailures=sum(f["critical"] for f in failures),
+        failures=failures,
+    )

@@ -35,7 +35,7 @@ Capability → Requirement → Scenario
 
 Todo artefato `passed` precisa de um `path` não vazio para um arquivo existente dentro da raiz real do projeto. A verificação resolve links simbólicos e rejeita diretórios. Um teste sem esse arquivo não satisfaz a cobertura do cenário.
 
-Uma relação `checkedBy` com um gate declara um compromisso de verificação para a mudança: apenas `passed` o satisfaz. `planned`, `failed` e `waived` bloqueiam esse compromisso. Observações de auditoria sem essa relação permanecem não bloqueantes. A autoridade hard/audit/human e os waivers do avaliador de gates continuam seguindo seus próprios contratos; o analisador de trace não executa gates nem converte uma observação em aprovação.
+Uma relação `checkedBy` com um gate declara um compromisso de verificação para a mudança: apenas `passed` o satisfaz. `planned`, `failed` e `waived` bloqueiam esse compromisso. Observações de auditoria sem essa relação permanecem não bloqueantes. A autoridade hard/audit/human continua seguindo seus próprios contratos; o analisador de trace não executa gates nem converte uma observação em aprovação.
 
 Validação de delta acrescenta conflitos como adicionar requisito já vigente, alterar/remover requisito desconhecido, IDs duplicados e criação de capability sem propósito.
 

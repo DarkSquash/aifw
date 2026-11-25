@@ -140,24 +140,6 @@ def test_instruction_source_cannot_be_secret_or_generated_target(tmp_path):
             run(tmp_path, "instructions", "build", "--source", source)
 
 
-def test_ci_inspection_does_not_claim_execution(tmp_path):
-    put(
-        tmp_path,
-        ".aifw/gates.yaml",
-        "apiVersion: aifw.dev/v1alpha1\nkind: QualityGateSet\nphilosophy: progressive-by-risk\ngates:\n- id: tests\n  enforcement: hard\n  levels: [L1]\n  command: [python, -m, pytest, -q]\n- id: review\n  enforcement: audit\n  levels: [L1]\n",
-    )
-    put(
-        tmp_path,
-        ".github/workflows/tests.yml",
-        "on: workflow_dispatch\njobs:\n  tests:\n    runs-on: ubuntu-latest\n    steps:\n    - run: python -m pytest -q\n",
-    )
-    value, code = run(tmp_path, "gates", "check", "--level", "L1")
-    assert code == 2
-    row = next(g for g in value["gates"] if g["id"] == "tests")
-    assert row["execution"] == "not-run" and row["ciStatus"] == "manual-only"
-    assert next(g for g in value["gates"] if g["id"] == "review")["configured"] is False
-
-
 def test_missing_hard_gate_never_passes():
     value = evaluate_quality_gates(
         dict(change={"level": "L1", "humanApproval": "none"}, requiredGateIds=["tests"], results=[])
@@ -198,22 +180,6 @@ def test_instruction_failed_write_restores_both_files(tmp_path, monkeypatch):
         run(tmp_path, "instructions", "build")
     assert (tmp_path / "AGENTS.md").read_text() == "# Universal"
     assert (tmp_path / "CLAUDE.md").read_text() == "# Existing"
-
-
-def test_ci_conditional_false_is_not_automatic_evidence(tmp_path):
-    put(
-        tmp_path,
-        ".aifw/gates.yaml",
-        "apiVersion: aifw.dev/v1alpha1\nkind: QualityGateSet\nphilosophy: progressive-by-risk\ngates:\n- id: tests\n  enforcement: hard\n  levels: [L1]\n  command: [python, -m, pytest]\n",
-    )
-    put(
-        tmp_path,
-        ".github/workflows/test.yml",
-        "on: push\njobs:\n  test:\n    if: false\n    steps:\n    - run: python -m pytest\n",
-    )
-    value, code = run(tmp_path, "gates", "check", "--level", "L1")
-    assert code == 2
-    assert value["gates"][0]["ciStatus"] == "conditional-reference"
 
 
 @pytest.mark.parametrize("status", ["skipped", "warning", "unknown"])
@@ -272,28 +238,6 @@ def test_builtin_context_gate_reports_real_broken_links(tmp_path):
     value = gates.validate_workspace(tmp_path, "L1")
     assert value["status"] == "blocked"
     assert value["blockers"][0]["gateId"] == "context-integrity"
-
-
-def test_ci_recognizes_literal_uv_runner_but_not_echo(tmp_path):
-    put(
-        tmp_path,
-        ".aifw/gates.yaml",
-        "apiVersion: aifw.dev/v1alpha1\nkind: QualityGateSet\nphilosophy: progressive-by-risk\ngates:\n- id: tests\n  enforcement: hard\n  levels: [L1]\n  command: [python, -m, pytest, -q]\n",
-    )
-    workflow = ".github/workflows/test.yml"
-    put(
-        tmp_path,
-        workflow,
-        "on: pull_request\njobs:\n  test:\n    steps:\n    - run: uv run --no-sync python -m pytest -q\n",
-    )
-    value, code = run(tmp_path, "gates", "check", "--level", "L1")
-    assert code == 0 and value["gates"][0]["execution"] == "not-run"
-    put(
-        tmp_path,
-        workflow,
-        "on: pull_request\njobs:\n  test:\n    steps:\n    - run: echo python -m pytest -q\n",
-    )
-    assert run(tmp_path, "gates", "check", "--level", "L1")[1] == 2
 
 
 def test_existing_document_title_is_searchable_without_metadata(tmp_path):

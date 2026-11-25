@@ -1,0 +1,23 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: remove-unused-commands
+capability: agent-autonomy
+title: Autonomia do agente
+purpose: Deixar o agente trabalhar sem pedir confirmação no que fica registrado e é reversível, e manter a decisão humana só onde o efeito sai do projeto ou não volta atrás.
+operations:
+  added:
+  - id: REQ-AUTONOMY-LEGACY-BREAKGLASS
+    strength: MUST
+    statement: Um permissions.yaml com a chave breakGlass de versões anteriores deve continuar carregando, sem erro, e a chave e os arquivos .aifw/break-glass/ não devem mudar nenhuma decisão do hook; um permissions.yaml sem a chave também deve carregar.
+    scenarios:
+    - id: SCN-AUTONOMY-LEGACY-BREAKGLASS
+      given:
+      - Um projeto com AIFW cujo permissions.yaml traz o bloco breakGlass antigo e cuja pasta .aifw/break-glass/ tem um grant válido para git-remote.
+      - Um permissions.yaml gravado pelo init, sem a chave breakGlass.
+      when:
+      - O hook avalia git push e o permissions.yaml é carregado.
+      then:
+      - Os dois carregam sem erro.
+      - O git push continua pedindo confirmação, como sem o grant.
+  modified: []
+  removed: []

@@ -117,22 +117,8 @@ configure um gate com comando `aifw instructions check --agent codex`. O primeir
 referências e o snapshot, quando presente. Versione o snapshot para detectar drift na CI.
 Esses gates não são ativados automaticamente.
 
-```powershell
-aifw gates check --level L2 --json
-```
-
-Inspeciona configuração e referências literais em `run:` de GitHub Actions, distinguindo
-referência automática, condicional, manual e ausente. Reconhece o comando completo ou
-`aifw validate --level L2`, também via `python -m aifw` e com `--json` opcional. Reconhece
-`uv run` com `--no-sync`, `--locked` ou `--frozen`, e equivalência entre executáveis
-ruff/pytest/aifw e seus módulos Python. Outros wrappers,
-scripts npm, matrizes e workflows reutilizáveis exigem revisão: ausência de correspondência
-não prova ausência de CI.
-
-Resultados mantêm `execution: not-run`: uma referência não prova execução, proteção de
-branch ou bloqueio de deploy. Em `validate`, gates hard/human exigem status `pass`;
+Em `validate`, gates hard/human exigem status `pass`;
 `skipped`, estados desconhecidos e avisos não aprovam.
 
 Nos novos comandos, 0 indica verificação sem achados, 1 indica entrada/execução inválida
-e 2 indica achados ou pendência. `gates check` retornando 0 certifica apenas correspondência
-estática, nunca execução dos testes.
+e 2 indica achados ou pendência.

@@ -77,3 +77,15 @@ Esta versão troca o host de referência para o Claude Code e endurece a valida�
 11. Se o projeto instala pacotes, publica ou acessa servidores pelo agente, decida se inclui `remote-host` em `spec.externalAllowlist`. A partir da ADR-0025, instalações sempre pedem confirmação, e `package-registry` na allowlist não muda isso.
 
 Nenhum arquivo é reescrito automaticamente, e os registros já arquivados continuam válidos.
+
+## v0.4.1 → próxima versão
+
+Esta versão tira comandos e arquivos de controle de waiver e break-glass. Consulte o [CHANGELOG](../CHANGELOG.md).
+
+1. Saem `aifw waiver`, `aifw break-glass`, `aifw eval` e `aifw gates check`, sem substituto; o argparse recusa o comando.
+2. Sai o gate `conformance`. Se o seu `.aifw/gates.yaml` o copiou das receitas, remova-o: ele chama `aifw eval`, que não existe mais.
+3. Os caminhos `.aifw/waivers/` e `.aifw/break-glass/` deixam de ser arquivos de controle. Podem ser apagados; nada os lê.
+4. A chave `breakGlass` do `.aifw/permissions.yaml` pode ficar (é ignorada) ou ser apagada.
+5. Um gate que um waiver cobria agora reprova de verdade.
+6. Grants de break-glass ativos deixam de valer no mesmo instante: o hook volta a pedir confirmação.
+7. Rode `aifw claude enable` para atualizar a skill.

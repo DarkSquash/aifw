@@ -227,9 +227,6 @@ def test_commits_allowed_by_policy_still_ask_with_control_files_changed(tmp_path
     assert decision(tmp_path, "Bash", command="git commit -S -m x") == "ask"
     assert decision(tmp_path, "Bash", command="git add -A && git commit -m x") is None
     assert decision(tmp_path, "Bash", command="python gen.py && git commit -am x") == "ask"
-    (tmp_path / ".aifw/waivers").mkdir(exist_ok=True)
-    (tmp_path / ".aifw/waivers/w.yaml").write_text("id: w\n")
-    assert decision(tmp_path, "Bash", command=command) == "ask"
 
 
 @pytest.mark.parametrize(

@@ -6,13 +6,13 @@ import time
 
 import pytest
 
-from aifw import signing, waiver
+from aifw import signing
 from aifw.claude import check_project, enable_project, install_command
 from aifw.common import read_yaml, write_yaml
 from aifw.hooks import handle
 from aifw.secrets import scan
 from aifw.shell import analyze, runs_tests
-from test_workflows import AT, init
+from test_workflows import init
 
 GIT = ["git", "-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false"]
 
@@ -35,8 +35,6 @@ def commit(root):
 @pytest.mark.parametrize(
     "path",
     [
-        ".aifw/waivers/waiver-tests.yaml",
-        ".aifw/break-glass/inc.yaml",
         ".aifw/runs/s.jsonl",
         ".aifw/charter.yaml",
         ".aifw/changes/active/x/change.yaml",
@@ -150,15 +148,11 @@ def test_secret_scan_reports_locations_not_values(tmp_path):
 
 def test_signed_commit_mode_rejects_unsigned_approvals(tmp_path):
     init(tmp_path)
-    data = dict(ruleId="tests", scope=["ci"], reason="r", requestedBy="agent:t", approvedBy="human:me")
-    waiver.add_waiver(tmp_path, dict(data, approvedAt=AT, expiresAt="2999-01-01T00:00:00Z"))
-    assert waiver.load_waivers(tmp_path)[0]["active"]
     policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
     policy["approvals"] = dict(requireSignedCommit=True)
     write_yaml(tmp_path / ".aifw/permissions.yaml", policy)
     commit(tmp_path)
     assert signing.required(tmp_path)
-    assert not waiver.load_waivers(tmp_path)[0]["active"]
     assert not signing.approved(tmp_path, tmp_path / ".aifw/charter.yaml")
 
 

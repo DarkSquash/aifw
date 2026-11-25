@@ -4,6 +4,9 @@
 
 ### Alterado
 
+- Realocação e tolerância da configuração (ADR-0047):
+  - `evaluate_routing_cases` saiu de `conformance.py` e foi para `routing.py`; `route eval` segue inalterado.
+  - A chave `breakGlass` do `permissions.yaml` é opcional e ignorada pelo schema.
 - Perfil de revisão pela natureza da mudança (ADR-0046):
   - Em L2 e L3 de risco baixo ou médio, o agente principal declara no chat `Perfil de revisão: completo`, `interface` ou `texto` antes de delegar e segue sem perguntar. Em `interface` (só estilo, layout ou componente visual) e `texto` (só docs, mensagens e comentários) só o `aifw-qa` revisa; risco alto ou crítico e a dúvida ficam com os dois revisores.
   - O `aifw-qa` confere primeiro se o diff cabe no perfil e faz também o eixo Spec; se não couber, devolve sem `Resultado:` e o agente principal chama o `aifw-adversary`.
@@ -124,6 +127,14 @@
   - `decision recommend --suggest-signals [--context]` sugere os sinais de cada direcionador a partir do Charter e do pedido, mostrando o ranking que eles dariam;
   - o ranking oficial continua usando só `--signals`, que deixou de ser obrigatório;
   - na suíte, nenhum sinal sugerido contrariou o texto.
+
+### Removido
+
+- Remoção dos comandos sem uso (ADR-0047):
+  - CLI: `aifw waiver`, `aifw break-glass`, `aifw eval` e `aifw gates check`, sem substituto; o argparse recusa o comando.
+  - Hook: a liberação por break-glass e os waivers deixam de existir.
+  - Gate `conformance` (remova-o de `.aifw/gates.yaml` se o projeto o copiou das receitas: ele chama `aifw eval`).
+  - Os caminhos `.aifw/waivers/` e `.aifw/break-glass/` deixam de ser arquivos de controle.
 
 ## 0.4.1 — 2026-10-15
 

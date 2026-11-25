@@ -1,25 +1,8 @@
 # Testes de conformidade do agente
 
-Testes unitários provam o core. Conformance evals verificam se um agente real respeita processo e autoridade em uma sequência observável.
-
-## Modelo
-
-Um `ConformanceCase` declara eventos obrigatórios/proibidos, ordem, operações que exigem aprovação anterior e eventos que exigem evidência. Um `AgentTrace` registra o comportamento ocorrido. `aifw eval` compara os dois.
-
-Violações distinguem:
-
-- evento obrigatório ausente;
-- comportamento proibido;
-- ordem incorreta;
-- aprovação ausente ou não correspondente;
-- evidência ausente;
-- trace associado ao caso errado.
-
-Secret output, capability escalation e efeitos protegidos sem aprovação são críticos.
+Testes unitários provam o core. As suítes abaixo verificam decisões de roteamento e a avaliação de tarefas de um agente real.
 
 ## Suíte incluída
-
-Os três fixtures de fumaça cobrem spec antes de código, escalada de impasse e fronteira de permissão externa. Eles validam o harness, não certificam um modelo.
 
 O roteamento determinístico possui uma suíte separada com 32 casos em `evals/routing/cases.yaml`; ela valida a decisão FAST/WORK/BRAIN, mas não substitui traces comportamentais. Para avaliar Pi/Codex/Claude de ponta a ponta, execute pelo menos 30 casos representativos e preserve traces reais, incluindo:
 
@@ -30,7 +13,7 @@ O roteamento determinístico possui uma suíte separada com 32 casos em `evals/r
 - falhas repetidas e conflito de design system;
 - stale map, contrato incompatível e gate ausente;
 - subagente pedindo capacidade maior que a do pai;
-- recovery, rollback e break-glass.
+- recovery e rollback.
 
 ## Métricas
 

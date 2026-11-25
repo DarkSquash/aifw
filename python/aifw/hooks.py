@@ -19,7 +19,7 @@ import time
 from . import signing
 from .common import AifwError, now, parse_yaml, read_yaml
 from .impasse import case_file, load_cases, mutation_allowed
-from .permissions import decide_action, load_permission_policy, validate_break_glass
+from .permissions import decide_action, load_permission_policy
 from .shell import SECRET_FILE, analyze, domains_for, runs_tests, service_of, verification_visible
 
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
@@ -30,8 +30,6 @@ SHELL_TOOLS = {"Bash", "PowerShell"}
 CONTROL = (
     "aifw.yaml",
     ".aifw/charter.yaml",
-    ".aifw/waivers/",
-    ".aifw/break-glass/",
     ".aifw/runs/",
     ".aifw/permissions.yaml",
     ".aifw/routing.yaml",
@@ -55,11 +53,11 @@ CONTROL = (
     ".husky/",  # husky points core.hooksPath here: git runs these hooks on commit
 )
 # What a commit must not carry without asking: files a signature turns into an approval (Charter,
-# adoption, impasse, waiver, break-glass) and the policy itself. Generated files, evidence and change
+# adoption, impasse) and the policy itself. Generated files, evidence and change
 # approvals are left out (ADR-0037).
 SIGNED_OR_POLICY = (
-    "aifw.yaml", ".aifw/charter.yaml", ".aifw/adoption/status.yaml", ".aifw/impasses/", ".aifw/waivers/",
-    ".aifw/break-glass/", ".aifw/permissions.yaml", ".aifw/routing.yaml", ".aifw/gates.yaml",
+    "aifw.yaml", ".aifw/charter.yaml", ".aifw/adoption/status.yaml", ".aifw/impasses/",
+    ".aifw/permissions.yaml", ".aifw/routing.yaml", ".aifw/gates.yaml",
     ".aifw/project-rules.yaml", ".claude/settings.json", ".claude/settings.local.json",
 )  # fmt: skip
 # Installed tools the hook runs without reading (ADR-0034): editing them with the edit tools asks.
@@ -384,29 +382,7 @@ def protected_push(root, item):
     return ""
 
 
-def active_grants(root, policy):
-    """Action kinds covered by a valid, unexpired break-glass grant."""
-    if not policy.get("breakGlass", {}).get("enabled"):
-        return set()
-    kinds = {}
-    for file in (Path(root) / ".aifw/break-glass").glob("*.yaml"):
-        grant = read_yaml(file)
-        if signing.approved(root, file):
-            kinds.update({s: file for s in grant.get("scope", []) if validate_break_glass(grant, s)["valid"]})
-    return kinds
-
-
-def log_break_glass(file, kind, tool_name, tool_input):
-    """Audit trail for every action a break-glass grant lets through."""
-    from .context import redact
-
-    detail = redact(str(tool_input.get("command") or tool_input.get("file_path") or ""))[:300]
-    entry = dict(at=now(), kind=kind, tool=tool_name, detail=detail)
-    with file.with_suffix(".log").open("a", encoding="utf-8", newline="\n") as stream:
-        stream.write(json.dumps(entry, ensure_ascii=False) + "\n")
-
-
-def item_findings(root, policy, item, allowlist, classification, tool_name="", tool_input=None):
+def item_findings(root, policy, item, allowlist, classification):
     """Policy findings for one action of a tool call."""
     kind, findings = item["kind"], []
     if kind == "opaque":
@@ -445,7 +421,7 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
             findings.append(("ask", "creates or rewrites a commit; the person reviews every commit"))
         elif control:
             # A commit carrying a control file can turn into an approval once signed (Charter, adoption,
-            # impasse, waiver, break-glass); change approvals no longer depend on signing (ADR-0037).
+            # impasse); change approvals no longer depend on signing (ADR-0037).
             findings.append(("ask", f"commits with the AIFW control file {control} changed"))
     elif kind == "mcp":
         servers = policy.get("mcpServers", {})
@@ -459,11 +435,7 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
             # Subagents on this machine inherit these hooks; a cloud session runs outside them.
             findings.append(("ask", "delegates to a cloud session, outside this machine's AIFW hooks"))
     elif kind == "git-remote" and policy.get("remoteMutation") == "branches":
-        reason = protected_push(root, item)
-        grants = active_grants(root, policy) if reason else {}
-        if reason and kind in grants:
-            log_break_glass(grants[kind], kind, tool_name, tool_input or {})
-        elif reason:
+        if reason := protected_push(root, item):
             findings.append(("ask", reason))
     elif (
         kind in {"external-write", "external-read"}
@@ -474,10 +446,6 @@ def item_findings(root, policy, item, allowlist, classification, tool_name="", t
         pass  # opening and discussing pull requests is how branch work reaches the person (ADR-0037)
     else:
         decision = decide_action(item, policy, allowlist)
-        grants = active_grants(root, policy) if decision["decision"] != "allow" else {}
-        if kind in grants:
-            log_break_glass(grants[kind], kind, tool_name, tool_input or {})
-            decision = dict(decision="allow", reason="break-glass")
         # Outside the allowlist, a person confirms external reads and writes; sensitive data is denied.
         outside = kind in {"external-read", "external-write"} and decision["decision"] == "deny"
         if outside and classification in {"confidential", "restricted"}:
@@ -516,7 +484,7 @@ def evaluate(root, tool_name, tool_input, cwd=None):
     mixed = any(i["kind"] not in {"commit", "git-local", "read-only", "signing", "git-remote"} for i in items)
     for item in items:
         item = dict(item, mixed=True) if mixed and item["kind"] == "commit" else item
-        findings += item_findings(root, policy, item, allowlist, classification, tool_name, tool_input)
+        findings += item_findings(root, policy, item, allowlist, classification)
     control = control_target(
         root,
         tool_name,

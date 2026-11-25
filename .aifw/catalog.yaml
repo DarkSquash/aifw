@@ -138,18 +138,6 @@ entities:
     target: component:core
   - type: documentedBy
     target: resource:how-to-use
-- id: component:conformance
-  kind: Component
-  name: Agent conformance evaluator
-  description: Avalia traces contra eventos, ordem, aprovações e evidência esperados.
-  owner: framework:quality
-  source: python/aifw/conformance.py
-  visibility: public
-  relations:
-  - type: partOf
-    target: component:core
-  - type: consumes
-    target: resource:evals
 - id: component:context-intelligence
   kind: Component
   name: Context intelligence
@@ -163,7 +151,7 @@ entities:
 - id: component:core
   kind: Component
   name: Vendor-neutral core
-  description: Intake, authority, lifecycle, gates, map, permissions, impasse, routing e conformance.
+  description: Intake, authority, lifecycle, gates, map, permissions, impasse e routing.
   owner: framework:core
   source: python/aifw/
   visibility: public
@@ -518,8 +506,8 @@ entities:
     target: system:aifw
 - id: resource:evals
   kind: Resource
-  name: Conformance fixtures
-  description: Casos e traces de fumaça para validar o evaluator.
+  name: Evaluation cases
+  description: Casos de roteamento e do avaliador de tarefas.
   owner: framework:quality
   source: evals/
   visibility: public

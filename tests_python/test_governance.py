@@ -1,7 +1,7 @@
 import pytest
 
 from aifw.common import AifwError
-from aifw import permissions, impasse, waiver
+from aifw import permissions, impasse
 
 AT = "2026-09-06T03:00:00.000Z"
 
@@ -22,20 +22,6 @@ AT = "2026-09-06T03:00:00.000Z"
 def test_permissions(action, expected):
     policy = dict(permissions.DEFAULT_PERMISSION_POLICY, externalAllowlist=["known"])
     assert permissions.authorize_action(action, policy)["decision"] == expected
-
-
-def test_break_glass_window():
-    grant = dict(
-        incidentId="INC-1",
-        scope=["repair"],
-        approvedBy="human:test",
-        approvedAt=AT,
-        expiresAt="2026-09-06T04:00:00Z",
-        reason="Repair incident",
-    )
-    assert permissions.validate_break_glass(grant, "repair", AT)["valid"]
-    assert not permissions.validate_break_glass(grant, "deploy", AT)["valid"]
-    assert not permissions.validate_break_glass(grant, "repair", "2026-09-06T04:00:00Z")["valid"]
 
 
 def attempt(index):
@@ -83,22 +69,3 @@ def test_repeated_strategy_opens_immediately():
     case = impasse.record_attempt(impasse.create_impasse_case("case", "L0"), attempt(1))
     repeated = dict(attempt(1), hypothesis=" CAUSE   1 ", intervention=" FIX  1 ")
     assert impasse.record_attempt(case, repeated)["openReason"] == "repeated-strategy"
-
-
-def test_waiver_cannot_override_invariant():
-    data = dict(
-        id="w",
-        ruleId="core",
-        scope=["task"],
-        reason="Justified",
-        requestedBy="agent:test",
-        approvedBy="human:test",
-        approvedAt=AT,
-        expiresAt="2026-09-07T03:00:00Z",
-        checkpoint="before",
-    )
-    with pytest.raises(AifwError):
-        waiver.create_waiver(data, non_waivable_rule_ids=["core"])
-    value = waiver.create_waiver(data)
-    assert waiver.is_waiver_active(value, AT)
-    assert not waiver.is_waiver_active(value, "2026-09-07T03:00:00Z")

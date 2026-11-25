@@ -23,9 +23,9 @@ O manifesto classifica `public`, `internal`, `confidential` ou `restricted`. A c
 
 Dependências usam lockfile, revisão de provenance/licença proporcional ao risco, audit de vulnerabilidades e atualização controlada. Scripts de instalação e geração são código. Pacote ou MCP novo é mudança de capability, não detalhe invisível.
 
-## Aprovação e break-glass
+## Aprovação
 
-Push, escrita externa, produção e destruição seguem permission policy. Break-glass só vale para incident ID e scope exatos, após aprovação humana, dentro da janela de validade. Cada ação liberada é registrada em `.aifw/break-glass/<incidente>.log`, que serve de base para a revisão pós-incidente; break-glass não remove proteção contra secrets.
+Push, escrita externa, produção e destruição seguem permission policy.
 
 ## Evidência segura
 

@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from aifw import gates, intake, permissions, routing, specs, waiver
+from aifw import gates, intake, permissions, routing, specs
 from aifw.claude import HOOKS, check_project, enable_project
 from aifw.common import AifwError, read_yaml, write_yaml
 from aifw.hooks import handle, summarize_runs
@@ -69,17 +69,32 @@ def test_mcp_delegation_and_data_classification(tmp_path):
     assert pre(tmp_path, "Bash", command="curl -X POST https://api.github.com/x") == "deny"
 
 
-def test_break_glass_grant_lifts_policy_prompts_until_it_expires(tmp_path):
+def test_legacy_break_glass_key_is_ignored(tmp_path):
     init(tmp_path)
     assert pre(tmp_path, "Bash", command="git push") == "ask"
-    grant = dict(incidentId="inc-1", scope=["git-remote"], reason="outage", approvedBy="human:me")
-    permissions.grant_break_glass(tmp_path, dict(grant, approvedAt=AT, expiresAt="2999-01-01T00:00:00Z"))
-    assert pre(tmp_path, "Bash", command="git push") is None
-    with pytest.raises(AifwError):
-        permissions.grant_break_glass(
-            tmp_path, dict(grant, incidentId="x", scope=["root"], approvedAt=AT, expiresAt=AT)
-        )
-    assert permissions.list_break_glass(tmp_path)[0]["active"]
+    policy = read_yaml(tmp_path / ".aifw/permissions.yaml")
+    policy["breakGlass"] = dict(
+        enabled=True, requiresIncidentId=True, requiresHumanApproval=True, expires=True
+    )
+    write_yaml(tmp_path / ".aifw/permissions.yaml", policy)
+    grant = dict(
+        incidentId="inc-1",
+        scope=["git-remote"],
+        reason="outage",
+        approvedBy="human:me",
+        approvedAt=AT,
+        expiresAt="2999-01-01T00:00:00Z",
+    )
+    (tmp_path / ".aifw/break-glass").mkdir(parents=True)
+    write_yaml(tmp_path / ".aifw/break-glass/inc-1.yaml", grant)
+    permissions.load_permission_policy(tmp_path)
+    assert pre(tmp_path, "Bash", command="git push") == "ask"
+
+
+def test_permissions_without_break_glass_validate(tmp_path):
+    init(tmp_path)
+    assert "breakGlass" not in read_yaml(tmp_path / ".aifw/permissions.yaml")
+    permissions.load_permission_policy(tmp_path)
 
 
 def test_session_log_drives_stop_and_impasse_hint(tmp_path):
@@ -107,20 +122,6 @@ def test_session_start_reports_state(tmp_path):
     specs.create_change(tmp_path, dict(id="feature", title="F", summary="S", level="L2", createdAt=AT))
     context = event(tmp_path, "SessionStart")["hookSpecificOutput"]["additionalContext"]
     assert "Intake is incomplete" in context and "Active change feature (L2, draft)" in context
-
-
-def test_waiver_passes_a_gate_but_never_human_approval(tmp_path):
-    init(tmp_path)
-    data = dict(scope=["project"], reason="flaky CI", requestedBy="agent:test", approvedBy="human:me")
-    data.update(approvedAt=AT, expiresAt="2999-01-01T00:00:00Z")
-    waiver.add_waiver(tmp_path, dict(data, ruleId="tests"))
-    report = gates.validate_workspace(tmp_path, "L1", lambda *_: dict(ok=False, stdout="", stderr="x"))
-    tests = next(r for r in report["passed"] if r["gateId"] == "tests")
-    assert tests["waived"]
-    with pytest.raises(AifwError):
-        waiver.add_waiver(tmp_path, dict(data, ruleId="human-approval"))
-    with pytest.raises(AifwError):
-        waiver.add_waiver(tmp_path, dict(data, ruleId="security.no-secret-output"))
 
 
 def test_intake_set_records_and_reopens(tmp_path):

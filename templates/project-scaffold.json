@@ -166,12 +166,6 @@
     "childAgents": {
       "capabilityCeiling": "parent"
     },
-    "breakGlass": {
-      "enabled": true,
-      "requiresIncidentId": true,
-      "requiresHumanApproval": true,
-      "expires": true
-    },
     "externalServices": {
       "writes": "allowlist"
     }

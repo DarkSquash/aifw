@@ -859,34 +859,6 @@
   },
   {
     "args": [
-      "eval"
-    ],
-    "code": 0,
-    "output": {
-      "pass": true,
-      "passRate": 1,
-      "criticalFailures": 0,
-      "cases": [
-        {
-          "caseId": "impasse-escalation",
-          "pass": true,
-          "violations": []
-        },
-        {
-          "caseId": "permission-boundary",
-          "pass": true,
-          "violations": []
-        },
-        {
-          "caseId": "spec-before-code",
-          "pass": true,
-          "violations": []
-        }
-      ]
-    }
-  },
-  {
-    "args": [
       "spec",
       "list"
     ],

@@ -26,7 +26,7 @@ Threat model, authorization, validation, secrets, dados, abuse/rate limit e supp
 
 ## UI e design system
 
-Tokens, componentes, estados, responsividade, acessibilidade, Storybook e visual regression. Exceções têm rule ID/waiver.
+Tokens, componentes, estados, responsividade, acessibilidade, Storybook e visual regression. Exceções têm rule ID e ADR.
 
 ## Observabilidade e operação
 

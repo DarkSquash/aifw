@@ -1,0 +1,21 @@
+apiVersion: aifw.dev/v1alpha1
+kind: CapabilityDelta
+changeId: remove-unused-commands
+capability: context-intelligence
+title: Context intelligence
+purpose: Select and maintain reviewable project context without promoting imported content to authority.
+operations:
+  added: []
+  modified:
+  - id: REQ-CONTEXT-GATES
+    strength: MUST
+    statement: Require pass for mandatory gates, so a gate that is missing, skipped, warning or unknown blocks.
+    scenarios:
+    - id: SCN-CONTEXT-GATES
+      given:
+      - A mandatory gate is missing, skipped or reports a warning or an unknown status.
+      when:
+      - Gate evaluation runs.
+      then:
+      - Unproven mandatory checks block.
+  removed: []

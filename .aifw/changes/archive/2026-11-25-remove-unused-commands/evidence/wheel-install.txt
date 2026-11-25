@@ -1,0 +1,7 @@
+Processing C:\Users\DARKSQ~1\AppData\Local\Temp\claude\f70c4826a486d420\31451809-735d-4dd2-985a-991c20809a6a\scratchpad\wheel\aifw_cli-0.4.1-py3-none-any.whl
+Installing collected packages: aifw-cli
+  Attempting uninstall: aifw-cli
+    Found existing installation: aifw-cli 0.4.1
+    Not uninstalling aifw-cli at c:\users\darksquash\appdata\local\python\pythoncore-3.14-64\lib\site-packages, outside environment C:\Users\DARKSQ~1\AppData\Local\Temp\claude\f70c4826a486d420\31451809-735d-4dd2-985a-991c20809a6a\scratchpad\venv
+    Can't uninstall 'aifw-cli'. No files were found to uninstall.
+Successfully installed aifw-cli-0.4.1

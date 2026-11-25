@@ -1,0 +1,25 @@
+{
+  "change": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "SpecChange",
+    "metadata": {
+      "id": "remove-unused-commands",
+      "title": "Remove waiver, break-glass, eval e gates check",
+      "level": "L2",
+      "createdAt": "2026-11-15T19:35:00.804Z"
+    },
+    "summary": "Remove do CLI e do hook os recursos waiver e break-glass inteiros e os subcomandos eval e gates check, nunca usados no fluxo, mantendo legiveis os projetos que ja tem breakGlass no permissions.yaml.",
+    "status": "draft",
+    "approval": {
+      "approvedBy": "human:DarkSquash",
+      "approvedAt": "2026-11-15T20:05:03.840Z",
+      "record": ".aifw/changes/active/remove-unused-commands/approval.md"
+    }
+  },
+  "pass": true,
+  "findings": [],
+  "capabilities": [
+    "agent-autonomy",
+    "context-intelligence"
+  ]
+}
