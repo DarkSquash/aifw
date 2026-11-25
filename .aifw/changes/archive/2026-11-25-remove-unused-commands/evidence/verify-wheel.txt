@@ -1,0 +1,7 @@
+{
+  "status": "pass",
+  "version": "0.4.1",
+  "nodeOnPath": false,
+  "isolatedPackage": "C:\\Users\\DARKSQ~1\\AppData\\Local\\Temp\\claude\\f70c4826a486d420\\31451809-735d-4dd2-985a-991c20809a6a\\scratchpad\\venv\\Lib\\site-packages\\aifw\\__init__.py",
+  "commands": 14
+}

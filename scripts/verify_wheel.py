@@ -46,7 +46,6 @@ def verify():
         run("decision", "list", "--json")
         run("intake", "status", "--json", expected=2)
         assert json.loads(run("route", "eval", "--json"))["passed"] == 32
-        assert json.loads(run("eval", "--json"))["pass"]
         project = Path(directory)
         (project / "docs").mkdir(exist_ok=True)
         (project / "docs/login.md").write_text("---\nscope: login\n---\n# Login\n", encoding="utf-8")
@@ -57,7 +56,6 @@ def verify():
         run("context", "check", "--json")
         selected = json.loads(run("context", "select", "--task", "login", "--json"))
         assert any(doc["path"] == "docs/login.md" for doc in selected["selected"])
-        run("gates", "check", "--level", "L1", "--json", expected=2)
         import aifw
         from aifw.common import assets
 

@@ -52,6 +52,19 @@ requirements:
     - O agente faz um POST para esse domínio, para outro domínio, ou com dataClassification restricted.
     then:
     - O primeiro roda, o segundo pede confirmação e o terceiro é negado.
+- id: REQ-AUTONOMY-LEGACY-BREAKGLASS
+  strength: MUST
+  statement: Um permissions.yaml com a chave breakGlass de versões anteriores deve continuar carregando, sem erro, e a chave e os arquivos .aifw/break-glass/ não devem mudar nenhuma decisão do hook; um permissions.yaml sem a chave também deve carregar.
+  scenarios:
+  - id: SCN-AUTONOMY-LEGACY-BREAKGLASS
+    given:
+    - Um projeto com AIFW cujo permissions.yaml traz o bloco breakGlass antigo e cuja pasta .aifw/break-glass/ tem um grant válido para git-remote.
+    - Um permissions.yaml gravado pelo init, sem a chave breakGlass.
+    when:
+    - O hook avalia git push e o permissions.yaml é carregado.
+    then:
+    - Os dois carregam sem erro.
+    - O git push continua pedindo confirmação, como sem o grant.
 - id: REQ-AUTONOMY-PUBLISH
   strength: MUST
   statement: Publicar um pacote ou release deve sempre pedir confirmação, mesmo com o registro na allowlist, e deve ser negado com dados confidential ou restricted.

@@ -12,8 +12,7 @@
     "previewDeployment",
     "productionDeployment",
     "destructiveChanges",
-    "childAgents",
-    "breakGlass"
+    "childAgents"
   ],
   "properties": {
     "apiVersion": {
@@ -95,28 +94,7 @@
       }
     },
     "breakGlass": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "enabled",
-        "requiresIncidentId",
-        "requiresHumanApproval",
-        "expires"
-      ],
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "requiresIncidentId": {
-          "const": true
-        },
-        "requiresHumanApproval": {
-          "const": true
-        },
-        "expires": {
-          "const": true
-        }
-      }
+      "description": "Ignorado. O recurso break-glass foi removido (ADR-0047); a chave de projetos antigos continua sendo aceita."
     },
     "mcpServers": {
       "type": "object",

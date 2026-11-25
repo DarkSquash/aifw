@@ -131,7 +131,7 @@ def test_force_push_is_both_remote_and_destructive():
 
 def test_approval_is_detected_through_wrappers():
     assert analyze("python -m aifw intake approve --by human:x")["approval"]
-    assert analyze('bash -c "aifw waiver add --rule tests"')["approval"]
+    assert analyze('bash -c "aifw impasse decide --id x"')["approval"]
     assert not analyze("aifw intake status")["approval"]
 
 

@@ -11,7 +11,7 @@ externalServices:
   writes: allowlist
 # Opaque code (scripts, eval) runs; the commands inside it keep their own rules (ADR-0037).
 opaqueCode: allow
-# Impasse, waiver, break-glass, Charter and adoption count only in a signed, unchanged commit.
+# Impasse, Charter and adoption count only in a signed, unchanged commit.
 # Change approvals come from the person's reply in the chat instead (ADR-0037).
 approvals:
   requireSignedCommit: true
@@ -30,8 +30,3 @@ orchestration:
     - python/aifw/indirect.py
 childAgents:
   capabilityCeiling: parent
-breakGlass:
-  enabled: true
-  requiresIncidentId: true
-  requiresHumanApproval: true
-  expires: true

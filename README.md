@@ -15,7 +15,7 @@ O núcleo é independente do agente. O host de referência é o Claude Code, int
 | push para a branch padrão, tags, force push, apagar branch remota, merge de PR | escrita em serviço da allowlist do projeto |
 | escrever em serviço fora da allowlist (e incluir um domínio novo nela) | delegar trabalho a subagentes (haiku/sonnet/opus) |
 | publicar pacote ou release, deploy de produção, ação destrutiva | código opaco (`python -c`, scripts), se o projeto liberar |
-| impasse, waiver, break-glass, Charter, adoção e decisões de arquitetura | deploy de preview |
+| impasse, Charter, adoção e decisões de arquitetura | deploy de preview |
 
 Ler segredos (`.env`, chaves, `printenv`) é sempre negado.
 
@@ -37,12 +37,12 @@ Ler segredos (`.env`, chaves, `printenv`) é sempre negado.
 - catálogo global contextual de Clean Code, SOLID, KISS, YAGNI, DRY e separação de responsabilidades, incluindo riscos de uso dogmático;
 - quality gates progressivos, distinguindo hard gate, auditoria e aprovação humana;
 - máquina de estados para prevenção de impasse e loops de correção;
-- política de permissões para Git local/remoto (branches de trabalho livres, branch padrão protegida), deploy, serviços externos com allowlist, publicação, delegação e break-glass;
+- política de permissões para Git local/remoto (branches de trabalho livres, branch padrão protegida), deploy, serviços externos com allowlist, publicação e delegação;
 - integração com o Claude Code ativada por projeto (`/aifw new|adopt`), com skill de fluxo e tabela de modelos FAST/WORK/BRAIN (haiku/sonnet/opus) sempre ligada, e subagentes por papel com modelo e esforço fixos: cascata pela complexidade (rápido, executor, planner, worker, lead; sênior para risco alto em L1), mais explorador e a revisão em duas etapas, adversário e QA (nove papéis);
 - hooks que aplicam permissões, impasses e arquivos de controle a cada ação, leem os comandos de shell como um shell (inclusive scripts, `package.json` e `Makefile` que o comando executa), gravam a aprovação do plano a partir da sua resposta no chat e impedem concluir com código não verificado;
 - avaliador de tarefas que classifica cada pedido (risco, importância, complexidade) e entrega ao agente o caminho FAST, WORK, PLANNED ou CRITICAL, com piso de risco vindo do diff;
 - avaliações em modo sombra por modelo de decisão para impasse, contexto, intake, rastreabilidade e sinais de decisão, com relatório e vereditos humanos;
-- validação por mudança (`validate --change`) exigida pelo archive, waivers e break-glass com prazo, secret scan e resumo das sessões (`runs show`);
+- validação por mudança (`validate --change`) exigida pelo archive, secret scan e resumo das sessões (`runs show`);
 - testes de conformidade comportamental do agente;
 - profile oficial `flutter-mobile`, com descoberta de `pubspec.yaml`, targets Android/iOS e receitas de gates para Windows e macOS;
 - seleção direta de stack no `init` por `--flutter`, `--web` ou `--python`, validada antes de qualquer arquivo ser criado;
@@ -118,7 +118,6 @@ aifw principle list
 aifw audit
 aifw change classify --behavior-change --local-only --reversible
 aifw validate --level L1
-aifw eval
 aifw doctor
 ```
 

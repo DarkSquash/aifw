@@ -1,0 +1,874 @@
+{
+  "change": {
+    "apiVersion": "aifw.dev/v1alpha1",
+    "kind": "SpecChange",
+    "metadata": {
+      "id": "remove-unused-commands",
+      "title": "Remove waiver, break-glass, eval e gates check",
+      "level": "L2",
+      "createdAt": "2026-11-15T19:35:00.804Z"
+    },
+    "summary": "Remove do CLI e do hook os recursos waiver e break-glass inteiros e os subcomandos eval e gates check, nunca usados no fluxo, mantendo legiveis os projetos que ja tem breakGlass no permissions.yaml.",
+    "status": "draft",
+    "approval": {
+      "approvedBy": "human:DarkSquash",
+      "approvedAt": "2026-11-15T20:05:03.840Z",
+      "record": ".aifw/changes/active/remove-unused-commands/approval.md"
+    }
+  },
+  "pass": true,
+  "findings": [],
+  "coverage": {
+    "requirements": {
+      "total": 2,
+      "linkedToTask": 2
+    },
+    "scenarios": {
+      "total": 2,
+      "verified": 2
+    },
+    "tasks": {
+      "total": 12,
+      "completed": 12
+    }
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "ADR-0047",
+        "type": "adr",
+        "path": "docs/decisions/ADR-0047-remove-unused-commands.md"
+      },
+      {
+        "id": "DESIGN-REMOVE-UNUSED-COMMANDS",
+        "type": "design",
+        "path": ".aifw/changes/active/remove-unused-commands/design.md"
+      },
+      {
+        "id": "EVIDENCE-ACCEPTANCE-GREP",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/acceptance-grep.txt"
+      },
+      {
+        "id": "EVIDENCE-BUILD",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/build.txt"
+      },
+      {
+        "id": "EVIDENCE-CLAUDE-CHECK",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/claude-check.txt"
+      },
+      {
+        "id": "EVIDENCE-CLI-REFERENCE-CHECK",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/cli-reference-check.txt"
+      },
+      {
+        "id": "EVIDENCE-MAP-CHECK",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/map-check.txt"
+      },
+      {
+        "id": "EVIDENCE-REMOVED-COMMANDS",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/removed-commands.txt"
+      },
+      {
+        "id": "EVIDENCE-RESOLVE-CHECK",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/resolve-check.txt"
+      },
+      {
+        "id": "EVIDENCE-RUFF-CHECK",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/ruff-check.txt"
+      },
+      {
+        "id": "EVIDENCE-RUFF-FORMAT",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/ruff-format.txt"
+      },
+      {
+        "id": "EVIDENCE-SCENARIO-TESTS",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/scenario-tests.txt"
+      },
+      {
+        "id": "EVIDENCE-VERIFY-WHEEL",
+        "type": "evidence",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/verify-wheel.txt"
+      },
+      {
+        "id": "FILE:.aifw/catalog.yaml",
+        "type": "code",
+        "path": ".aifw/catalog.yaml"
+      },
+      {
+        "id": "FILE:.aifw/gates.yaml",
+        "type": "code",
+        "path": ".aifw/gates.yaml"
+      },
+      {
+        "id": "FILE:.aifw/permissions.yaml",
+        "type": "code",
+        "path": ".aifw/permissions.yaml"
+      },
+      {
+        "id": "FILE:.claude/skills/aifw-workflow/SKILL.md",
+        "type": "code",
+        "path": ".claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "id": "FILE:CHANGELOG.md",
+        "type": "code",
+        "path": "CHANGELOG.md"
+      },
+      {
+        "id": "FILE:HOW_TO_USE.md",
+        "type": "code",
+        "path": "HOW_TO_USE.md"
+      },
+      {
+        "id": "FILE:PROJECT_MAP.md",
+        "type": "code",
+        "path": "PROJECT_MAP.md"
+      },
+      {
+        "id": "FILE:README.md",
+        "type": "code",
+        "path": "README.md"
+      },
+      {
+        "id": "FILE:docs/agent-conformance.md",
+        "type": "code",
+        "path": "docs/agent-conformance.md"
+      },
+      {
+        "id": "FILE:docs/architecture.md",
+        "type": "code",
+        "path": "docs/architecture.md"
+      },
+      {
+        "id": "FILE:docs/authority.md",
+        "type": "code",
+        "path": "docs/authority.md"
+      },
+      {
+        "id": "FILE:docs/claude-code.md",
+        "type": "code",
+        "path": "docs/claude-code.md"
+      },
+      {
+        "id": "FILE:docs/cli-reference.generated.md",
+        "type": "code",
+        "path": "docs/cli-reference.generated.md"
+      },
+      {
+        "id": "FILE:docs/cli.md",
+        "type": "code",
+        "path": "docs/cli.md"
+      },
+      {
+        "id": "FILE:docs/context-intelligence.md",
+        "type": "code",
+        "path": "docs/context-intelligence.md"
+      },
+      {
+        "id": "FILE:docs/decisions/ADR-0047-remove-unused-commands.md",
+        "type": "code",
+        "path": "docs/decisions/ADR-0047-remove-unused-commands.md"
+      },
+      {
+        "id": "FILE:docs/migrations.md",
+        "type": "code",
+        "path": "docs/migrations.md"
+      },
+      {
+        "id": "FILE:docs/observability-and-runbooks.md",
+        "type": "code",
+        "path": "docs/observability-and-runbooks.md"
+      },
+      {
+        "id": "FILE:docs/quality-gates.md",
+        "type": "code",
+        "path": "docs/quality-gates.md"
+      },
+      {
+        "id": "FILE:docs/security.md",
+        "type": "code",
+        "path": "docs/security.md"
+      },
+      {
+        "id": "FILE:docs/traceability.md",
+        "type": "code",
+        "path": "docs/traceability.md"
+      },
+      {
+        "id": "FILE:evals/cases",
+        "type": "code",
+        "path": "evals/cases"
+      },
+      {
+        "id": "FILE:evals/traces",
+        "type": "code",
+        "path": "evals/traces"
+      },
+      {
+        "id": "FILE:python/aifw/cli.py",
+        "type": "code",
+        "path": "python/aifw/cli.py"
+      },
+      {
+        "id": "FILE:python/aifw/cli.py",
+        "type": "code",
+        "path": "python/aifw/cli.py"
+      },
+      {
+        "id": "FILE:python/aifw/cli.py",
+        "type": "code",
+        "path": "python/aifw/cli.py"
+      },
+      {
+        "id": "FILE:python/aifw/conformance.py",
+        "type": "code",
+        "path": "python/aifw/conformance.py"
+      },
+      {
+        "id": "FILE:python/aifw/gates.py",
+        "type": "code",
+        "path": "python/aifw/gates.py"
+      },
+      {
+        "id": "FILE:python/aifw/gates.py",
+        "type": "code",
+        "path": "python/aifw/gates.py"
+      },
+      {
+        "id": "FILE:python/aifw/hooks.py",
+        "type": "code",
+        "path": "python/aifw/hooks.py"
+      },
+      {
+        "id": "FILE:python/aifw/permissions.py",
+        "type": "code",
+        "path": "python/aifw/permissions.py"
+      },
+      {
+        "id": "FILE:python/aifw/routing.py",
+        "type": "code",
+        "path": "python/aifw/routing.py"
+      },
+      {
+        "id": "FILE:python/aifw/shell.py",
+        "type": "code",
+        "path": "python/aifw/shell.py"
+      },
+      {
+        "id": "FILE:python/aifw/waiver.py",
+        "type": "code",
+        "path": "python/aifw/waiver.py"
+      },
+      {
+        "id": "FILE:schemas/agent-trace.schema.json",
+        "type": "code",
+        "path": "schemas/agent-trace.schema.json"
+      },
+      {
+        "id": "FILE:schemas/conformance-case.schema.json",
+        "type": "code",
+        "path": "schemas/conformance-case.schema.json"
+      },
+      {
+        "id": "FILE:schemas/permissions.schema.json",
+        "type": "code",
+        "path": "schemas/permissions.schema.json"
+      },
+      {
+        "id": "FILE:schemas/waiver.schema.json",
+        "type": "code",
+        "path": "schemas/waiver.schema.json"
+      },
+      {
+        "id": "FILE:scripts/verify_wheel.py",
+        "type": "code",
+        "path": "scripts/verify_wheel.py"
+      },
+      {
+        "id": "FILE:scripts/verify_wheel.py",
+        "type": "code",
+        "path": "scripts/verify_wheel.py"
+      },
+      {
+        "id": "FILE:templates/agent-trace.yaml",
+        "type": "code",
+        "path": "templates/agent-trace.yaml"
+      },
+      {
+        "id": "FILE:templates/claude/skills/aifw-workflow/SKILL.md",
+        "type": "code",
+        "path": "templates/claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "id": "FILE:templates/project-scaffold.json",
+        "type": "code",
+        "path": "templates/project-scaffold.json"
+      },
+      {
+        "id": "FILE:templates/storybook.md",
+        "type": "code",
+        "path": "templates/storybook.md"
+      },
+      {
+        "id": "FILE:templates/technical-plan.md",
+        "type": "code",
+        "path": "templates/technical-plan.md"
+      },
+      {
+        "id": "FILE:templates/waiver.yaml",
+        "type": "code",
+        "path": "templates/waiver.yaml"
+      },
+      {
+        "id": "FILE:tests_python/fixtures/cli-parity.json",
+        "type": "code",
+        "path": "tests_python/fixtures/cli-parity.json"
+      },
+      {
+        "id": "FILE:tests_python/fixtures/commands.json",
+        "type": "code",
+        "path": "tests_python/fixtures/commands.json"
+      },
+      {
+        "id": "FILE:tests_python/fixtures/commands.json",
+        "type": "code",
+        "path": "tests_python/fixtures/commands.json"
+      },
+      {
+        "id": "FILE:tests_python/test_audit_features.py",
+        "type": "code",
+        "path": "tests_python/test_audit_features.py"
+      },
+      {
+        "id": "FILE:tests_python/test_audit_features.py",
+        "type": "code",
+        "path": "tests_python/test_audit_features.py"
+      },
+      {
+        "id": "FILE:tests_python/test_context.py",
+        "type": "code",
+        "path": "tests_python/test_context.py"
+      },
+      {
+        "id": "FILE:tests_python/test_governance.py",
+        "type": "code",
+        "path": "tests_python/test_governance.py"
+      },
+      {
+        "id": "FILE:tests_python/test_governance.py",
+        "type": "code",
+        "path": "tests_python/test_governance.py"
+      },
+      {
+        "id": "FILE:tests_python/test_hardening.py",
+        "type": "code",
+        "path": "tests_python/test_hardening.py"
+      },
+      {
+        "id": "FILE:tests_python/test_hardening.py",
+        "type": "code",
+        "path": "tests_python/test_hardening.py"
+      },
+      {
+        "id": "FILE:tests_python/test_hooks.py",
+        "type": "code",
+        "path": "tests_python/test_hooks.py"
+      },
+      {
+        "id": "FILE:tests_python/test_shell.py",
+        "type": "code",
+        "path": "tests_python/test_shell.py"
+      },
+      {
+        "id": "FILE:tests_python/test_third_audit.py",
+        "type": "code",
+        "path": "tests_python/test_third_audit.py"
+      },
+      {
+        "id": "FILE:tests_python/test_workflows.py",
+        "type": "code",
+        "path": "tests_python/test_workflows.py"
+      },
+      {
+        "id": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "type": "requirement"
+      },
+      {
+        "id": "REQ-CONTEXT-GATES",
+        "type": "requirement"
+      },
+      {
+        "id": "SCN-AUTONOMY-LEGACY-BREAKGLASS",
+        "type": "scenario"
+      },
+      {
+        "id": "SCN-CONTEXT-GATES",
+        "type": "scenario"
+      },
+      {
+        "id": "TASK-ADR",
+        "type": "task"
+      },
+      {
+        "id": "TASK-BREAKGLASS",
+        "type": "task"
+      },
+      {
+        "id": "TASK-CLI-GOV",
+        "type": "task"
+      },
+      {
+        "id": "TASK-DOCS-SECURITY",
+        "type": "task"
+      },
+      {
+        "id": "TASK-DOCS-USAGE",
+        "type": "task"
+      },
+      {
+        "id": "TASK-EVAL",
+        "type": "task"
+      },
+      {
+        "id": "TASK-GATES-CHECK",
+        "type": "task"
+      },
+      {
+        "id": "TASK-GENERATED",
+        "type": "task"
+      },
+      {
+        "id": "TASK-HOOK-CORE",
+        "type": "task"
+      },
+      {
+        "id": "TASK-INSTALL",
+        "type": "task"
+      },
+      {
+        "id": "TASK-SKILL-TEMPLATES",
+        "type": "task"
+      },
+      {
+        "id": "TASK-WAIVER",
+        "type": "task"
+      },
+      {
+        "id": "TEST-REMOVE-UNUSED-COMMANDS",
+        "type": "test",
+        "path": ".aifw/changes/active/remove-unused-commands/evidence/tests.txt"
+      }
+    ],
+    "links": [
+      {
+        "from": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "designedBy",
+        "to": "DESIGN-REMOVE-UNUSED-COMMANDS"
+      },
+      {
+        "from": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "governedBy",
+        "to": "ADR-0047"
+      },
+      {
+        "from": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "hasScenario",
+        "to": "SCN-AUTONOMY-LEGACY-BREAKGLASS"
+      },
+      {
+        "from": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "implementedBy",
+        "to": "TASK-BREAKGLASS"
+      },
+      {
+        "from": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "implementedBy",
+        "to": "TASK-HOOK-CORE"
+      },
+      {
+        "from": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "provedBy",
+        "to": "TASK-BREAKGLASS"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "designedBy",
+        "to": "DESIGN-REMOVE-UNUSED-COMMANDS"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "governedBy",
+        "to": "ADR-0047"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "hasScenario",
+        "to": "SCN-CONTEXT-GATES"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "implementedBy",
+        "to": "TASK-GATES-CHECK"
+      },
+      {
+        "from": "REQ-CONTEXT-GATES",
+        "relation": "provedBy",
+        "to": "TASK-GATES-CHECK"
+      },
+      {
+        "from": "SCN-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "verifiedBy",
+        "to": "EVIDENCE-SCENARIO-TESTS"
+      },
+      {
+        "from": "SCN-AUTONOMY-LEGACY-BREAKGLASS",
+        "relation": "verifiedBy",
+        "to": "TEST-REMOVE-UNUSED-COMMANDS"
+      },
+      {
+        "from": "SCN-CONTEXT-GATES",
+        "relation": "verifiedBy",
+        "to": "EVIDENCE-SCENARIO-TESTS"
+      },
+      {
+        "from": "SCN-CONTEXT-GATES",
+        "relation": "verifiedBy",
+        "to": "TEST-REMOVE-UNUSED-COMMANDS"
+      },
+      {
+        "from": "TASK-ADR",
+        "relation": "changes",
+        "to": "FILE:docs/decisions/ADR-0047-remove-unused-commands.md"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:.aifw/permissions.yaml"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:python/aifw/permissions.py"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:schemas/permissions.schema.json"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:templates/project-scaffold.json"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_audit_features.py"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_governance.py"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_hardening.py"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_hooks.py"
+      },
+      {
+        "from": "TASK-BREAKGLASS",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_third_audit.py"
+      },
+      {
+        "from": "TASK-CLI-GOV",
+        "relation": "changes",
+        "to": "FILE:python/aifw/cli.py"
+      },
+      {
+        "from": "TASK-CLI-GOV",
+        "relation": "changes",
+        "to": "FILE:tests_python/fixtures/commands.json"
+      },
+      {
+        "from": "TASK-CLI-GOV",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_shell.py"
+      },
+      {
+        "from": "TASK-DOCS-SECURITY",
+        "relation": "changes",
+        "to": "FILE:CHANGELOG.md"
+      },
+      {
+        "from": "TASK-DOCS-SECURITY",
+        "relation": "changes",
+        "to": "FILE:docs/authority.md"
+      },
+      {
+        "from": "TASK-DOCS-SECURITY",
+        "relation": "changes",
+        "to": "FILE:docs/claude-code.md"
+      },
+      {
+        "from": "TASK-DOCS-SECURITY",
+        "relation": "changes",
+        "to": "FILE:docs/migrations.md"
+      },
+      {
+        "from": "TASK-DOCS-SECURITY",
+        "relation": "changes",
+        "to": "FILE:docs/observability-and-runbooks.md"
+      },
+      {
+        "from": "TASK-DOCS-SECURITY",
+        "relation": "changes",
+        "to": "FILE:docs/security.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:HOW_TO_USE.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:README.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:docs/agent-conformance.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:docs/architecture.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:docs/cli.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:docs/context-intelligence.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:docs/quality-gates.md"
+      },
+      {
+        "from": "TASK-DOCS-USAGE",
+        "relation": "changes",
+        "to": "FILE:docs/traceability.md"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:.aifw/catalog.yaml"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:.aifw/gates.yaml"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:evals/cases"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:evals/traces"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:python/aifw/cli.py"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:python/aifw/conformance.py"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:python/aifw/routing.py"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:schemas/agent-trace.schema.json"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:schemas/conformance-case.schema.json"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:scripts/verify_wheel.py"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:templates/agent-trace.yaml"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:tests_python/fixtures/cli-parity.json"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:tests_python/fixtures/commands.json"
+      },
+      {
+        "from": "TASK-EVAL",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_workflows.py"
+      },
+      {
+        "from": "TASK-GATES-CHECK",
+        "relation": "changes",
+        "to": "FILE:python/aifw/cli.py"
+      },
+      {
+        "from": "TASK-GATES-CHECK",
+        "relation": "changes",
+        "to": "FILE:python/aifw/gates.py"
+      },
+      {
+        "from": "TASK-GATES-CHECK",
+        "relation": "changes",
+        "to": "FILE:scripts/verify_wheel.py"
+      },
+      {
+        "from": "TASK-GATES-CHECK",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_context.py"
+      },
+      {
+        "from": "TASK-GENERATED",
+        "relation": "changes",
+        "to": "FILE:PROJECT_MAP.md"
+      },
+      {
+        "from": "TASK-GENERATED",
+        "relation": "changes",
+        "to": "FILE:docs/cli-reference.generated.md"
+      },
+      {
+        "from": "TASK-HOOK-CORE",
+        "relation": "changes",
+        "to": "FILE:python/aifw/hooks.py"
+      },
+      {
+        "from": "TASK-HOOK-CORE",
+        "relation": "changes",
+        "to": "FILE:python/aifw/shell.py"
+      },
+      {
+        "from": "TASK-INSTALL",
+        "relation": "changes",
+        "to": "FILE:.claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "from": "TASK-SKILL-TEMPLATES",
+        "relation": "changes",
+        "to": "FILE:templates/claude/skills/aifw-workflow/SKILL.md"
+      },
+      {
+        "from": "TASK-SKILL-TEMPLATES",
+        "relation": "changes",
+        "to": "FILE:templates/storybook.md"
+      },
+      {
+        "from": "TASK-SKILL-TEMPLATES",
+        "relation": "changes",
+        "to": "FILE:templates/technical-plan.md"
+      },
+      {
+        "from": "TASK-WAIVER",
+        "relation": "changes",
+        "to": "FILE:python/aifw/gates.py"
+      },
+      {
+        "from": "TASK-WAIVER",
+        "relation": "changes",
+        "to": "FILE:python/aifw/waiver.py"
+      },
+      {
+        "from": "TASK-WAIVER",
+        "relation": "changes",
+        "to": "FILE:schemas/waiver.schema.json"
+      },
+      {
+        "from": "TASK-WAIVER",
+        "relation": "changes",
+        "to": "FILE:templates/waiver.yaml"
+      },
+      {
+        "from": "TASK-WAIVER",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_audit_features.py"
+      },
+      {
+        "from": "TASK-WAIVER",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_governance.py"
+      },
+      {
+        "from": "TASK-WAIVER",
+        "relation": "changes",
+        "to": "FILE:tests_python/test_hardening.py"
+      }
+    ]
+  },
+  "assessment": {
+    "status": "cached",
+    "mode": "shadow",
+    "recorded": false,
+    "at": "2026-11-15T19:45:56.385Z",
+    "model": "perplexity/pplx-decider-v1.2",
+    "change": "remove-unused-commands",
+    "specs": "a18de50fe37003850c7a531d8a8a7c17a1abdbc9a283cba1080ad4927f5dc7ec",
+    "pairs": [
+      {
+        "requirement": "REQ-AUTONOMY-LEGACY-BREAKGLASS",
+        "scenario": "SCN-AUTONOMY-LEGACY-BREAKGLASS",
+        "probability": 0.999
+      },
+      {
+        "requirement": "REQ-CONTEXT-GATES",
+        "scenario": "SCN-CONTEXT-GATES",
+        "probability": 0.997
+      }
+    ],
+    "weakTraces": [],
+    "cost": 8.86e-06,
+    "id": 24
+  }
+}

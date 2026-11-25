@@ -153,30 +153,11 @@
     "doctor"
   ],
   [
-    "eval"
-  ],
-  [
     "validate"
   ],
   [
     "intake",
     "set"
-  ],
-  [
-    "waiver",
-    "add"
-  ],
-  [
-    "waiver",
-    "list"
-  ],
-  [
-    "break-glass",
-    "grant"
-  ],
-  [
-    "break-glass",
-    "list"
   ],
   [
     "template",

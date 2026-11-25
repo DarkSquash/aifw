@@ -36,7 +36,7 @@ Humano + Project Charter + ADRs + contratos
 | Impasse | tentativas, estados e escalada | Impasse Case |
 | Permissions | efeitos externos e capability ceiling | `.aifw/permissions.yaml` |
 | Routing | recomendação/ativação FAST–WORK–BRAIN | `.aifw/routing.yaml` |
-| Conformance | comportamento observável do agente | `evals/` + traces reais |
+| Conformance | roteamento e avaliador de tarefas | `evals/` (roteamento e avaliador) |
 | Adapters | tradução para o host do agente | `templates/claude/` |
 
 ## Fronteiras

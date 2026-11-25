@@ -21,4 +21,4 @@ Default, hover/focus/active, disabled, loading, empty, error, long content, narr
 - visual regression em viewports definidos;
 - revisão humana para mudança estética global.
 
-Uma story não é implementação duplicada. Ela importa o componente real. Exceção ao design system referencia rule ID, Change Case/waiver e expiração quando temporária.
+Uma story não é implementação duplicada. Ela importa o componente real. Exceção ao design system referencia rule ID, Change Case/ADR e expiração quando temporária.

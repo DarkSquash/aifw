@@ -482,16 +482,6 @@ aifw change classify --diff
 aifw change classify --diff --base main --behavior-change
 ```
 
-### `aifw waiver` e `aifw break-glass`
-
-Exceções humanas com prazo. Um waiver faz um gate reprovado passar como `waived` até expirar; `manifest`, `human-approval` e os invariantes do core não aceitam waiver. O break-glass libera tipos de ação no hook durante um incidente.
-
-```powershell
-aifw waiver add --rule tests --scope ci --reason "runner instável" --expires 2026-10-20T00:00:00Z --by "human:proprietario"
-aifw waiver list
-aifw break-glass grant --incident inc-42 --scope git-remote,deploy --reason "correção em produção" --hours 4 --by "human:proprietario"
-```
-
 ### `aifw secrets scan`
 
 Procura segredos nos arquivos do projeto: chaves privadas, tokens da AWS, do GitHub e do Slack, chaves de API e senhas atribuídas em código, além de arquivos como `.env` versionados. Mostra arquivo, linha e tipo, nunca o valor. Uma linha com o comentário `aifw:allow-secret` é ignorada (use em fixtures de teste). É o gate `secret-scan`, obrigatório a partir de L1. Com `--history`, também lê as linhas adicionadas em todos os commits de todas as branches, porque um segredo apagado depois continua no histórico; cada achado traz o commit.
@@ -564,17 +554,6 @@ Verifica Python, Git, Windows e WSL. WSL é tratado como ambiente separado; indi
 ```powershell
 aifw doctor --json
 ```
-
-### `aifw eval`
-
-Executa casos de conformidade comportamental contra traces do agente. Serve para verificar se o agente respeita ordem, aprovações, evidências e comportamentos proibidos.
-
-```powershell
-aifw eval --json
-aifw eval --cases evals/cases --traces evals/traces
-```
-
-Este comando é diferente de `route eval`: um testa comportamento geral do agente; o outro testa especificamente decisões de roteamento.
 
 ### `aifw validate`
 

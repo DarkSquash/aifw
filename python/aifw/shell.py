@@ -746,8 +746,7 @@ def inline_script(name, code):
     found = found or [request("read-only")]
     # Approvals belong to the person, so they are flagged even inside code that also runs programs.
     if re.search(r"\baifw\b", code) and (
-        re.search(r"approve|activate|decide|grant|add_waiver|verdict|record_chat", code)
-        or FORGES.search(code)
+        re.search(r"approve|activate|decide|verdict|record_chat", code) or FORGES.search(code)
     ):
         found = [dict(r, approval=True) for r in found]
     return found
@@ -885,10 +884,7 @@ def segment_requests(words, piped, allowlist, depth, cwd=None):
         found.append(request("secret-read"))
     if (
         name == "aifw"
-        and (
-            set(lowered) & {"approve", "activate", "decide", "grant", "verdict"}
-            or lowered[:2] == ["waiver", "add"]
-        )
+        and set(lowered) & {"approve", "activate", "decide", "verdict"}
         or forges_prompt(name, args, text)
     ):
         found = [dict(r, approval=True) for r in found]

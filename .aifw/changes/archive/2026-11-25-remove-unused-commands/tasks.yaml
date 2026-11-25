@@ -1,0 +1,152 @@
+apiVersion: aifw.dev/v1alpha1
+kind: ChangeTasks
+changeId: remove-unused-commands
+tasks:
+- id: TASK-HOOK-CORE
+  title: 'Sessão principal (hook core): em hooks.py tirar active_grants, log_break_glass, o import validate_break_glass, os caminhos waivers e break-glass de CONTROL e SIGNED_OR_POLICY e os ramos break-glass de item_findings; em shell.py tirar grant, add_waiver e waiver add da detecção de aprovação. Cópia, py_compile, ruff, depois instalar. Edições exatas em design.md'
+  status: done
+  dependsOn: []
+  requirementIds:
+  - REQ-AUTONOMY-LEGACY-BREAKGLASS
+  paths:
+  - python/aifw/hooks.py
+  - python/aifw/shell.py
+- id: TASK-CLI-GOV
+  title: 'Worker: cli.py sem os comandos waiver e break-glass (parser, APPROVALS, bloco de execução, imports sem uso); commands.json sem as 4 entradas; test_shell troca o exemplo waiver add por impasse decide. Verif: pytest test_cli test_shell test_cli_parity'
+  status: done
+  dependsOn:
+  - TASK-HOOK-CORE
+  requirementIds: []
+  paths:
+  - python/aifw/cli.py
+  - tests_python/fixtures/commands.json
+  - tests_python/test_shell.py
+- id: TASK-BREAKGLASS
+  title: 'Worker: permissions.py sem as 4 funções de break-glass; schema sem breakGlass em required e com a propriedade tolerada; scaffold e .aifw/permissions.yaml sem o bloco; testes antigos removidos e 2 de compatibilidade novos. Verif: pytest audit_features third_audit governance hardening hooks policy'
+  status: done
+  dependsOn:
+  - TASK-CLI-GOV
+  requirementIds:
+  - REQ-AUTONOMY-LEGACY-BREAKGLASS
+  paths:
+  - python/aifw/permissions.py
+  - schemas/permissions.schema.json
+  - templates/project-scaffold.json
+  - .aifw/permissions.yaml
+  - tests_python/test_audit_features.py
+  - tests_python/test_third_audit.py
+  - tests_python/test_governance.py
+  - tests_python/test_hardening.py
+  - tests_python/test_hooks.py
+- id: TASK-WAIVER
+  title: 'Worker: gates.py sem apply_waivers; apagar waiver.py, waiver.schema.json e templates/waiver.yaml; testes de waiver removidos e o de assinatura sem waiver. Verif: pytest audit_features governance hardening spec_integrity workflows e grep waiver vazio'
+  status: done
+  dependsOn:
+  - TASK-BREAKGLASS
+  requirementIds: []
+  paths:
+  - python/aifw/gates.py
+  - python/aifw/waiver.py
+  - schemas/waiver.schema.json
+  - templates/waiver.yaml
+  - tests_python/test_audit_features.py
+  - tests_python/test_governance.py
+  - tests_python/test_hardening.py
+- id: TASK-GATES-CHECK
+  title: 'Worker: apagar inspect_gate_wiring, o comando gates check do cli.py, a linha do verify_wheel.py e os 3 testes de CI em test_context.py. Verif: pytest test_context test_cli'
+  status: done
+  dependsOn:
+  - TASK-WAIVER
+  requirementIds:
+  - REQ-CONTEXT-GATES
+  paths:
+  - python/aifw/gates.py
+  - python/aifw/cli.py
+  - scripts/verify_wheel.py
+  - tests_python/test_context.py
+- id: TASK-EVAL
+  title: 'Worker: mover evaluate_routing_cases para routing.py; cli.py sem o comando eval e com route eval apontando para routing; apagar conformance.py, 2 schemas, template agent-trace, evals/cases e evals/traces; fixtures, test_workflows, verify_wheel, gate conformance de .aifw/gates.yaml e catálogo ajustados. Verif: pytest workflows cli cli_parity assessment_eval'
+  status: done
+  dependsOn:
+  - TASK-GATES-CHECK
+  requirementIds: []
+  paths:
+  - python/aifw/routing.py
+  - python/aifw/cli.py
+  - python/aifw/conformance.py
+  - schemas/conformance-case.schema.json
+  - schemas/agent-trace.schema.json
+  - templates/agent-trace.yaml
+  - evals/cases
+  - evals/traces
+  - tests_python/fixtures/cli-parity.json
+  - tests_python/fixtures/commands.json
+  - tests_python/test_workflows.py
+  - scripts/verify_wheel.py
+  - .aifw/gates.yaml
+  - .aifw/catalog.yaml
+- id: TASK-SKILL-TEMPLATES
+  title: 'Worker (skill writing-for-agents): templates/claude/skills/aifw-workflow/SKILL.md sem waiver, break-glass e gates check (5 pontos); technical-plan.md e storybook.md sem waiver. Verif: pytest review_profile cascade role_subagents hooks e grep vazio em templates'
+  status: done
+  dependsOn:
+  - TASK-EVAL
+  requirementIds: []
+  paths:
+  - templates/claude/skills/aifw-workflow/SKILL.md
+  - templates/technical-plan.md
+  - templates/storybook.md
+- id: TASK-INSTALL
+  title: 'Worker: regenerar a cópia com aifw claude enable --no-graphify (nunca à mão); conferir aifw claude check e git diff --stat só com a skill'
+  status: done
+  dependsOn:
+  - TASK-SKILL-TEMPLATES
+  requirementIds: []
+  paths:
+  - .claude/skills/aifw-workflow/SKILL.md
+- id: TASK-DOCS-USAGE
+  title: 'Worker: README, HOW_TO_USE, docs/cli.md, context-intelligence, agent-conformance, architecture, quality-gates e traceability sem os 4 recursos. Verif: grep vazio nesses arquivos e pytest test_context'
+  status: done
+  dependsOn:
+  - TASK-EVAL
+  requirementIds: []
+  paths:
+  - README.md
+  - HOW_TO_USE.md
+  - docs/cli.md
+  - docs/context-intelligence.md
+  - docs/agent-conformance.md
+  - docs/architecture.md
+  - docs/quality-gates.md
+  - docs/traceability.md
+- id: TASK-DOCS-SECURITY
+  title: 'Worker: claude-code, security, authority, observability-and-runbooks, migrations (seção nova com a nota de migração) e CHANGELOG. Verif: grep waiver e break-glass vazio nos 4 primeiros'
+  status: done
+  dependsOn:
+  - TASK-EVAL
+  requirementIds: []
+  paths:
+  - docs/claude-code.md
+  - docs/security.md
+  - docs/authority.md
+  - docs/observability-and-runbooks.md
+  - docs/migrations.md
+  - CHANGELOG.md
+- id: TASK-ADR
+  title: 'Worker (skill architecture-decision-records): docs/decisions/ADR-0047-remove-unused-commands.md no formato do ADR-0046'
+  status: done
+  dependsOn:
+  - TASK-DOCS-SECURITY
+  requirementIds: []
+  paths:
+  - docs/decisions/ADR-0047-remove-unused-commands.md
+- id: TASK-GENERATED
+  title: 'Worker: python scripts/generate_cli_reference.py, aifw map build, depois generate --check, map check e resolve check; git diff --stat só nos dois gerados'
+  status: done
+  dependsOn:
+  - TASK-INSTALL
+  - TASK-DOCS-USAGE
+  - TASK-ADR
+  requirementIds: []
+  paths:
+  - docs/cli-reference.generated.md
+  - PROJECT_MAP.md

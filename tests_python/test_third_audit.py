@@ -1,9 +1,8 @@
-import json
 import subprocess
 
 import pytest
 
-from aifw import brownfield, impasse, permissions
+from aifw import brownfield, impasse
 from aifw.claude import enable_project
 from aifw.common import read_yaml, write_yaml
 from aifw.hooks import handle
@@ -75,15 +74,6 @@ def test_grep_and_glob_on_secret_files_are_denied(tmp_path):
     assert pre(tmp_path, "Grep", pattern="KEY", path=".env") == "deny"  # ADR-0037
     assert pre(tmp_path, "Glob", pattern="**/*.pem") == "deny"
     assert pre(tmp_path, "Grep", pattern="TODO", path="src") is None
-
-
-def test_break_glass_use_is_logged(tmp_path):
-    init(tmp_path)
-    grant = dict(incidentId="inc-9", scope=["git-remote"], reason="outage", approvedBy="human:me")
-    permissions.grant_break_glass(tmp_path, dict(grant, approvedAt=AT, expiresAt="2999-01-01T00:00:00Z"))
-    assert pre(tmp_path, "Bash", command="git push origin hotfix") is None
-    entry = json.loads((tmp_path / ".aifw/break-glass/inc-9.log").read_text().splitlines()[0])
-    assert entry["kind"] == "git-remote" and "git push" in entry["detail"]
 
 
 def test_signed_mode_covers_impasse_decisions_and_adoption(tmp_path):

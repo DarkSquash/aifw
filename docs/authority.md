@@ -43,7 +43,7 @@ Um override legítimo:
 - não enfraquece regra irrenunciável;
 - é persistido e testado.
 
-Exceção temporária usa Waiver, não override permanente. Mudança na Constitution/core é L3.
+Exceção temporária não é override permanente: registre-a em ADR ou mude a regra. Mudança na Constitution/core é L3.
 
 ## Artefatos gerados
 

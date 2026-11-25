@@ -69,17 +69,6 @@ gates:
   - -m
   - build
   - --no-isolation
-- id: conformance
-  enforcement: hard
-  levels:
-  - L2
-  - L3
-  command:
-  - python
-  - -m
-  - aifw
-  - eval
-  - --json
 - id: secret-scan
   enforcement: hard
   levels:

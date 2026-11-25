@@ -1,0 +1,16 @@
+## grep de aceitacao (python scripts schemas templates policies profiles tests_python)
+schemas/permissions.schema.json:96:    "breakGlass": {
+schemas/permissions.schema.json:97:      "description": "Ignorado. O recurso break-glass foi removido (ADR-0047); a chave de projetos antigos continua sendo aceita."
+templates/project-scaffold.json:116:        "id": "session-conformance",
+templates/technical-plan.md:37:Unit, integration, contract, E2E, visual, accessibility, performance e conformance selecionados pelo risco.
+policies/core.yaml:70:    statement: Route models automatically only through a routing table whose conformance eval passes; delegated agents never exceed the parent's capabilities.
+profiles/flutter-mobile/gates.macos.yaml:31:  - id: session-conformance
+profiles/flutter-mobile/gates.windows-fvm.yaml:34:  - id: session-conformance
+profiles/flutter-mobile/gates.windows.yaml:34:  - id: session-conformance
+profiles/python/gates.yaml:27:  - id: session-conformance
+profiles/web-ts/gates.yaml:27:  - id: session-conformance
+tests_python/test_audit_features.py:76:    policy["breakGlass"] = dict(
+tests_python/test_audit_features.py:88:    (tmp_path / ".aifw/break-glass").mkdir(parents=True)
+tests_python/test_audit_features.py:89:    write_yaml(tmp_path / ".aifw/break-glass/inc-1.yaml", grant)
+tests_python/test_audit_features.py:96:    assert "breakGlass" not in read_yaml(tmp_path / ".aifw/permissions.yaml")
+exit=0

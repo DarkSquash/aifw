@@ -1,0 +1,22 @@
+== aifw waiver --help
+MANIFEST_INVALID: argument command: invalid choice: 'waiver' (choose from 'init', 'audit', 'intake', 'map', 'adopt', 'spec', 'decision', 'principle', 'resolve', 'change', 'assess', 'route', 'secrets', 'template', 'runs', 'claude', 'impasse', 'context', 'instructions', 'doctor', 'validate')
+exit=0
+== aifw break-glass --help
+MANIFEST_INVALID: argument command: invalid choice: 'break-glass' (choose from 'init', 'audit', 'intake', 'map', 'adopt', 'spec', 'decision', 'principle', 'resolve', 'change', 'assess', 'route', 'secrets', 'template', 'runs', 'claude', 'impasse', 'context', 'instructions', 'doctor', 'validate')
+exit=0
+== aifw eval --help
+MANIFEST_INVALID: argument command: invalid choice: 'eval' (choose from 'init', 'audit', 'intake', 'map', 'adopt', 'spec', 'decision', 'principle', 'resolve', 'change', 'assess', 'route', 'secrets', 'template', 'runs', 'claude', 'impasse', 'context', 'instructions', 'doctor', 'validate')
+exit=0
+== aifw gates check --help
+MANIFEST_INVALID: argument command: invalid choice: 'gates' (choose from 'init', 'audit', 'intake', 'map', 'adopt', 'spec', 'decision', 'principle', 'resolve', 'change', 'assess', 'route', 'secrets', 'template', 'runs', 'claude', 'impasse', 'context', 'instructions', 'doctor', 'validate')
+exit=0
+== cli-reference
+grep-exit=1
+== route eval
+{
+  "cases": 32,
+  "passed": 32,
+  "passRate": 1.0,
+  "criticalFailures": 0,
+  "failures": []
+}

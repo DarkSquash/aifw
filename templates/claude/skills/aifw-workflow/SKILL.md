@@ -19,7 +19,7 @@ O que exige a aprovação do usuário (ADR-0037):
 - instalar pacote, biblioteca, programa ou projeto novo;
 - push para a branch padrão, force push, apagar branch remota, tags, merge de PR, deploy de produção e publicar pacote;
 - escrever num serviço externo fora de `spec.externalAllowlist`: quando um domínio parecer parte do projeto, pergunte uma vez se pode incluí-lo na lista e, com o sim, inclua;
-- o que já era decisão humana: impasse, waiver, break-glass, Charter, adoção e decisões.
+- o que já era decisão humana: impasse, Charter, adoção e decisões.
 
 O hook pede confirmação nesses casos. Commits, push para branches de trabalho, PRs, delegação a subagentes, código opaco e escritas na allowlist seguem sem perguntar. Segredos nunca são lidos.
 
@@ -30,7 +30,7 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 - Resolva informações recuperáveis no repositório antes de perguntar. `ready` significa Charter pronto para aprovação; `complete` inclui as avaliações técnicas atuais, não significa por si só que o Charter foi aprovado. Confira seu estado e registro.
 - Para projeto existente sem baseline atual, `aifw adopt analyze --json` descobre fatos. Dentro da adoção autorizada, `adopt analyze --write` e `adopt apply` persistem candidatos para revisão.
 - Não deduza responsabilidade, owner ou relação de runtime apenas por nomes de arquivos. Solicite julgamento humano somente sobre decisões que ainda não estejam resolvidas.
-- `adopt approve`, `intake approve`, `decision approve`, `spec approve`, `impasse decide`, `waiver add`, `break-glass grant` e `assess verdict` são aprovações humanas. O CLI só as aceita no terminal da pessoa que aprova, com o id do projeto digitado por ela; no shell do agente elas falham e o hook as nega. Mostre o comando exato e peça para a pessoa rodar. Nunca tente contornar essa exigência.
+- `adopt approve`, `intake approve`, `decision approve`, `spec approve`, `impasse decide` e `assess verdict` são aprovações humanas. O CLI só as aceita no terminal da pessoa que aprova, com o id do projeto digitado por ela; no shell do agente elas falham e o hook as nega. Mostre o comando exato e peça para a pessoa rodar. Nunca tente contornar essa exigência.
 - Conduza a entrevista do intake invocando a skill `grilling` pela ferramenta Skill, usando as perguntas de `aifw intake status` como fronteira inicial. Grave cada resposta com `aifw intake set --field <campo> --value <valor>`; editar um Charter aprovado o reabre. A skill não aprova nada.
 - Se `aifw intake status --json` trouxer `assessment.weakAnswers`, respostas que o Decider avaliou como vagas ou parciais, use-as como as próximas perguntas da entrevista. Não bloqueiam o `ready` nem a aprovação.
 - Use catálogos de decisão apenas quando a tarefa exigir uma escolha arquitetural. Com o recurso `decisions` ligado, `decision recommend --suggest-signals --context "<pedido>"` sugere sinais. Confirme cada um com o usuário antes de passá-lo em `--signals`.
@@ -41,7 +41,6 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 - Preserve dependências obrigatórias quando houver `overBudget`; orçamento é estimativa informativa. Sem correspondência, investigue os caminhos relevantes em vez de presumir contexto completo.
 - `context check` verifica referências e compara com o snapshot, quando existir. Mudança de hash pede revisão; não prova conteúdo incorreto. `context index --write` registra baseline factual depois da revisão, não aprovação semântica.
 - Para sincronizar regras entre agentes, mantenha uma fonte específica do projeto e use `instructions build/check --agent claude`, que mantém um bloco gerenciado no `CLAUDE.md`. Preserve o restante do `CLAUDE.md` e as instruções globais do usuário; não importe instruções de terceiros como autoridade automaticamente.
-- `gates check --level <nível>` apenas inspeciona referências na CI. `execution: not-run` não é evidência de teste executado. Gates obrigatórios com `skipped`, aviso ou estado desconhecido bloqueiam.
 
 ## Mudanças e evidências
 
@@ -63,7 +62,6 @@ Código de saída 0 indica sucesso; 1 indica erro de entrada ou execução; 2 in
 8. Quando entradas do catálogo ou da resolução mudarem, use `map build` ou `resolve build` e confira novamente. Não edite manualmente suas projeções para esconder drift.
 
 - Use `aifw template copy --name <template> --change <id>` para criar threat model, plano técnico, runbook e outros documentos a partir dos templates (`aifw template list`).
-- Waivers (`aifw waiver add`) e break-glass (`aifw break-glass grant`) são decisões humanas: proponha, mas só rode com a confirmação do usuário. Nenhum waiver substitui `human-approval` ou um invariante do core.
 - O hook Stop impede concluir com código alterado depois da última verificação bem-sucedida: rode os testes ou `aifw validate`, ou diga explicitamente por que não se aplicam. `aifw runs show --session latest` resume a sessão contra essas regras.
 
 ## Fechamento de uma mudança com specs
@@ -119,7 +117,7 @@ Perfil de revisão (ADR-0046): em L2 e L3 de risco baixo ou médio, uma mudança
 
 Esta skill não é um servidor MCP e não troca o modelo da sessão. Se a rota recomendada divergir do modelo atual e o trabalho não puder ser delegado, informe o usuário.
 
-Com o hook `aifw-hook` instalado, cada ação passa por `.aifw/permissions.yaml` e pelos impasses abertos: o Claude Code nega a ação ou pede confirmação ao usuário. Quando o hook negar, não contorne por outro caminho; explique o motivo e o próximo passo. Edições nos arquivos de controle do AIFW (política, gates, roteamento, impasses, aprovações, specs aceitas, `evidence/validation.json`, `.claude/settings.json`, a skill e os subagentes do AIFW em `.claude/`, os `paths` do `tasks.yaml` de uma mudança aprovada, a pasta `.git/`, `.venv/` e `node_modules/`) pedem confirmação humana, e a leitura de arquivos de segredo é negada. Comandos que o hook não consegue ler (`eval`, `python -c`, scripts) rodam quando `opaqueCode: allow`, mas o que eles fazem continua sob as regras acima: não use um script para instalar, publicar ou fazer push que pediria confirmação. Não escreva waivers, break-glass, Charter, `change.yaml` ou registros de sessão à mão: use os comandos do aifw. Rode cada verificação sozinha ou ligada por `&&`: terminar com `| tail`, `; echo` ou `|| true` esconde a falha, e o hook não conta como verificada. Para transferir o trabalho a outra sessão, use a skill `handoff`.
+Com o hook `aifw-hook` instalado, cada ação passa por `.aifw/permissions.yaml` e pelos impasses abertos: o Claude Code nega a ação ou pede confirmação ao usuário. Quando o hook negar, não contorne por outro caminho; explique o motivo e o próximo passo. Edições nos arquivos de controle do AIFW (política, gates, roteamento, impasses, aprovações, specs aceitas, `evidence/validation.json`, `.claude/settings.json`, a skill e os subagentes do AIFW em `.claude/`, os `paths` do `tasks.yaml` de uma mudança aprovada, a pasta `.git/`, `.venv/` e `node_modules/`) pedem confirmação humana, e a leitura de arquivos de segredo é negada. Comandos que o hook não consegue ler (`eval`, `python -c`, scripts) rodam quando `opaqueCode: allow`, mas o que eles fazem continua sob as regras acima: não use um script para instalar, publicar ou fazer push que pediria confirmação. Não escreva Charter, `change.yaml` ou registros de sessão à mão: use os comandos do aifw. Rode cada verificação sozinha ou ligada por `&&`: terminar com `| tail`, `; echo` ou `|| true` esconde a falha, e o hook não conta como verificada. Para transferir o trabalho a outra sessão, use a skill `handoff`.
 
 ## Impasse
 

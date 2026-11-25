@@ -26,15 +26,12 @@ A CLI é o **plano de controle** do framework: uma camada pequena que lê fontes
 | `route explain/status/eval` | indica a rota, avalia casos e mostra o estado; o roteamento fica sempre ligado |
 | `impasse open/attempt/status/review/decide/revalidate` | registra tentativas de correção e congela mudanças ao atingir o limite |
 | `intake set` | grava uma decisão no Charter; editar um Charter aprovado o reabre |
-| `waiver add/list` | exceções humanas com prazo para gates e regras sobrescrevíveis |
-| `break-glass grant/list` | permissões temporárias de incidente respeitadas pelo hook |
 | `template list/copy` | cria documentos a partir dos templates |
 | `secrets scan` | procura segredos nos arquivos do projeto (e no histórico do git com `--history`), sem mostrar os valores |
 | `change assess`, `assess report/verdict` | avaliador de tarefas em modo sombra e seus vereditos |
 | `assess eval` | roda uma suíte de `evals/assessment/` contra o modelo de decisão e mostra acertos e cortes |
 | `runs show` | resume as sessões gravadas contra as regras do fluxo |
 | `claude install/enable/check` | comando `/aifw`, ativação por projeto e diagnóstico da integração |
-| `eval` | executa conformance cases contra traces |
 | `doctor` | diagnostica Python/Git/Windows/WSL |
 
 ## Seleção de stack no `init`

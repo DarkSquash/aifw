@@ -17,15 +17,15 @@ requirements:
     - Decision files are classified as ADRs without executing code.
 - id: REQ-CONTEXT-GATES
   strength: MUST
-  statement: Require pass for mandatory gates and distinguish static CI references from executed evidence.
+  statement: Require pass for mandatory gates, so a gate that is missing, skipped, warning or unknown blocks.
   scenarios:
   - id: SCN-CONTEXT-GATES
     given:
-    - A gate is missing, skipped, conditional or referenced by CI.
+    - A mandatory gate is missing, skipped or reports a warning or an unknown status.
     when:
-    - Gate evaluation or wiring inspection runs.
+    - Gate evaluation runs.
     then:
-    - Unproven mandatory checks block and CI inspection never claims execution.
+    - Unproven mandatory checks block.
 - id: REQ-CONTEXT-INSTRUCTIONS
   strength: MUST
   statement: Generate shared managed instruction blocks preserving user text and recovery on write failure.

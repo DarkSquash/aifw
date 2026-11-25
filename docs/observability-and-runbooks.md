@@ -24,4 +24,4 @@ Runbooks entram no catálogo/PROJECT_MAP quando protegem um fluxo material. Muda
 
 ## Incidentes
 
-Durante incidente, preservar evidência e reduzir dano tem prioridade. Break-glass continua limitado. Após recuperação, registrar timeline, causa, gaps de detecção, ações com owner e mudanças de policy/teste; nunca converter postmortem em culpa individual.
+Durante incidente, preservar evidência e reduzir dano tem prioridade. Após recuperação, registrar timeline, causa, gaps de detecção, ações com owner e mudanças de policy/teste; nunca converter postmortem em culpa individual.

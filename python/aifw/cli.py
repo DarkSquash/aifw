@@ -1,7 +1,6 @@
 """AIFW command line. Exit 0 succeeds, 1 rejects input, 2 reports blockers."""
 
 import argparse
-from datetime import timedelta
 import os
 from pathlib import Path
 import sys
@@ -17,7 +16,6 @@ from .common import (
     parse_yaml,
     project_path,
     require,
-    timestamp,
     write_json,
 )
 
@@ -234,18 +232,6 @@ def create_parser():
     leaf = command("route eval", "evaluate routing against reviewable cases")
     option(leaf, "--cases")
     option(leaf, "--output")
-    leaf = command("waiver add", "record a time-bounded human exception for a gate or overridable rule")
-    for flag in ("--rule", "--scope", "--reason", "--expires"):
-        option(leaf, flag, required=True)
-    option(leaf, "--requested-by", default="agent:claude")
-    approval(leaf)
-    command("waiver list", "list waivers and whether they are active")
-    leaf = command("break-glass grant", "grant temporary incident permissions honored by the Claude hook")
-    for flag in ("--incident", "--scope", "--reason"):
-        option(leaf, flag, required=True)
-    option(leaf, "--hours", default="4")
-    approval(leaf)
-    command("break-glass list", "list incident grants and whether they are active")
     leaf = command("secrets scan", "find secrets in project files; reports locations, never values")
     option(leaf, "--history", action="store_true")
     command("template list", "list document templates")
@@ -296,14 +282,7 @@ def create_parser():
         )
         option(leaf, "--agent", default="all", choices=["all", "codex", "claude", "opencode"])
         option(leaf, "--source", default=".aifw/project-instructions.md")
-    leaf = command(
-        "gates check", "inspect gate configuration and static GitHub CI references without running them"
-    )
-    option(leaf, "--level", required=True, choices=LEVELS)
     command("doctor", "check Python, Git, Windows and WSL")
-    leaf = command("eval", "evaluate agent behavioral conformance")
-    option(leaf, "--cases")
-    option(leaf, "--traces")
     leaf = command("validate", "run quality gates selected by impact, or for a spec change")
     option(leaf, "--level", choices=LEVELS)
     option(leaf, "--change")
@@ -322,8 +301,6 @@ APPROVALS = {
     "decision approve",
     "spec approve",  # from a terminal; in Claude Code the prompt hook records the reply (ADR-0037)
     "impasse decide",
-    "waiver add",
-    "break-glass grant",
     "assess verdict",
 }
 
@@ -355,7 +332,7 @@ def confirm_human(by, project):
 
 
 def execute(args, root):
-    from . import brownfield, catalogs, conformance, gates, intake, policy, routing, specs, workspace
+    from . import brownfield, catalogs, gates, intake, policy, routing, specs, workspace
 
     action = args.action
     at = getattr(args, "at", None) or now()
@@ -386,9 +363,6 @@ def execute(args, root):
         from .instructions import sync_instructions
 
         value = sync_instructions(root, args.agent, args.source, write=action.endswith("build"))
-        return value, 0 if value["status"] == "pass" else 2
-    if action == "gates check":
-        value = gates.inspect_gate_wiring(root, args.level)
         return value, 0 if value["status"] == "pass" else 2
     if action == "init":
         profiles = [
@@ -622,31 +596,10 @@ def execute(args, root):
     if action == "route status":
         return routing.load_routing(root), 0
     if action == "route eval":
-        value = conformance.evaluate_routing_cases(args.cases or assets() / "evals/routing/cases.yaml")
+        value = routing.evaluate_routing_cases(args.cases or assets() / "evals/routing/cases.yaml")
         if args.output:
             write_json(args.output, value)
         return value, 2 if value["failures"] else 0  # a check of the rules; routing is always on (ADR-0037)
-    if action.startswith(("waiver ", "break-glass ")):
-        from . import permissions, waiver
-
-        if action == "waiver list":
-            return waiver.load_waivers(root), 0
-        if action == "break-glass list":
-            return permissions.list_break_glass(root), 0
-        scope = comma_list(args.scope)
-        if action == "waiver add":
-            data = dict(ruleId=args.rule, scope=scope, reason=args.reason, requestedBy=args.requested_by)
-            data.update(approvedBy=args.by, approvedAt=at, expiresAt=args.expires)
-            return waiver.add_waiver(root, data), 0
-        try:
-            hours = float(args.hours)
-        except ValueError as error:
-            raise AifwError("MANIFEST_INVALID", "--hours must be a number.") from error
-        require(0 < hours <= 72, "Break-glass grants last at most 72 hours.")
-        expires = (timestamp(at) + timedelta(hours=hours)).isoformat().replace("+00:00", "Z")
-        grant = dict(incidentId=args.incident, scope=scope, reason=args.reason, approvedBy=args.by)
-        grant.update(approvedAt=at, expiresAt=expires)
-        return permissions.grant_break_glass(root, grant), 0
     if action == "secrets scan":
         from .secrets import scan
 
@@ -727,11 +680,6 @@ def execute(args, root):
             # Informational: CI has no Claude Code, so this never changes the exit code.
             value["claude"] = check_project(root)
         return value, 0 if value["healthy"] else 2
-    if action == "eval":
-        value = conformance.run_conformance(
-            args.cases or assets() / "evals/cases", args.traces or assets() / "evals/traces"
-        )
-        return value, 0 if value["pass"] else 2
     if action == "validate":
         require(bool(args.level) != bool(args.change), "Use either --level or --change.")
         require(not args.write or args.change, "--write records evidence for a --change.")

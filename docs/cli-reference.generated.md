@@ -2,18 +2,18 @@
 
 > Gerado por `python scripts/generate_cli_reference.py`. Guia: [HOW_TO_USE.md](../HOW_TO_USE.md).
 
-Esta referência contém 61 comandos finais e suas opções.
+Esta referência contém 55 comandos finais e suas opções.
 
 ## `aifw --help`
 
 ```text
 usage: aifw [-h] [--version]
-            {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,assess,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate} ...
+            {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,assess,route,secrets,template,runs,claude,impasse,context,instructions,doctor,validate} ...
 
 AI Software Engineering Framework control plane (Python)
 
 positional arguments:
-  {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,assess,route,waiver,break-glass,secrets,template,runs,claude,impasse,context,instructions,gates,doctor,eval,validate}
+  {init,audit,intake,map,adopt,spec,decision,principle,resolve,change,assess,route,secrets,template,runs,claude,impasse,context,instructions,doctor,validate}
     init                initialize a project control plane
     audit               inspect a project without changing it
     intake              Manage intake
@@ -26,8 +26,6 @@ positional arguments:
     change              Manage change
     assess              Manage assess
     route               Manage route
-    waiver              Manage waiver
-    break-glass         Manage break-glass
     secrets             Manage secrets
     template            Manage template
     runs                Manage runs
@@ -35,9 +33,7 @@ positional arguments:
     impasse             Manage impasse
     context             Manage context
     instructions        Manage instructions
-    gates               Manage gates
     doctor              check Python, Git, Windows and WSL
-    eval                evaluate agent behavioral conformance
     validate            run quality gates selected by impact, or for a spec
                         change
 
@@ -623,72 +619,6 @@ options:
   --output OUTPUT  output
 ```
 
-## `aifw waiver add`
-
-```text
-usage: aifw waiver add [-h] [--json] --rule RULE --scope SCOPE --reason REASON
-                       --expires EXPIRES [--requested-by REQUESTED_BY] --by BY
-                       [--at AT]
-
-record a time-bounded human exception for a gate or overridable rule
-
-options:
-  -h, --help            show this help message and exit
-  --json                emit stable machine-readable JSON
-  --rule RULE           rule
-  --scope SCOPE         scope
-  --reason REASON       reason
-  --expires EXPIRES     expires
-  --requested-by REQUESTED_BY
-                        requested by
-  --by BY               by
-  --at AT               at
-```
-
-## `aifw waiver list`
-
-```text
-usage: aifw waiver list [-h] [--json]
-
-list waivers and whether they are active
-
-options:
-  -h, --help  show this help message and exit
-  --json      emit stable machine-readable JSON
-```
-
-## `aifw break-glass grant`
-
-```text
-usage: aifw break-glass grant [-h] [--json] --incident INCIDENT --scope SCOPE
-                              --reason REASON [--hours HOURS] --by BY
-                              [--at AT]
-
-grant temporary incident permissions honored by the Claude hook
-
-options:
-  -h, --help           show this help message and exit
-  --json               emit stable machine-readable JSON
-  --incident INCIDENT  incident
-  --scope SCOPE        scope
-  --reason REASON      reason
-  --hours HOURS        hours
-  --by BY              by
-  --at AT              at
-```
-
-## `aifw break-glass list`
-
-```text
-usage: aifw break-glass list [-h] [--json]
-
-list incident grants and whether they are active
-
-options:
-  -h, --help  show this help message and exit
-  --json      emit stable machine-readable JSON
-```
-
 ## `aifw secrets scan`
 
 ```text
@@ -961,21 +891,6 @@ options:
   --source SOURCE       source
 ```
 
-## `aifw gates check`
-
-```text
-usage: aifw gates check [-h] [--json] --level {L0,L1,L2,L3}
-
-inspect gate configuration and static GitHub CI references without running
-them
-
-options:
-  -h, --help            show this help message and exit
-  --json                emit stable machine-readable JSON
-  --level {L0,L1,L2,L3}
-                        level
-```
-
 ## `aifw doctor`
 
 ```text
@@ -986,20 +901,6 @@ check Python, Git, Windows and WSL
 options:
   -h, --help  show this help message and exit
   --json      emit stable machine-readable JSON
-```
-
-## `aifw eval`
-
-```text
-usage: aifw eval [-h] [--json] [--cases CASES] [--traces TRACES]
-
-evaluate agent behavioral conformance
-
-options:
-  -h, --help       show this help message and exit
-  --json           emit stable machine-readable JSON
-  --cases CASES    cases
-  --traces TRACES  traces
 ```
 
 ## `aifw validate`

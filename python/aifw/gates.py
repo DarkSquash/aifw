@@ -9,7 +9,6 @@ import subprocess
 import sys
 
 from .common import AifwError, digest, file_state, human, now, read_yaml, require, validate, write_json
-from .waiver import apply_waivers
 from .workspace import build_workspace_map, load_manifest
 
 
@@ -216,100 +215,11 @@ def validate_workspace(root, level, run=run_command, approval=None, evidence=Non
             humanApproval="required" if level == "L3" else "conditional" if level == "L2" else "none",
         ),
         requiredGateIds=[g["id"] for g in gates["gates"] if level in g["levels"]],
-        results=apply_waivers(root, run_gate_set(gates, level, root, run, builtins)),
+        results=run_gate_set(gates, level, root, run, builtins),
     )
     if approval:
         data["approval"] = approval
     return evaluate_quality_gates(data)
-
-
-def inspect_gate_wiring(root, level):
-    """Static references only: never infer successful execution or branch protection."""
-    from .common import AifwError
-    from .context import safe_path
-
-    root = Path(root).resolve()
-
-    def normalize(command):
-        command = " ".join(command.split())
-        command = re.sub(r"^uv run (?:(?:--no-sync|--locked|--frozen) )*", "", command)
-        return re.sub(r"^python -m (ruff|pytest|aifw)\b", r"\1", command)
-
-    config = validate(read_yaml(safe_path(root, ".aifw/gates.yaml")), "quality-gates.schema.json")
-    workflows = []
-    for name in sorted((root / ".github/workflows").glob("*")):
-        if name.suffix not in {".yml", ".yaml"}:
-            continue
-        path = name.relative_to(root).as_posix()
-        try:
-            data = read_yaml(safe_path(root, path))
-            require(isinstance(data, dict), "Workflow must be a mapping.")
-            triggers = data.get("on", {})
-            if isinstance(triggers, str):
-                triggers = [triggers]
-            automatic = (
-                any(t in triggers for t in ("push", "pull_request", "pull_request_target", "merge_group"))
-                if isinstance(triggers, (dict, list))
-                else False
-            )
-            for job in data.get("jobs", {}).values():
-                for step in job.get("steps", []):
-                    if isinstance(step.get("run"), str):
-                        workflows.append(
-                            dict(
-                                path=path,
-                                automatic=automatic,
-                                conditional="if" in job
-                                or "if" in step
-                                or bool(job.get("continue-on-error") or step.get("continue-on-error")),
-                                lines=[normalize(line) for line in step["run"].splitlines()],
-                            )
-                        )
-        except (AifwError, OSError, TypeError, AttributeError):
-            workflows.append(dict(path=path, automatic=False, conditional=True, lines=[]))
-    rows = []
-    for gate in config["gates"]:
-        if level not in gate["levels"]:
-            continue
-        builtin = gate["id"] in {"manifest", "project-map", "context-integrity", "instructions-integrity"}
-        command = normalize(" ".join(gate.get("command", [])))
-        validators = {
-            f"{prefix} validate --level {level}{suffix}"
-            for prefix in ("aifw", "python -m aifw")
-            for suffix in ("", " --json")
-        }
-        matches = [
-            w for w in workflows if (command and command in w["lines"]) or validators.intersection(w["lines"])
-        ]
-        state = (
-            "automatic-reference"
-            if any(w["automatic"] and not w["conditional"] for w in matches)
-            else "conditional-reference"
-            if any(w["automatic"] for w in matches)
-            else "manual-only"
-            if matches
-            else "not-found"
-        )
-        rows.append(
-            dict(
-                id=gate["id"],
-                configured=bool(command) or builtin,
-                enforcement=gate["enforcement"],
-                execution="not-run",
-                ciStatus=state,
-                ciFiles=sorted({w["path"] for w in matches}),
-            )
-        )
-    return dict(
-        status="pass"
-        if rows and all(r["configured"] and r["ciStatus"] == "automatic-reference" for r in rows)
-        else "warning",
-        gates=rows,
-        execution="not-run",
-        branchProtection="not-verified",
-        deploymentBlocking="not-verified",
-        analysis="literal GitHub Actions command references only",
-    )
 
 
 def run_doctor(platform=None, run=run_command):

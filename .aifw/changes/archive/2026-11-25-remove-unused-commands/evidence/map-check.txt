@@ -1,0 +1,5 @@
+{
+  "current": true,
+  "digest": "883bf5174dbec252d14b66a6e86d1a2b956592abebf01f6ba64898d0ca4caa42",
+  "path": "PROJECT_MAP.md"
+}

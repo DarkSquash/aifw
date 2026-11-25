@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from aifw import brownfield, catalogs, conformance, gates, intake, policy, routing, workspace
+from aifw import brownfield, catalogs, gates, intake, policy, routing, workspace
 from aifw.common import AifwError, API, assets, digest, parse_yaml, read_yaml, write_yaml
 
 AT = "2026-09-06T03:00:00.000Z"
@@ -100,7 +100,7 @@ def test_new_projects_route_automatically_and_the_eval_stays_a_check(tmp_path):
     init(tmp_path)
     policy = routing.load_routing(tmp_path)
     assert policy["enabled"] and policy["mode"] == "automatic" and "activation" not in policy  # ADR-0037
-    report = conformance.evaluate_routing_cases(assets() / "evals/routing/cases.yaml")
+    report = routing.evaluate_routing_cases(assets() / "evals/routing/cases.yaml")
     assert report["passRate"] == 1 and report["criticalFailures"] == 0
 
 
